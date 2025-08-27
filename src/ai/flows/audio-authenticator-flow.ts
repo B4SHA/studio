@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -52,7 +53,9 @@ const prompt = ai.definePrompt({
   - Metallic or robotic artifacts in the voice.
   - Abrupt cuts or changes in audio quality.
 
-  Based on your analysis, provide a verdict ('Likely Authentic', 'Potential AI/Manipulation', or 'Uncertain'), a confidence score for your verdict, and a detailed report explaining your reasoning. The report should cite specific timestamps or characteristics you observed.
+  Based on your analysis, you will provide a final verdict ('Likely Authentic', 'Potential AI/Manipulation', or 'Uncertain') and a confidence score for that verdict.
+
+  You must also provide a detailed report explaining your reasoning. The report MUST justify the verdict you have chosen, citing specific timestamps or audio characteristics that support your conclusion. Ensure there is no contradiction between the verdict and the report.
 
   Audio: {{media url=audioDataUri}}`,
 });
