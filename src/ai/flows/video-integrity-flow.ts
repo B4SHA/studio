@@ -10,17 +10,13 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import ytdl from 'ytdl-core';
 
 const VideoIntegrityInputSchema = z.object({
   videoDataUri: z
     .string()
     .describe(
       "A video, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'"
-    ).optional(),
-  videoUrl: z.string().url().describe('The URL of the video to analyze.').optional(),
-}).refine(data => data.videoDataUri || data.videoUrl, {
-    message: 'Either a video file or a video URL must be provided.',
+    )
 });
 
 export type VideoIntegrityInput = z.infer<typeof VideoIntegrityInputSchema>;
@@ -45,7 +41,7 @@ export async function videoIntegrityAnalysis(input: VideoIntegrityInput): Promis
 
 const prompt = ai.definePrompt({
   name: 'videoIntegrityPrompt',
-  input: {schema: z.object({ videoDataUri: z.string() })},
+  input: {schema: VideoIntegrityInputSchema},
   output: {schema: VideoIntegrityOutputSchema},
   prompt: `You are an expert in detecting AI-generated and manipulated videos.
 
@@ -59,16 +55,6 @@ Write a short summary of your analysis.
 `,
 });
 
-// Helper to convert a stream to a base64 data URI
-async function streamToDataUri(stream: NodeJS.ReadableStream, mimeType: string): Promise<string> {
-    const chunks: Buffer[] = [];
-    for await (const chunk of stream) {
-        chunks.push(chunk as Buffer);
-    }
-    const buffer = Buffer.concat(chunks);
-    return `data:${mimeType};base64,${buffer.toString('base64')}`;
-}
-
 const videoIntegrityFlow = ai.defineFlow(
   {
     name: 'videoIntegrityFlow',
@@ -76,71 +62,7 @@ const videoIntegrityFlow = ai.defineFlow(
     outputSchema: VideoIntegrityOutputSchema,
   },
   async input => {
-    let videoDataUri = input.videoDataUri;
-
-    if (input.videoUrl && !input.videoDataUri) {
-      try {
-        if (!ytdl.validateURL(input.videoUrl)) {
-            return {
-                analysis: {
-                    deepfake: false,
-                    mislabeling: false,
-                    videoManipulation: false,
-                    satireParody: false,
-                    syntheticVoice: false,
-                    fullyAiGenerated: false,
-                    confidenceScore: 0,
-                    summary: `The provided URL is not a valid YouTube URL. Please provide a valid YouTube video link for analysis.`,
-                }
-            };
-        }
-        
-        const videoInfo = await ytdl.getInfo(input.videoUrl);
-        const format = ytdl.chooseFormat(videoInfo.formats, { 
-          quality: 'lowestvideo',
-          filter: (format) => format.container === 'mp4' && !format.hasAudio,
-        });
-        
-        if (!format) {
-             return {
-                analysis: {
-                    deepfake: false,
-                    mislabeling: false,
-                    videoManipulation: false,
-                    satireParody: false,
-                    syntheticVoice: false,
-                    fullyAiGenerated: false,
-                    confidenceScore: 0,
-                    summary: "Could not find a suitable video format to download from the provided URL. The YouTube URL analysis feature can be unreliable due to frequent changes in YouTube's platform. For best results, please download the video and use the 'File Upload' option.",
-                }
-            };
-        }
-
-        const videoStream = ytdl(input.videoUrl, { format: format });
-        videoDataUri = await streamToDataUri(videoStream, format.mimeType || 'video/mp4');
-
-      } catch (error: any) {
-        console.error("Error processing video URL:", error);
-        let userMessage = `I was unable to process the video from the provided URL. This can happen due to YouTube's backend changes. For guaranteed analysis, please download the video and upload the file directly. The tool returned the following error: ${error.message}`;
-        if (error.message && error.message.includes('private')) {
-            userMessage = "This video appears to be private or unavailable. Please try a different, public YouTube video or upload the file directly.";
-        }
-        return {
-            analysis: {
-                deepfake: false,
-                mislabeling: false,
-                videoManipulation: false,
-                satireParody: false,
-                syntheticVoice: false,
-                fullyAiGenerated: false,
-                confidenceScore: 0,
-                summary: userMessage,
-            }
-        };
-      }
-    }
-    
-    if (!videoDataUri) {
+    if (!input.videoDataUri) {
          return {
             analysis: {
                 deepfake: false,
@@ -155,7 +77,7 @@ const videoIntegrityFlow = ai.defineFlow(
         };
     }
 
-    const {output} = await prompt({ videoDataUri });
+    const {output} = await prompt({ videoDataUri: input.videoDataUri });
     return output!;
   }
 );

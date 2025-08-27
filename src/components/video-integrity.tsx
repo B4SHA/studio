@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -13,41 +14,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Icons } from "@/components/icons";
 import { Progress } from "@/components/ui/progress";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const formSchema = z.object({
-  inputType: z.enum(["file", "url"]).default("file"),
-  videoFile: z.custom<FileList>().optional(),
-  videoUrl: z.string().optional(),
-}).superRefine((data, ctx) => {
-  if (data.inputType === 'file') {
-    if (!data.videoFile || data.videoFile.length === 0) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['videoFile'], message: 'Video file is required.' });
-      return;
-    }
-    const file = data.videoFile[0];
-    if (!file.type.startsWith("video/")) {
-       ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['videoFile'], message: 'Please upload a valid video file.' });
-    }
-    if (file.size > 50 * 1024 * 1024) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['videoFile'], message: 'File size should be less than 50MB.' });
-    }
-  }
-  if (data.inputType === 'url') {
-    if (!data.videoUrl) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['videoUrl'], message: 'URL is required.' });
-    } else {
-      try {
-         const url = new URL(data.videoUrl);
-         if (url.hostname !== 'www.youtube.com' && url.hostname !== 'youtube.com' && url.hostname !== 'youtu.be') {
-            ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['videoUrl'], message: 'Please enter a valid YouTube URL.' });
-         }
-      } catch {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['videoUrl'], message: 'Please enter a valid URL.' });
-      }
-    }
-  }
+  videoFile: z
+    .custom<FileList>()
+    .refine((files) => files?.length === 1, "Video file is required.")
+    .refine((files) => files?.[0]?.type.startsWith("video/"), "Please upload a valid video file.")
+    .refine((files) => files?.[0]?.size <= 50 * 1024 * 1024, "File size should be less than 50MB."),
 });
 
 
@@ -57,7 +30,7 @@ const AnalysisItem = ({ label, value }: { label: string; value: boolean }) => (
     {value ? (
       <span className="flex items-center font-medium text-destructive"><Icons.alert className="mr-1.5 h-4 w-4" /> Detected</span>
     ) : (
-      <span className="flex items-center font-medium text-green-600"><Icons.checkCircle className="mr-1.5 h-4 w-4" /> Not Detected</span>
+      <span className="flex items-center font-medium text-primary"><Icons.checkCircle className="mr-1.5 h-4 w-4" /> Not Detected</span>
     )}
   </div>
 );
@@ -72,13 +45,9 @@ export function VideoIntegrity() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      inputType: "file",
       videoFile: undefined,
-      videoUrl: "",
     },
   });
-
-  const inputType = form.watch("inputType");
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -92,26 +61,10 @@ export function VideoIntegrity() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     setResult(null);
-    if (values.inputType === 'file') {
-        // Keep the preview for file uploads
-    } else {
-        setVideoPreview(null);
-    }
     
     try {
-      let analysisInput = {};
-      if (values.inputType === 'file' && values.videoFile?.[0]) {
-        const videoDataUri = await fileToDataUri(values.videoFile[0]);
-        analysisInput = { videoDataUri };
-        if (!videoPreview) {
-            const objectUrl = URL.createObjectURL(values.videoFile[0]);
-            setVideoPreview(objectUrl);
-        }
-      } else if (values.inputType === 'url' && values.videoUrl) {
-        analysisInput = { videoUrl: values.videoUrl };
-      }
-
-      const analysisResult = await videoIntegrityAnalysis(analysisInput);
+      const videoDataUri = await fileToDataUri(values.videoFile[0]);
+      const analysisResult = await videoIntegrityAnalysis({ videoDataUri });
       setResult(analysisResult);
     } catch (error) {
       console.error(error);
@@ -140,7 +93,7 @@ export function VideoIntegrity() {
             Video Integrity Analysis
           </CardTitle>
           <CardDescription>
-            Upload a video file or provide a YouTube URL to detect deepfakes and manipulations. File upload is recommended for best results.
+            Upload a video file to detect deepfakes, manipulations, and other signs of AI-generated content.
           </CardDescription>
         </CardHeader>
         <Form {...form}>
@@ -148,85 +101,22 @@ export function VideoIntegrity() {
             <CardContent className="space-y-4">
               <FormField
                 control={form.control}
-                name="inputType"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel>Analysis Input</FormLabel>
+                name="videoFile"
+                render={() => (
+                  <FormItem>
+                    <FormLabel>Video File (Max 50MB)</FormLabel>
                     <FormControl>
-                      <RadioGroup
-                        onValueChange={(value) => {
-                            field.onChange(value);
-                            setResult(null);
-                            setVideoPreview(null);
-                            form.reset({inputType: value as 'file' | 'url', videoFile: undefined, videoUrl: ''});
-                        }}
-                        defaultValue={field.value}
-                        className="grid grid-cols-2 gap-4"
-                      >
-                        <FormItem className="flex items-center space-x-2 space-y-0">
-                          <FormControl>
-                            <RadioGroupItem value="file" id="file" />
-                          </FormControl>
-                          <FormLabel htmlFor="file" className="font-normal">File Upload</FormLabel>
-                        </FormItem>
-                        <FormItem className="flex items-center space-x-2 space-y-0">
-                          <FormControl>
-                            <RadioGroupItem value="url" id="url" />
-                          </FormControl>
-                          <FormLabel htmlFor="url" className="font-normal">YouTube URL</FormLabel>
-                        </FormItem>
-                      </RadioGroup>
+                      <Input
+                        type="file"
+                        accept="video/*"
+                        onChange={handleFileChange}
+                        className="file:text-foreground"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
-              {inputType === 'file' && (
-                <FormField
-                  control={form.control}
-                  name="videoFile"
-                  render={() => (
-                    <FormItem>
-                      <FormLabel>Video File (Max 50MB)</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="file"
-                          accept="video/*"
-                          onChange={handleFileChange}
-                          className="file:text-foreground"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-              
-              {inputType === 'url' && (
-                <>
-                  <FormField
-                    control={form.control}
-                    name="videoUrl"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>YouTube Video URL</FormLabel>
-                        <FormControl>
-                          <Input placeholder="https://www.youtube.com/watch?v=..." {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                   <Alert variant="default" className="border-accent bg-accent/10">
-                    <Icons.alert className="h-4 w-4 !text-accent-foreground" />
-                    <AlertTitle className="text-accent-foreground/90">Recommendation</AlertTitle>
-                    <AlertDescription className="text-accent-foreground/80">
-                      YouTube URL analysis can be unreliable. For guaranteed results and faster processing, please use the file upload option.
-                    </AlertDescription>
-                  </Alert>
-                </>
-              )}
 
               {videoPreview && (
                 <div className="mt-4 rounded-lg overflow-hidden border">
@@ -249,7 +139,7 @@ export function VideoIntegrity() {
           <CardTitle className="text-xl">Analysis Report</CardTitle>
           <CardDescription>
             The results of the video integrity analysis will appear here.
-          </CardDescription>
+          </Description>
         </CardHeader>
         <CardContent>
           {isLoading && (
