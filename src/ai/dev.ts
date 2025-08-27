@@ -1,1 +1,6 @@
-// Flows will be imported for their side effects in this file.
+import { config } from 'dotenv';
+config();
+
+import '@/ai/flows/audio-authenticator-flow.ts';
+import '@/ai/flows/video-integrity-flow.ts';
+import '@/ai/flows/news-sleuth-flow.ts';
