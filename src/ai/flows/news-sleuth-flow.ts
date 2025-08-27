@@ -13,13 +13,17 @@ import {ai} from '@/ai/genkit';
 import {getArticleContentFromUrl} from '@/services/url-fetcher';
 import {z} from 'genkit';
 
-const NewsSleuthInputSchema = z.object({
+const NewsSleuthInputObjectSchema = z.object({
   articleText: z.string().optional().describe('The text content of the news article to analyze.'),
   articleUrl: z.string().url().optional().describe('The URL of the news article to analyze.'),
   articleHeadline: z.string().optional().describe('The headline of the news article to analyze.'),
-}).refine(data => data.articleText || data.articleUrl || data.articleHeadline, {
+});
+
+const NewsSleuthInputSchema = NewsSleuthInputObjectSchema.refine(
+  data => data.articleText || data.articleUrl || data.articleHeadline, {
   message: 'One of article text, URL, or headline must be provided.',
 });
+
 export type NewsSleuthInput = z.infer<typeof NewsSleuthInputSchema>;
 
 const NewsSleuthOutputSchema = z.object({
@@ -56,7 +60,7 @@ const fetcherTool = ai.defineTool(
 const prompt = ai.definePrompt({
   name: 'newsSleuthPrompt',
   tools: [fetcherTool],
-  input: {schema: NewsSleuthInputSchema.extend({ currentDate: z.string() })},
+  input: {schema: NewsSleuthInputObjectSchema.extend({ currentDate: z.string() })},
   output: {schema: NewsSleuthOutputSchema},
   prompt: `You are an expert in identifying fake news and assessing the credibility of news articles.
 
