@@ -80,7 +80,7 @@ const prompt = ai.definePrompt({
 
   - If the user provides a URL, you MUST use the 'getArticleContentFromUrl' tool to fetch the article's text content first. Then, use your search capabilities to analyze the fetched content.
   - If the user provides ONLY a headline, you MUST use your internal search capabilities to find a credible news article URL that matches the headline. Once you find a suitable URL, you MUST then use the 'getArticleContentFromUrl' tool to fetch its content and perform your analysis.
-  - If the tool returns an error, explain to the user that you were unable to retrieve the content from the URL and that they should try pasting the article text directly. In this case, set the verdict to 'Uncertain' and the score to 0.
+  - If the tool returns an error (like a 404 Not Found), you should try to find a DIFFERENT, more reliable URL and use the tool again. Do not give up on the first try. If multiple attempts fail, you should then explain to the user that you were unable to retrieve the content. In this failure case, set the verdict to 'Uncertain' and the score to 0.
   - If the user provides the article text, your analysis should be based on a comprehensive evaluation of the provided information and what you can verify from other online sources.
 
   {{#if articleText}}
@@ -112,38 +112,6 @@ const newsSleuthFlow = ai.defineFlow(
 
     const llmResponse = await prompt(inputWithDate);
     
-    // Check if the model decided to use the fetcher tool.
-    const toolRequest = llmResponse.toolRequest;
-    if (toolRequest && toolRequest.tool.name === 'getArticleContentFromUrl') {
-      const toolResponse = await toolRequest.run();
-      const articleContent = (toolResponse as any)?.textContent;
-      const fetchError = (toolResponse as any)?.error;
-
-      // Handle the case where fetching the URL failed.
-      if (fetchError || !articleContent) {
-        return {
-          credibilityReport: {
-            overallScore: 0,
-            verdict: 'Uncertain',
-            summary: 'Could not analyze the article.',
-            biases: [],
-            flaggedContent: [],
-            reasoning: `I was unable to retrieve the content from the provided URL. The website may be blocking automated access, or the URL may be incorrect. Please try copying and pasting the article text directly for analysis. Error: ${fetchError || 'Could not extract article text.'}`,
-            sources: [],
-          },
-        };
-      }
-      
-      // If fetching was successful, send the content back to the LLM for the final analysis.
-      // We pass the fetched text, the current date, and crucially, we also pass the original input
-      // so the model has the full context of what it's been asked to do.
-      const finalInput = { ...inputWithDate, articleText: articleContent };
-      const finalResponse = await prompt(finalInput, {toolResponses: [toolResponse]});
-      return finalResponse.output!;
-
-    } else {
-      // If no tool was called (e.g., user provided text directly), return the direct output.
-      return llmResponse.output!;
-    }
+    return llmResponse.output!;
   }
 );
