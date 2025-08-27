@@ -82,8 +82,6 @@ const videoIntegrityFlow = ai.defineFlow(
     if (input.videoUrl && !input.videoDataUri) {
       try {
         if (!ytdl.validateURL(input.videoUrl)) {
-            // This is not a helpful response for the user, as the model will likely not be able to do anything with a non-YouTube URL.
-            // We should just fail gracefully.
             return {
                 analysis: {
                     deepfake: false,
@@ -98,11 +96,26 @@ const videoIntegrityFlow = ai.defineFlow(
             };
         }
         
-        const videoStream = ytdl(input.videoUrl, { 
-            quality: 'lowest', 
-            filter: 'audioandvideo'
-        });
-        videoDataUri = await streamToDataUri(videoStream, 'video/mp4');
+        const videoInfo = await ytdl.getInfo(input.videoUrl);
+        const format = ytdl.chooseFormat(videoInfo.formats, { quality: 'lowest', filter: 'videoandaudio' });
+        
+        if (!format) {
+             return {
+                analysis: {
+                    deepfake: false,
+                    mislabeling: false,
+                    videoManipulation: false,
+                    satireParody: false,
+                    syntheticVoice: false,
+                    fullyAiGenerated: false,
+                    confidenceScore: 0,
+                    summary: "Could not find a suitable video format to download.",
+                }
+            };
+        }
+
+        const videoStream = ytdl.downloadFromInfo(videoInfo, { format: format });
+        videoDataUri = await streamToDataUri(videoStream, format.mimeType || 'video/mp4');
 
       } catch (error: any) {
         console.error("Error processing video URL:", error);
@@ -115,7 +128,7 @@ const videoIntegrityFlow = ai.defineFlow(
                 syntheticVoice: false,
                 fullyAiGenerated: false,
                 confidenceScore: 0,
-                summary: `I was unable to process the video from the provided URL. Please make sure it's a valid YouTube link. Error: ${error.message}`,
+                summary: `I was unable to process the video from the provided URL. Please make sure it's a valid YouTube link. The tool returned the following error: ${error.message}`,
             }
         };
       }
