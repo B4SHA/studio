@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -29,7 +30,7 @@ const VideoIntegrityOutputSchema = z.object({
     satireParody: z.boolean().describe('Whether the video is satire or parody.'),
     syntheticVoice: z.boolean().describe('Whether the video contains a synthetic voice.'),
     fullyAiGenerated: z.boolean().describe('Whether the video is fully AI-generated.'),
-    confidenceScore: z.number().describe('The confidence score of the analysis.'),
+    confidenceScore: z.number().min(0).max(100).describe('The confidence in the accuracy of the overall analysis, from 0 to 100.'),
     summary: z.string().describe('A summary of the analysis.'),
   }),
 });
@@ -50,7 +51,7 @@ You will analyze the video and determine if it is a deepfake, mislabeled, manipu
 Analyze the following video:
 {{media url=videoDataUri}}
 
-Provide a confidence score for your analysis.
+Provide a confidence score for your analysis. The confidence score should reflect how certain you are about your overall analysis. A high score (e.g., 95) means you are very sure of your findings, whether the video is real or fake.
 Write a short summary of your analysis.
 `,
 });

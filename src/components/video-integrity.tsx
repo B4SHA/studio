@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -170,7 +171,7 @@ export function VideoIntegrity() {
                   <div>
                     <div className="flex justify-between items-center mb-2">
                         <h3 className="font-semibold text-lg">Confidence Score</h3>
-                        <span className="font-bold text-2xl text-primary">{result.analysis.confidenceScore.toFixed(0)}%</span>
+                        <span className="font-bold text-2xl text-primary">{result.analysis.confidenceScore.toFixed(0)}</span>
                     </div>
                     <Progress value={result.analysis.confidenceScore} indicatorClassName={getProgressIndicatorClassName(result.analysis.confidenceScore)} />
                   </div>
