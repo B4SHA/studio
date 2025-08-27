@@ -108,10 +108,10 @@ export function NewsSleuth() {
     }
   }
 
-  const getProgressColor = (score: number) => {
+  const getProgressIndicatorClassName = (score: number) => {
     if (score < 40) return "bg-destructive";
     if (score < 70) return "bg-accent";
-    return "bg-green-500";
+    return "bg-primary";
   };
 
   return (
@@ -255,7 +255,7 @@ export function NewsSleuth() {
                     <h3 className="font-semibold text-lg">Overall Credibility Score</h3>
                     <span className="font-bold text-2xl text-primary">{result.credibilityReport.overallScore}/100</span>
                 </div>
-                <Progress value={result.credibilityReport.overallScore} className={getProgressColor(result.credibilityReport.overallScore)} />
+                <Progress value={result.credibilityReport.overallScore} indicatorClassName={getProgressIndicatorClassName(result.credibilityReport.overallScore)} />
               </div>
               <Separator />
               <div>

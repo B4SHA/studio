@@ -11,7 +11,6 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import ytdl from 'ytdl-core';
-import { PassThrough } from 'stream';
 
 const VideoIntegrityInputSchema = z.object({
   videoDataUri: z
@@ -91,13 +90,14 @@ const videoIntegrityFlow = ai.defineFlow(
                     syntheticVoice: false,
                     fullyAiGenerated: false,
                     confidenceScore: 0,
-                    summary: `The provided URL is not a valid YouTube URL. The AI is unable to process it.`,
+                    summary: `The provided URL is not a valid YouTube URL. Please provide a valid YouTube video link for analysis.`,
                 }
             };
         }
         
         const videoInfo = await ytdl.getInfo(input.videoUrl);
-        const format = ytdl.chooseFormat(videoInfo.formats, { quality: 'lowest', filter: 'videoandaudio' });
+        // Prioritize combined video and audio, but fall back to video-only if necessary
+        const format = ytdl.chooseFormat(videoInfo.formats, { quality: 'lowest', filter: 'videoandaudio' }) || ytdl.chooseFormat(videoInfo.formats, { quality: 'lowest', filter: 'video' });
         
         if (!format) {
              return {
@@ -109,12 +109,12 @@ const videoIntegrityFlow = ai.defineFlow(
                     syntheticVoice: false,
                     fullyAiGenerated: false,
                     confidenceScore: 0,
-                    summary: "Could not find a suitable video format to download.",
+                    summary: "Could not find a suitable video format to download from the provided URL.",
                 }
             };
         }
 
-        const videoStream = ytdl.downloadFromInfo(videoInfo, { format: format });
+        const videoStream = ytdl(input.videoUrl, { format: format });
         videoDataUri = await streamToDataUri(videoStream, format.mimeType || 'video/mp4');
 
       } catch (error: any) {
@@ -128,7 +128,7 @@ const videoIntegrityFlow = ai.defineFlow(
                 syntheticVoice: false,
                 fullyAiGenerated: false,
                 confidenceScore: 0,
-                summary: `I was unable to process the video from the provided URL. Please make sure it's a valid YouTube link. The tool returned the following error: ${error.message}`,
+                summary: `I was unable to process the video from the provided URL. Please make sure it's a valid, public YouTube link. The tool returned the following error: ${error.message}`,
             }
         };
       }

@@ -14,7 +14,6 @@ import { Input } from "@/components/ui/input";
 import { Icons } from "@/components/icons";
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Separator } from "@/components/ui/separator";
 
 const formSchema = z.object({
   inputType: z.enum(["file", "url"]).default("file"),
@@ -48,7 +47,7 @@ const formSchema = z.object({
 
 
 const AnalysisItem = ({ label, value }: { label: string; value: boolean }) => (
-  <div className="flex items-center justify-between text-sm py-2">
+  <div className="flex items-center justify-between text-sm py-2 px-4">
     <span className="text-muted-foreground">{label}</span>
     {value ? (
       <span className="flex items-center font-medium text-destructive"><Icons.alert className="mr-1.5 h-4 w-4" /> Detected</span>
@@ -121,7 +120,7 @@ export function VideoIntegrity() {
     }
   }
   
-  const getProgressColor = (score: number) => {
+  const getProgressIndicatorClassName = (score: number) => {
     if (score < 40) return "bg-destructive";
     if (score < 70) return "bg-accent";
     return "bg-primary";
@@ -133,10 +132,10 @@ export function VideoIntegrity() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
             <Icons.video className="h-6 w-6" />
-            Video Integrity Scanner
+            Video Integrity Analysis
           </CardTitle>
           <CardDescription>
-            Upload a video or provide a URL to detect deepfakes, manipulations, and other forms of AI-generated content.
+            Upload a video or provide a YouTube URL to detect deepfakes, manipulations, and other forms of AI-generated content.
           </CardDescription>
         </CardHeader>
         <Form {...form}>
@@ -169,7 +168,7 @@ export function VideoIntegrity() {
                           <FormControl>
                             <RadioGroupItem value="url" id="url" />
                           </FormControl>
-                          <FormLabel htmlFor="url" className="font-normal">Video URL (YouTube)</FormLabel>
+                          <FormLabel htmlFor="url" className="font-normal">YouTube URL</FormLabel>
                         </FormItem>
                       </RadioGroup>
                     </FormControl>
@@ -207,7 +206,7 @@ export function VideoIntegrity() {
                     <FormItem>
                       <FormLabel>YouTube Video URL</FormLabel>
                       <FormControl>
-                        <Input placeholder="https://youtube.com/watch?v=..." {...field} />
+                        <Input placeholder="https://www.youtube.com/watch?v=..." {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -260,7 +259,7 @@ export function VideoIntegrity() {
                         <h3 className="font-semibold text-lg">Confidence Score</h3>
                         <span className="font-bold text-2xl text-primary">{result.analysis.confidenceScore.toFixed(0)}%</span>
                     </div>
-                    <Progress value={result.analysis.confidenceScore} indicatorClassName={getProgressColor(result.analysis.confidenceScore)} />
+                    <Progress value={result.analysis.confidenceScore} indicatorClassName={getProgressIndicatorClassName(result.analysis.confidenceScore)} />
                   </div>
                   
                   <div className="divide-y rounded-md border">
