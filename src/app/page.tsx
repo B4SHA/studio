@@ -1,54 +1,60 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { NewsSleuth } from "@/components/news-sleuth";
-import { VideoIntegrity } from "@/components/video-integrity";
-import { AudioAuthenticator } from "@/components/audio-authenticator";
-import { Icons } from "@/components/icons";
+import Link from 'next/link';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Icons } from '@/components/icons';
+import { ArrowRight } from 'lucide-react';
+
+const features = [
+  {
+    icon: <Icons.news className="h-8 w-8 text-primary" />,
+    title: 'News Sleuth',
+    description: 'Analyze news articles from text, URLs, or headlines to uncover biases, assess credibility, and identify potential misinformation.',
+    href: '/news-sleuth',
+  },
+  {
+    icon: <Icons.video className="h-8 w-8 text-primary" />,
+    title: 'Video Integrity',
+    description: 'Scrutinize videos from file uploads to detect deepfakes, manipulations, and other signs of AI-generated content.',
+    href: '/video-integrity',
+  },
+  {
+    icon: <Icons.audio className="h-8 w-8 text-primary" />,
+    title: 'Audio Authenticator',
+    description: 'Examine audio clips to determine their authenticity, flagging potential AI voice generation or signs of tampering.',
+    href: '/audio-authenticator',
+  },
+];
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center space-x-4">
-          <Icons.shield className="h-8 w-8 text-primary" />
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">
-            Veritas Vision
-          </h1>
-        </div>
-      </header>
-      <main className="flex-1 container py-8">
-        <Tabs defaultValue="news" className="w-full">
-          <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 h-auto sm:h-10">
-            <TabsTrigger value="news" className="py-2">
-              <Icons.news className="mr-2" />
-              News Sleuth
-            </TabsTrigger>
-            <TabsTrigger value="video" className="py-2">
-              <Icons.video className="mr-2" />
-              Video Integrity
-            </TabsTrigger>
-            <TabsTrigger value="audio" className="py-2">
-              <Icons.audio className="mr-2" />
-              Audio Authenticator
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="news" className="mt-6">
-            <NewsSleuth />
-          </TabsContent>
-          <TabsContent value="video" className="mt-6">
-            <VideoIntegrity />
-          </TabsContent>
-          <TabsContent value="audio" className="mt-6">
-            <AudioAuthenticator />
-          </TabsContent>
-        </Tabs>
-      </main>
-      <footer className="py-6 md:px-8 md:py-0 border-t">
-        <div className="container flex flex-col items-center justify-center gap-4 md:h-20 md:flex-row">
-          <p className="text-balance text-center text-sm leading-loose text-muted-foreground">
-            Built by Firebase Studio. AI may produce inaccurate information.
-          </p>
-        </div>
-      </footer>
+    <div className="flex flex-col items-center justify-center container py-12 md:py-20">
+      <div className="max-w-3xl text-center mb-12">
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tighter text-foreground mb-4">
+          Uncover the Truth with Veritas Vision
+        </h1>
+        <p className="text-lg md:text-xl text-muted-foreground">
+          Your AI-powered toolkit for analyzing news, video, and audio content. We help you navigate the digital world with confidence by detecting manipulation and verifying authenticity.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl">
+        {features.map((feature) => (
+          <Card key={feature.title} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <CardHeader className="flex flex-row items-center gap-4">
+              {feature.icon}
+              <CardTitle className="text-2xl">{feature.title}</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col flex-1">
+              <CardDescription className="flex-1 mb-6">{feature.description}</CardDescription>
+              <Button asChild className="w-full mt-auto">
+                <Link href={feature.href}>
+                  Get Started <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }

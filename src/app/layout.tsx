@@ -1,6 +1,8 @@
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
+import { Header } from '@/components/header';
+import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
   title: 'Veritas Vision',
@@ -13,14 +15,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className="h-full bg-background">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased h-full">
-        {children}
+      <body className={cn("font-body antialiased h-full flex flex-col")}>
+        <Header />
+        <main className="flex-1">
+          {children}
+        </main>
+        <footer className="py-6 md:px-8 md:py-0 border-t">
+          <div className="container flex flex-col items-center justify-center gap-4 md:h-20 md:flex-row">
+            <p className="text-balance text-center text-sm leading-loose text-muted-foreground">
+              Built by Firebase Studio. AI may produce inaccurate information.
+            </p>
+          </div>
+        </footer>
         <Toaster />
       </body>
     </html>
