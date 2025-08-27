@@ -80,7 +80,7 @@ const prompt = ai.definePrompt({
 
   - If the user provides a URL, you MUST use the 'getArticleContentFromUrl' tool to fetch the article's text content first. Then, use your search capabilities to analyze the fetched content.
   - If the tool returns an error, explain to the user that you were unable to retrieve the content from the URL and that they should try pasting the article text directly. In this case, set the verdict to 'Uncertain' and the score to 0.
-  - If the user provides ONLY a headline or article text, you MUST perform a detailed web search to find the story. Formulate search queries based on the headline's content. Find and analyze multiple high-quality news sources that have reported on this event. Your credibility assessment and summary MUST be based on the content of the articles you discover. Your reasoning must state that the analysis is based on public information and cite the specific articles you found.
+  - If the user provides ONLY a headline or article text, you MUST leverage your internal knowledge and search capabilities to find information about the story. Your credibility assessment and summary MUST be based on the content of the articles you discover from reputable sources. Your reasoning must state that the analysis is based on public information and cite the specific articles you found.
   - If, after a thorough search, you can't find any information on the headline or text, explain that and set the verdict to 'Uncertain'.
   - Your analysis should be based on a comprehensive evaluation of the provided information and what you can verify from other online sources.
 
