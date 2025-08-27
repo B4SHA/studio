@@ -23,18 +23,18 @@ const formSchema = z.object({
     .refine((files) => files?.[0]?.size <= 50 * 1024 * 1024, "File size should be less than 50MB."),
 });
 
-
-const AnalysisItem = ({ label, value }: { label: string; value: boolean }) => (
-  <div className="flex items-center justify-between text-sm py-2 px-4">
-    <span className="text-muted-foreground">{label}</span>
-    {value ? (
-      <span className="flex items-center font-medium text-destructive"><Icons.alert className="mr-1.5 h-4 w-4" /> Detected</span>
-    ) : (
-      <span className="flex items-center font-medium text-primary"><Icons.checkCircle className="mr-1.5 h-4 w-4" /> Not Detected</span>
-    )}
-  </div>
-);
-
+function AnalysisItem({ label, value }: { label: string; value: boolean }) {
+  return (
+    <div className="flex items-center justify-between text-sm py-2 px-4">
+      <span className="text-muted-foreground">{label}</span>
+      {value ? (
+        <span className="flex items-center font-medium text-destructive"><Icons.alert className="mr-1.5 h-4 w-4" /> Detected</span>
+      ) : (
+        <span className="flex items-center font-medium text-primary"><Icons.checkCircle className="mr-1.5 h-4 w-4" /> Not Detected</span>
+      )}
+    </div>
+  );
+}
 
 export function VideoIntegrity() {
   const [isLoading, setIsLoading] = useState(false);
