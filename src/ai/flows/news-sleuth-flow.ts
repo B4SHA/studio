@@ -112,15 +112,15 @@ const newsSleuthFlow = ai.defineFlow(
     const inputWithDate = { ...input, currentDate };
 
     const llmResponse = await prompt(inputWithDate);
-    const toolRequest = llmResponse.toolRequests.find(
-      (req) => req.tool.name === 'getArticleContentFromUrl'
-    );
-
-    if (toolRequest) {
+    
+    // Check if the model decided to use the fetcher tool.
+    const toolRequest = llmResponse.toolRequest;
+    if (toolRequest && toolRequest.tool.name === 'getArticleContentFromUrl') {
       const toolResponse = await toolRequest.run();
-      const articleContent = (toolResponse as any).textContent;
-      const fetchError = (toolResponse as any).error;
+      const articleContent = (toolResponse as any)?.textContent;
+      const fetchError = (toolResponse as any)?.error;
 
+      // If fetching failed, return an error report.
       if (fetchError || !articleContent) {
         return {
           credibilityReport: {
@@ -135,12 +135,15 @@ const newsSleuthFlow = ai.defineFlow(
         };
       }
       
-      const finalInput = { ...input, articleText: articleContent, currentDate };
+      // If fetching succeeded, send the content back to the model for the final analysis.
+      // We are creating a new input object that replaces the URL with the fetched text.
+      const finalInput = { articleText: articleContent, currentDate };
       const finalResponse = await prompt(finalInput);
       return finalResponse.output!;
 
     } else {
-        return llmResponse.output!;
+      // If no tool was called (e.g., for headline or text input), return the direct output.
+      return llmResponse.output!;
     }
   }
 );
