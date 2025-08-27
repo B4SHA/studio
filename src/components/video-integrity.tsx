@@ -35,6 +35,16 @@ function AnalysisItem({ label, value }: { label: string; value: boolean }) {
   );
 }
 
+function getProgressIndicatorClassName(score: number) {
+  if (score < 40) {
+    return "bg-destructive";
+  }
+  if (score < 70) {
+    return "bg-accent";
+  }
+  return "bg-primary";
+}
+
 export function VideoIntegrity() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<VideoIntegrityOutput | null>(null);
@@ -76,16 +86,6 @@ export function VideoIntegrity() {
       setIsLoading(false);
     }
   }
-  
-  const getProgressIndicatorClassName = (score: number) => {
-    if (score < 40) {
-      return "bg-destructive";
-    }
-    if (score < 70) {
-      return "bg-accent";
-    }
-    return "bg-primary";
-  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
