@@ -97,7 +97,7 @@ const videoIntegrityFlow = ai.defineFlow(
         
         const videoInfo = await ytdl.getInfo(input.videoUrl);
         // Prioritize combined video and audio, but fall back to video-only if necessary
-        const format = ytdl.chooseFormat(videoInfo.formats, { quality: 'lowest', filter: 'videoandaudio' }) || ytdl.chooseFormat(videoInfo.formats, { quality: 'lowest', filter: 'video' });
+        const format = ytdl.chooseFormat(videoInfo.formats, { quality: 'lowest', filter: 'videoandaudio' });
         
         if (!format) {
              return {
@@ -109,7 +109,7 @@ const videoIntegrityFlow = ai.defineFlow(
                     syntheticVoice: false,
                     fullyAiGenerated: false,
                     confidenceScore: 0,
-                    summary: "Could not find a suitable video format to download from the provided URL.",
+                    summary: "Could not find a suitable video format to download from the provided URL. The video might be private or removed.",
                 }
             };
         }
