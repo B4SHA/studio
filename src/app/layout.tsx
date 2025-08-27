@@ -5,7 +5,7 @@ import { Header } from '@/components/header';
 import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
-  title: 'Veritas Vision',
+  title: 'Misinformation Mitigator',
   description: 'AI-powered content analysis for news, video, and audio.',
 };
 
