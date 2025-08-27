@@ -46,7 +46,7 @@ export async function newsSleuthAnalysis(input: NewsSleuthInput): Promise<NewsSl
 const fetcherTool = ai.defineTool(
   {
     name: 'getArticleContentFromUrl',
-    description: 'Fetches the text content of a news article from a given URL. Use this tool if the user provides a URL or if you need to find and fetch an article based on a headline.',
+    description: 'Fetches the text content of a news article from a given URL. Use this tool ONLY when the user provides a specific articleUrl.',
     inputSchema: z.object({
       url: z.string().url().describe('The URL of the news article to fetch.'),
     }),
@@ -79,9 +79,8 @@ const prompt = ai.definePrompt({
   The user has provided one of the following: the full text of a news article, its URL, or just its headline.
 
   - If the user provides a URL, you MUST use the 'getArticleContentFromUrl' tool to fetch the article's text content first. Then, use your search capabilities to analyze the fetched content.
-  - If the user provides ONLY a headline, you MUST use your internal search capabilities to find a credible news article URL that matches the headline. Once you find a suitable URL, you MUST then use the 'getArticleContentFromUrl' tool to fetch its content and perform your analysis.
-  - If the tool returns an error (like a 404 Not Found), you should try to find a DIFFERENT, more reliable URL and use the tool again. Do not give up on the first try. If multiple attempts fail, you should then explain to the user that you were unable to retrieve the content. In this failure case, set the verdict to 'Uncertain' and the score to 0.
-  - If the user provides the article text, your analysis should be based on a comprehensive evaluation of the provided information and what you can verify from other online sources.
+  - If the user provides ONLY a headline or the article text, you MUST use your own internal web search and reasoning capabilities to find corroborating information and real news articles. Your analysis should be based on a comprehensive evaluation of the provided information and what you can verify from other online sources.
+  - If you cannot find any information from your internal search about a given headline, state that you were unable to find any information and set the verdict to 'Uncertain' and the score to 0.
 
   {{#if articleText}}
   News Article Text:
