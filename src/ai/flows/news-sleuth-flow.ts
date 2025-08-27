@@ -46,7 +46,7 @@ export async function newsSleuthAnalysis(input: NewsSleuthInput): Promise<NewsSl
 const fetcherTool = ai.defineTool(
   {
     name: 'getArticleContentFromUrl',
-    description: 'Fetches the text content of a news article from a given URL. Use this tool ONLY when the user provides a specific articleUrl.',
+    description: 'Fetches the text content of a news article from a given URL. Use this tool ONLY when you have a specific articleUrl.',
     inputSchema: z.object({
       url: z.string().url().describe('The URL of the news article to fetch.'),
     }),
@@ -78,9 +78,10 @@ const prompt = ai.definePrompt({
 
   The user has provided one of the following: the full text of a news article, its URL, or just its headline.
 
-  - If the user provides a URL, you MUST use the 'getArticleContentFromUrl' tool to fetch the article's text content first. Then, use your search capabilities to analyze the fetched content.
-  - If the user provides ONLY a headline or the article text, you MUST use your own internal web search and reasoning capabilities to find corroborating information and real news articles. Your analysis should be based on a comprehensive evaluation of the provided information and what you can verify from other online sources.
-  - If you cannot find any information from your internal search about a given headline, state that you were unable to find any information and set the verdict to 'Uncertain' and the score to 0.
+  - If the user provides a URL (articleUrl), you MUST use the 'getArticleContentFromUrl' tool to fetch the article's text content first. Then, perform your analysis on the fetched content.
+  - If the user provides ONLY a headline (articleHeadline), your FIRST step is to use your internal search capabilities to find a credible URL for a news article that matches the headline. Then, you MUST use the 'getArticleContentFromUrl' tool with that URL to get the article text. All subsequent analysis MUST be based on the text returned by the tool.
+  - If you cannot find a credible URL for the headline or the tool returns an error, state that you were unable to retrieve the content and set the verdict to 'Uncertain' and the score to 0.
+  - If the user provides only the article text, you must use your own internal web search and reasoning capabilities to find corroborating information and real news articles to verify the content.
 
   {{#if articleText}}
   News Article Text:
