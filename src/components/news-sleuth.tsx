@@ -10,13 +10,62 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/icons";
 import { Separator } from "@/components/ui/separator";
 
 const formSchema = z.object({
-  articleText: z.string().min(100, "Article text must be at least 100 characters long.").max(10000, "Article text must be less than 10,000 characters."),
+  inputType: z.enum(["text", "url", "headline"]).default("text"),
+  articleText: z.string().optional(),
+  articleUrl: z.string().optional(),
+  articleHeadline: z.string().optional(),
+}).superRefine((data, ctx) => {
+  if (data.inputType === 'text') {
+    if (!data.articleText || data.articleText.length < 100) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['articleText'],
+        message: 'Article text must be at least 100 characters long.',
+      });
+    }
+    if (data.articleText && data.articleText.length > 10000) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['articleText'],
+        message: 'Article text must be less than 10,000 characters.',
+      });
+    }
+  }
+  if (data.inputType === 'url') {
+    if (!data.articleUrl) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['articleUrl'], message: 'URL is required.' });
+    } else {
+      try {
+        new URL(data.articleUrl);
+      } catch {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['articleUrl'], message: 'Please enter a valid URL.' });
+      }
+    }
+  }
+  if (data.inputType === 'headline') {
+    if (!data.articleHeadline || data.articleHeadline.length < 10) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['articleHeadline'],
+        message: 'Headline must be at least 10 characters long.',
+      });
+    }
+     if (data.articleHeadline && data.articleHeadline.length > 200) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['articleHeadline'],
+        message: 'Headline must be less than 200 characters.',
+      });
+    }
+  }
 });
 
 export function NewsSleuth() {
@@ -26,14 +75,26 @@ export function NewsSleuth() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { articleText: "" },
+    defaultValues: {
+      inputType: "text",
+      articleText: "",
+      articleUrl: "",
+      articleHeadline: "",
+    },
   });
+
+  const inputType = form.watch("inputType");
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     setResult(null);
     try {
-      const analysisResult = await newsSleuthAnalysis({ articleText: values.articleText });
+      const analysisInput =
+        values.inputType === "text" ? { articleText: values.articleText } :
+        values.inputType === "url" ? { articleUrl: values.articleUrl } :
+        { articleHeadline: values.articleHeadline };
+      
+      const analysisResult = await newsSleuthAnalysis(analysisInput);
       setResult(analysisResult);
     } catch (error) {
       console.error(error);
@@ -62,34 +123,105 @@ export function NewsSleuth() {
             News Sleuth
           </CardTitle>
           <CardDescription>
-            Paste the text of a news article below to analyze its credibility, identify biases, and flag potential misinformation.
+            Analyze an article's credibility from its text, URL, or headline to identify biases and flag potential misinformation.
           </CardDescription>
         </CardHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <CardContent>
+            <CardContent className="space-y-4">
               <FormField
                 control={form.control}
-                name="articleText"
+                name="inputType"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Article Text</FormLabel>
+                  <FormItem className="space-y-3">
+                    <FormLabel>Analysis Input</FormLabel>
                     <FormControl>
-                      <Textarea
-                        placeholder="Paste the full text of the news article here..."
-                        className="min-h-[250px] resize-y"
-                        {...field}
-                      />
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="grid grid-cols-3 gap-4"
+                      >
+                        <FormItem className="flex items-center space-x-2 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="text" id="text" />
+                          </FormControl>
+                          <FormLabel htmlFor="text" className="font-normal">Article Text</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-2 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="url" id="url" />
+                          </FormControl>
+                          <FormLabel htmlFor="url" className="font-normal">URL</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-2 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="headline" id="headline" />
+                          </FormControl>
+                          <FormLabel htmlFor="headline" className="font-normal">Headline</FormLabel>
+                        </FormItem>
+                      </RadioGroup>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              {inputType === "text" && (
+                <FormField
+                  control={form.control}
+                  name="articleText"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Article Text</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Paste the full text of the news article here..."
+                          className="min-h-[200px] resize-y"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {inputType === "url" && (
+                <FormField
+                  control={form.control}
+                  name="articleUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Article URL</FormLabel>
+                      <FormControl>
+                        <Input placeholder="https://example.com/news-article" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {inputType === "headline" && (
+                <FormField
+                  control={form.control}
+                  name="articleHeadline"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Article Headline</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter the news article headline" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
             </CardContent>
             <CardFooter>
               <Button type="submit" disabled={isLoading} className="w-full">
                 {isLoading && <Icons.spinner className="mr-2" />}
-                Analyze Article
+                Analyze
               </Button>
             </CardFooter>
           </form>
@@ -107,7 +239,7 @@ export function NewsSleuth() {
           {isLoading && (
             <div className="flex flex-col items-center justify-center gap-4 p-8">
               <Icons.spinner className="h-10 w-10 text-primary" />
-              <p className="text-muted-foreground">Analyzing article... this may take a moment.</p>
+              <p className="text-muted-foreground">Analyzing... this may take a moment.</p>
             </div>
           )}
           {!isLoading && !result && (
