@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/icons";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 const formSchema = z.object({
   inputType: z.enum(["text", "url", "headline"]).default("text"),
@@ -326,6 +327,27 @@ export function NewsSleuth() {
               <div>
                 <h3 className="font-semibold text-lg mb-2">Analyst Reasoning</h3>
                 <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{result.credibilityReport.reasoning}</p>
+              </div>
+              <Separator />
+              <div>
+                 <h3 className="font-semibold text-lg mb-2">Sources Consulted</h3>
+                <div className="flex flex-col gap-2">
+                  {result.credibilityReport.sources.length > 0 ? (
+                    result.credibilityReport.sources.map((source, i) => (
+                      <Link
+                        key={i}
+                        href={source}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-primary hover:underline truncate"
+                      >
+                        {source}
+                      </Link>
+                    ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No external sources were cited for this analysis.</p>
+                  )}
+                </div>
               </div>
             </div>
           )}

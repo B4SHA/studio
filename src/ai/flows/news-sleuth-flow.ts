@@ -34,6 +34,7 @@ const NewsSleuthOutputSchema = z.object({
     biases: z.array(z.string()).describe('A list of potential biases identified in the article.'),
     flaggedContent: z.array(z.string()).describe('Specific content flagged for low credibility.'),
     reasoning: z.string().describe('The reasoning behind the credibility assessment.'),
+    sources: z.array(z.string().url()).describe('A list of URLs for the sources consulted during the analysis.'),
   }),
 });
 export type NewsSleuthOutput = z.infer<typeof NewsSleuthOutputSchema>;
@@ -70,7 +71,8 @@ const prompt = ai.definePrompt({
   3. A brief summary of the article.
   4. A list of potential biases identified.
   5. Specific content flagged for low credibility.
-  6. The reasoning behind your assessment, explicitly mentioning the sources you consulted during your analysis.
+  6. The reasoning behind your assessment, explicitly mentioning the sources you consulted.
+  7. A list of 3-5 hyperlink URLs for the primary sources you consulted to generate the report.
   
   IMPORTANT: The current date is {{currentDate}}. Use this as your reference point for any temporal analysis.
 
@@ -128,6 +130,7 @@ const newsSleuthFlow = ai.defineFlow(
             biases: [],
             flaggedContent: [],
             reasoning: `I was unable to retrieve the content from the provided URL. The website may be blocking automated access, or the URL may be incorrect. Please try copying and pasting the article text directly for analysis. Error: ${fetchError || 'Could not extract article text.'}`,
+            sources: [],
           },
         };
       }
