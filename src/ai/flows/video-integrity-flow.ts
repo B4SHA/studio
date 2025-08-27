@@ -10,6 +10,8 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import ytdl from 'ytdl-core';
+import { PassThrough } from 'stream';
 
 const VideoIntegrityInputSchema = z.object({
   videoDataUri: z
@@ -44,25 +46,29 @@ export async function videoIntegrityAnalysis(input: VideoIntegrityInput): Promis
 
 const prompt = ai.definePrompt({
   name: 'videoIntegrityPrompt',
-  input: {schema: VideoIntegrityInputSchema},
+  input: {schema: z.object({ videoDataUri: z.string() })},
   output: {schema: VideoIntegrityOutputSchema},
   prompt: `You are an expert in detecting AI-generated and manipulated videos.
 
 You will analyze the video and determine if it is a deepfake, mislabeled, manipulated, satire/parody, contains a synthetic voice, or is fully AI-generated.
 
 Analyze the following video:
-
-{{#if videoDataUri}}
 {{media url=videoDataUri}}
-{{/if}}
-{{#if videoUrl}}
-The user provided a URL, but the video content cannot be displayed here. The URL is {{videoUrl}}. You must tell the user that you cannot process videos from URLs directly.
-{{/if}}
 
 Provide a confidence score for your analysis.
 Write a short summary of your analysis.
 `,
 });
+
+// Helper to convert a stream to a base64 data URI
+async function streamToDataUri(stream: NodeJS.ReadableStream, mimeType: string): Promise<string> {
+    const chunks: Buffer[] = [];
+    for await (const chunk of stream) {
+        chunks.push(chunk as Buffer);
+    }
+    const buffer = Buffer.concat(chunks);
+    return `data:${mimeType};base64,${buffer.toString('base64')}`;
+}
 
 const videoIntegrityFlow = ai.defineFlow(
   {
@@ -71,9 +77,30 @@ const videoIntegrityFlow = ai.defineFlow(
     outputSchema: VideoIntegrityOutputSchema,
   },
   async input => {
-    // A limitation of the underlying model is that it cannot fetch videos from URLs directly.
-    // If a URL is provided, we simulate a response indicating this limitation.
+    let videoDataUri = input.videoDataUri;
+
     if (input.videoUrl && !input.videoDataUri) {
+      try {
+        if (!ytdl.validateURL(input.videoUrl)) {
+            throw new Error("Invalid YouTube URL provided.");
+        }
+        
+        const info = await ytdl.getInfo(input.videoUrl);
+        // Find a format that has video and audio, is mp4, and is not too high quality to speed up processing
+        const format = ytdl.chooseFormat(info.formats, { 
+            quality: 'lowestvideo', 
+            filter: (format) => format.container === 'mp4' && format.hasAudio && format.hasVideo
+        });
+        
+        if (!format) {
+            throw new Error("Could not find a suitable video format to download.");
+        }
+
+        const videoStream = ytdl(input.videoUrl, { format });
+        videoDataUri = await streamToDataUri(videoStream, 'video/mp4');
+
+      } catch (error: any) {
+        console.error("Error processing video URL:", error);
         return {
             analysis: {
                 deepfake: false,
@@ -83,11 +110,28 @@ const videoIntegrityFlow = ai.defineFlow(
                 syntheticVoice: false,
                 fullyAiGenerated: false,
                 confidenceScore: 0,
-                summary: "I'm sorry, but I cannot process videos directly from URLs like YouTube at the moment. Please download the video and upload it as a file for analysis.",
+                summary: `I was unable to process the video from the provided URL. Please make sure it's a valid YouTube link. Error: ${error.message}`,
+            }
+        };
+      }
+    }
+    
+    if (!videoDataUri) {
+         return {
+            analysis: {
+                deepfake: false,
+                mislabeling: false,
+                videoManipulation: false,
+                satireParody: false,
+                syntheticVoice: false,
+                fullyAiGenerated: false,
+                confidenceScore: 0,
+                summary: "No video data was provided for analysis.",
             }
         };
     }
-    const {output} = await prompt(input);
+
+    const {output} = await prompt({ videoDataUri });
     return output!;
   }
 );
