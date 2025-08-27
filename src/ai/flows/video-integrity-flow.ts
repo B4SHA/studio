@@ -16,8 +16,12 @@ const VideoIntegrityInputSchema = z.object({
     .string()
     .describe(
       "A video, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
-    ),
+    ).optional(),
+  videoUrl: z.string().url().describe('The URL of the video to analyze.').optional(),
+}).refine(data => data.videoDataUri || data.videoUrl, {
+    message: 'Either a video file or a video URL must be provided.',
 });
+
 export type VideoIntegrityInput = z.infer<typeof VideoIntegrityInputSchema>;
 
 const VideoIntegrityOutputSchema = z.object({
@@ -48,7 +52,12 @@ You will analyze the video and determine if it is a deepfake, mislabeled, manipu
 
 Analyze the following video:
 
+{{#if videoDataUri}}
 {{media url=videoDataUri}}
+{{/if}}
+{{#if videoUrl}}
+The user provided a URL, but the video content cannot be displayed here. The URL is {{videoUrl}}. You must tell the user that you cannot process videos from URLs directly.
+{{/if}}
 
 Provide a confidence score for your analysis.
 Write a short summary of your analysis.
@@ -62,6 +71,22 @@ const videoIntegrityFlow = ai.defineFlow(
     outputSchema: VideoIntegrityOutputSchema,
   },
   async input => {
+    // A limitation of the underlying model is that it cannot fetch videos from URLs directly.
+    // If a URL is provided, we simulate a response indicating this limitation.
+    if (input.videoUrl && !input.videoDataUri) {
+        return {
+            analysis: {
+                deepfake: false,
+                mislabeling: false,
+                videoManipulation: false,
+                satireParody: false,
+                syntheticVoice: false,
+                fullyAiGenerated: false,
+                confidenceScore: 0,
+                summary: "I'm sorry, but I cannot process videos directly from URLs like YouTube at the moment. Please download the video and upload it as a file for analysis.",
+            }
+        };
+    }
     const {output} = await prompt(input);
     return output!;
   }

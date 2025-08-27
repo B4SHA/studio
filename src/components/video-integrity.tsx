@@ -13,15 +13,40 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Icons } from "@/components/icons";
 import { Progress } from "@/components/ui/progress";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 
 const formSchema = z.object({
-  videoFile: z
-    .custom<FileList>()
-    .refine((files) => files?.length === 1, "Video file is required.")
-    .refine((files) => files?.[0]?.type.startsWith("video/"), "Please upload a valid video file.")
-    .refine((files) => files?.[0]?.size <= 50 * 1024 * 1024, "File size should be less than 50MB."),
+  inputType: z.enum(["file", "url"]).default("file"),
+  videoFile: z.custom<FileList>().optional(),
+  videoUrl: z.string().optional(),
+}).superRefine((data, ctx) => {
+  if (data.inputType === 'file') {
+    if (!data.videoFile || data.videoFile.length === 0) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['videoFile'], message: 'Video file is required.' });
+      return;
+    }
+    const file = data.videoFile[0];
+    if (!file.type.startsWith("video/")) {
+       ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['videoFile'], message: 'Please upload a valid video file.' });
+    }
+    if (file.size > 50 * 1024 * 1024) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['videoFile'], message: 'File size should be less than 50MB.' });
+    }
+  }
+  if (data.inputType === 'url') {
+    if (!data.videoUrl) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['videoUrl'], message: 'URL is required.' });
+    } else {
+      try {
+        new URL(data.videoUrl);
+      } catch {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['videoUrl'], message: 'Please enter a valid URL.' });
+      }
+    }
+  }
 });
+
 
 const AnalysisItem = ({ label, value }: { label: string; value: boolean }) => (
   <div className="flex items-center justify-between text-sm py-2">
@@ -43,7 +68,14 @@ export function VideoIntegrity() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      inputType: "file",
+      videoFile: undefined,
+      videoUrl: "",
+    },
   });
+
+  const inputType = form.watch("inputType");
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -57,9 +89,20 @@ export function VideoIntegrity() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     setResult(null);
+    setVideoPreview(null);
+    
     try {
-      const videoDataUri = await fileToDataUri(values.videoFile[0]);
-      const analysisResult = await videoIntegrityAnalysis({ videoDataUri });
+      let analysisInput = {};
+      if (values.inputType === 'file' && values.videoFile?.[0]) {
+        const videoDataUri = await fileToDataUri(values.videoFile[0]);
+        analysisInput = { videoDataUri };
+        const objectUrl = URL.createObjectURL(values.videoFile[0]);
+        setVideoPreview(objectUrl);
+      } else if (values.inputType === 'url' && values.videoUrl) {
+        analysisInput = { videoUrl: values.videoUrl };
+      }
+
+      const analysisResult = await videoIntegrityAnalysis(analysisInput);
       setResult(analysisResult);
     } catch (error) {
       console.error(error);
@@ -88,30 +131,85 @@ export function VideoIntegrity() {
             Video Integrity Scanner
           </CardTitle>
           <CardDescription>
-            Upload a video to detect deepfakes, manipulations, and other forms of AI-generated or altered content.
+            Upload a video or provide a URL to detect deepfakes, manipulations, and other forms of AI-generated content.
           </CardDescription>
         </CardHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <CardContent>
+            <CardContent className="space-y-4">
               <FormField
                 control={form.control}
-                name="videoFile"
+                name="inputType"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Video File (Max 50MB)</FormLabel>
+                  <FormItem className="space-y-3">
+                    <FormLabel>Analysis Input</FormLabel>
                     <FormControl>
-                      <Input
-                        type="file"
-                        accept="video/*"
-                        onChange={handleFileChange}
-                        className="file:text-foreground"
-                      />
+                      <RadioGroup
+                        onValueChange={(value) => {
+                            field.onChange(value);
+                            setResult(null);
+                            setVideoPreview(null);
+                            form.reset({inputType: value as 'file' | 'url', videoFile: undefined, videoUrl: ''});
+                        }}
+                        defaultValue={field.value}
+                        className="grid grid-cols-2 gap-4"
+                      >
+                        <FormItem className="flex items-center space-x-2 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="file" id="file" />
+                          </FormControl>
+                          <FormLabel htmlFor="file" className="font-normal">File Upload</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-2 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="url" id="url" />
+                          </FormControl>
+                          <FormLabel htmlFor="url" className="font-normal">Video URL</FormLabel>
+                        </FormItem>
+                      </RadioGroup>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              {inputType === 'file' && (
+                <FormField
+                  control={form.control}
+                  name="videoFile"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel>Video File (Max 50MB)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="file"
+                          accept="video/*"
+                          onChange={handleFileChange}
+                          className="file:text-foreground"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+              
+              {inputType === 'url' && (
+                 <FormField
+                  control={form.control}
+                  name="videoUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Video URL</FormLabel>
+                      <FormControl>
+                        <Input placeholder="https://youtube.com/watch?v=..." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
               {videoPreview && (
                 <div className="mt-4 rounded-lg overflow-hidden border">
                    <video controls src={videoPreview} className="w-full aspect-video" />
@@ -150,22 +248,26 @@ export function VideoIntegrity() {
           )}
           {result && result.analysis && (
             <div className="space-y-4">
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                    <h3 className="font-semibold text-lg">Confidence Score</h3>
-                    <span className="font-bold text-2xl text-primary">{result.analysis.confidenceScore.toFixed(0)}%</span>
-                </div>
-                <Progress value={result.analysis.confidenceScore} indicatorClassName={getProgressColor(result.analysis.confidenceScore)} />
-              </div>
-              
-              <div className="divide-y rounded-md border">
-                <AnalysisItem label="Deepfake" value={result.analysis.deepfake} />
-                <AnalysisItem label="Video Manipulation" value={result.analysis.videoManipulation} />
-                <AnalysisItem label="Synthetic Voice" value={result.analysis.syntheticVoice} />
-                <AnalysisItem label="Fully AI-Generated" value={result.analysis.fullyAiGenerated} />
-                <AnalysisItem label="Satire or Parody" value={result.analysis.satireParody} />
-                <AnalysisItem label="Mislabeling" value={result.analysis.mislabeling} />
-              </div>
+               {result.analysis.confidenceScore > 0 && (
+                <>
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                        <h3 className="font-semibold text-lg">Confidence Score</h3>
+                        <span className="font-bold text-2xl text-primary">{result.analysis.confidenceScore.toFixed(0)}%</span>
+                    </div>
+                    <Progress value={result.analysis.confidenceScore} indicatorClassName={getProgressColor(result.analysis.confidenceScore)} />
+                  </div>
+                  
+                  <div className="divide-y rounded-md border">
+                    <AnalysisItem label="Deepfake" value={result.analysis.deepfake} />
+                    <AnalysisItem label="Video Manipulation" value={result.analysis.videoManipulation} />
+                    <AnalysisItem label="Synthetic Voice" value={result.analysis.syntheticVoice} />
+                    <AnalysisItem label="Fully AI-Generated" value={result.analysis.fullyAiGenerated} />
+                    <AnalysisItem label="Satire or Parody" value={result.analysis.satireParody} />
+                    <AnalysisItem label="Mislabeling" value={result.analysis.mislabeling} />
+                  </div>
+                </>
+              )}
 
               <div>
                 <h3 className="font-semibold text-lg mb-2">Analysis Summary</h3>
