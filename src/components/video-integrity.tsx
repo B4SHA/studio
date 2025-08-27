@@ -38,9 +38,8 @@ const formSchema = z.object({
     if (!data.videoUrl) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['videoUrl'], message: 'URL is required.' });
     } else {
-      try {
-        new URL(data.videoUrl);
-      } catch {
+      // Basic URL validation, the backend will do a more specific one.
+      if (!data.videoUrl.startsWith('http')) {
         ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['videoUrl'], message: 'Please enter a valid URL.' });
       }
     }
@@ -52,7 +51,7 @@ const AnalysisItem = ({ label, value }: { label: string; value: boolean }) => (
   <div className="flex items-center justify-between text-sm py-2">
     <span className="text-muted-foreground">{label}</span>
     {value ? (
-      <span className="flex items-center font-medium text-destructive"><Icons.checkCircle className="mr-1.5 h-4 w-4" /> Detected</span>
+      <span className="flex items-center font-medium text-destructive"><Icons.alert className="mr-1.5 h-4 w-4" /> Detected</span>
     ) : (
       <span className="flex items-center font-medium text-green-600"><Icons.checkCircle className="mr-1.5 h-4 w-4" /> Not Detected</span>
     )}
@@ -89,15 +88,21 @@ export function VideoIntegrity() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     setResult(null);
-    setVideoPreview(null);
+    if (values.inputType === 'file') {
+        // Keep the preview for file uploads
+    } else {
+        setVideoPreview(null);
+    }
     
     try {
       let analysisInput = {};
       if (values.inputType === 'file' && values.videoFile?.[0]) {
         const videoDataUri = await fileToDataUri(values.videoFile[0]);
         analysisInput = { videoDataUri };
-        const objectUrl = URL.createObjectURL(values.videoFile[0]);
-        setVideoPreview(objectUrl);
+        if (!videoPreview) {
+            const objectUrl = URL.createObjectURL(values.videoFile[0]);
+            setVideoPreview(objectUrl);
+        }
       } else if (values.inputType === 'url' && values.videoUrl) {
         analysisInput = { videoUrl: values.videoUrl };
       }
@@ -119,7 +124,7 @@ export function VideoIntegrity() {
   const getProgressColor = (score: number) => {
     if (score < 40) return "bg-destructive";
     if (score < 70) return "bg-accent";
-    return "bg-green-500";
+    return "bg-primary";
   };
 
   return (
@@ -164,7 +169,7 @@ export function VideoIntegrity() {
                           <FormControl>
                             <RadioGroupItem value="url" id="url" />
                           </FormControl>
-                          <FormLabel htmlFor="url" className="font-normal">Video URL</FormLabel>
+                          <FormLabel htmlFor="url" className="font-normal">Video URL (YouTube)</FormLabel>
                         </FormItem>
                       </RadioGroup>
                     </FormControl>
@@ -200,7 +205,7 @@ export function VideoIntegrity() {
                   name="videoUrl"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Video URL</FormLabel>
+                      <FormLabel>YouTube Video URL</FormLabel>
                       <FormControl>
                         <Input placeholder="https://youtube.com/watch?v=..." {...field} />
                       </FormControl>

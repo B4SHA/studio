@@ -17,7 +17,7 @@ const VideoIntegrityInputSchema = z.object({
   videoDataUri: z
     .string()
     .describe(
-      "A video, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+      "A video, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'"
     ).optional(),
   videoUrl: z.string().url().describe('The URL of the video to analyze.').optional(),
 }).refine(data => data.videoDataUri || data.videoUrl, {
@@ -82,7 +82,20 @@ const videoIntegrityFlow = ai.defineFlow(
     if (input.videoUrl && !input.videoDataUri) {
       try {
         if (!ytdl.validateURL(input.videoUrl)) {
-            throw new Error("Invalid YouTube URL provided.");
+            // This is not a helpful response for the user, as the model will likely not be able to do anything with a non-YouTube URL.
+            // We should just fail gracefully.
+            return {
+                analysis: {
+                    deepfake: false,
+                    mislabeling: false,
+                    videoManipulation: false,
+                    satireParody: false,
+                    syntheticVoice: false,
+                    fullyAiGenerated: false,
+                    confidenceScore: 0,
+                    summary: `The provided URL is not a valid YouTube URL. The AI is unable to process it.`,
+                }
+            };
         }
         
         const info = await ytdl.getInfo(input.videoUrl);
