@@ -56,7 +56,7 @@ const fetcherTool = ai.defineTool(
 const prompt = ai.definePrompt({
   name: 'newsSleuthPrompt',
   tools: [fetcherTool],
-  input: {schema: NewsSleuthInputSchema},
+  input: {schema: NewsSleuthInputSchema.extend({ currentDate: z.string() })},
   output: {schema: NewsSleuthOutputSchema},
   prompt: `You are an expert in identifying fake news and assessing the credibility of news articles.
 
@@ -67,6 +67,8 @@ const prompt = ai.definePrompt({
   4. A list of potential biases identified.
   5. Specific content flagged for low credibility.
   6. The reasoning behind your assessment.
+  
+  IMPORTANT: The current date is {{currentDate}}. Use this as your reference point for any temporal analysis. Do not assume the date the article was written is in the future unless it is actually after this date.
 
   The user has provided one of the following: the full text of a news article, its URL, or just its headline.
 
@@ -100,7 +102,10 @@ const newsSleuthFlow = ai.defineFlow(
     outputSchema: NewsSleuthOutputSchema,
   },
   async (input) => {
-    const llmResponse = await prompt(input);
+    const currentDate = new Date().toDateString();
+    const inputWithDate = { ...input, currentDate };
+
+    const llmResponse = await prompt(inputWithDate);
     const toolRequest = llmResponse.toolRequests.find(
       (req) => req.tool.name === 'getArticleContentFromUrl'
     );
@@ -123,7 +128,7 @@ const newsSleuthFlow = ai.defineFlow(
         };
       }
       
-      const finalInput = { ...input, articleText: articleContent };
+      const finalInput = { ...input, articleText: articleContent, currentDate };
       const finalResponse = await prompt(finalInput);
       return finalResponse.output!;
 
