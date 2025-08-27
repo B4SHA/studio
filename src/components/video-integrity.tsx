@@ -38,8 +38,8 @@ const formSchema = z.object({
       ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['videoUrl'], message: 'URL is required.' });
     } else {
       // Basic URL validation, the backend will do a more specific one.
-      if (!data.videoUrl.startsWith('http')) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['videoUrl'], message: 'Please enter a valid URL.' });
+      if (!data.videoUrl.startsWith('https://www.youtube.com/')) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['videoUrl'], message: 'Please enter a valid YouTube URL.' });
       }
     }
   }
