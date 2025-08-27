@@ -255,7 +255,7 @@ export function NewsSleuth() {
                     <h3 className="font-semibold text-lg">Overall Credibility Score</h3>
                     <span className="font-bold text-2xl text-primary">{result.credibilityReport.overallScore}/100</span>
                 </div>
-                <Progress value={result.credibilityReport.overallScore} indicatorClassName={getProgressColor(result.credibilityReport.overallScore)} />
+                <Progress value={result.credibilityReport.overallScore} className={getProgressColor(result.credibilityReport.overallScore)} />
               </div>
               <Separator />
               <div>
