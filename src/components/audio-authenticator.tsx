@@ -62,7 +62,7 @@ export function AudioAuthenticator() {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
@@ -123,7 +123,7 @@ export function AudioAuthenticator() {
           {isLoading && (
             <div className="flex flex-col items-center justify-center gap-4 p-8">
               <Icons.spinner className="h-10 w-10 text-primary" />
-              <p className="text-muted-foreground">Analyzing audio... this may take a moment.</p>
+              <p className="text-muted-foreground text-center">Analyzing audio... <br /> This may take a moment.</p>
             </div>
           )}
           {!isLoading && !result && (

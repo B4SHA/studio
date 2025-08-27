@@ -115,7 +115,7 @@ export function NewsSleuth() {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
@@ -239,7 +239,7 @@ export function NewsSleuth() {
           {isLoading && (
             <div className="flex flex-col items-center justify-center gap-4 p-8">
               <Icons.spinner className="h-10 w-10 text-primary" />
-              <p className="text-muted-foreground">Analyzing... this may take a moment.</p>
+              <p className="text-muted-foreground text-center">Analyzing article... <br/>This may take a moment.</p>
             </div>
           )}
           {!isLoading && !result && (
@@ -256,6 +256,11 @@ export function NewsSleuth() {
                     <span className="font-bold text-2xl text-primary">{result.credibilityReport.overallScore}/100</span>
                 </div>
                 <Progress value={result.credibilityReport.overallScore} indicatorClassName={getProgressIndicatorClassName(result.credibilityReport.overallScore)} />
+              </div>
+              <Separator />
+               <div>
+                <h3 className="font-semibold text-lg mb-2">Summary</h3>
+                <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{result.credibilityReport.summary}</p>
               </div>
               <Separator />
               <div>

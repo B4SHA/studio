@@ -23,6 +23,7 @@ export type NewsSleuthInput = z.infer<typeof NewsSleuthInputSchema>;
 const NewsSleuthOutputSchema = z.object({
   credibilityReport: z.object({
     overallScore: z.number().describe('An overall credibility score for the article (0-100).'),
+    summary: z.string().describe('A brief summary of the article content.'),
     biases: z.array(z.string()).describe('A list of potential biases identified in the article.'),
     flaggedContent: z.array(z.string()).describe('Specific content flagged for low credibility.'),
     reasoning: z.string().describe('The reasoning behind the credibility assessment.'),
@@ -40,7 +41,7 @@ const prompt = ai.definePrompt({
   output: {schema: NewsSleuthOutputSchema},
   prompt: `You are an expert in identifying fake news and assessing the credibility of news articles.
 
-  Analyze the following news information for potential biases, low credibility content, and overall trustworthiness. Provide a detailed report including an overall credibility score (0-100), a list of potential biases identified, specific content flagged for low credibility, and the reasoning behind your assessment.
+  Analyze the following news information for potential biases, low credibility content, and overall trustworthiness. Provide a detailed report including an overall credibility score (0-100), a brief summary of the article, a list of potential biases identified, specific content flagged for low credibility, and the reasoning behind your assessment.
 
   The user has provided one of the following: a news article's full text, its URL, or just its headline. Your analysis should be based on the provided information.
 

@@ -121,6 +121,10 @@ const videoIntegrityFlow = ai.defineFlow(
 
       } catch (error: any) {
         console.error("Error processing video URL:", error);
+        let userMessage = `I was unable to process the video from the provided URL. This can happen due to YouTube's backend changes. For guaranteed analysis, please download the video and upload the file directly. The tool returned the following error: ${error.message}`;
+        if (error.message && error.message.includes('private')) {
+            userMessage = "This video appears to be private or unavailable. Please try a different, public YouTube video or upload the file directly.";
+        }
         return {
             analysis: {
                 deepfake: false,
@@ -130,7 +134,7 @@ const videoIntegrityFlow = ai.defineFlow(
                 syntheticVoice: false,
                 fullyAiGenerated: false,
                 confidenceScore: 0,
-                summary: `I was unable to process the video from the provided URL. This can happen due to YouTube's backend changes. For guaranteed analysis, please download the video and upload the file directly. The tool returned the following error: ${error.message}`,
+                summary: userMessage,
             }
         };
       }

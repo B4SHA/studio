@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Icons } from "@/components/icons";
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const formSchema = z.object({
   inputType: z.enum(["file", "url"]).default("file"),
@@ -38,8 +38,13 @@ const formSchema = z.object({
     if (!data.videoUrl) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['videoUrl'], message: 'URL is required.' });
     } else {
-      if (!data.videoUrl.startsWith('https://www.youtube.com/') && !data.videoUrl.startsWith('https://youtu.be/')) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['videoUrl'], message: 'Please enter a valid YouTube URL.' });
+      try {
+         const url = new URL(data.videoUrl);
+         if (url.hostname !== 'www.youtube.com' && url.hostname !== 'youtube.com' && url.hostname !== 'youtu.be') {
+            ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['videoUrl'], message: 'Please enter a valid YouTube URL.' });
+         }
+      } catch {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['videoUrl'], message: 'Please enter a valid URL.' });
       }
     }
   }
@@ -127,7 +132,7 @@ export function VideoIntegrity() {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
@@ -162,7 +167,7 @@ export function VideoIntegrity() {
                           <FormControl>
                             <RadioGroupItem value="file" id="file" />
                           </FormControl>
-                          <FormLabel htmlFor="file" className="font-normal">File Upload (Recommended)</FormLabel>
+                          <FormLabel htmlFor="file" className="font-normal">File Upload</FormLabel>
                         </FormItem>
                         <FormItem className="flex items-center space-x-2 space-y-0">
                           <FormControl>
@@ -213,10 +218,11 @@ export function VideoIntegrity() {
                       </FormItem>
                     )}
                   />
-                  <Alert variant="default" className="border-accent">
+                   <Alert variant="default" className="border-accent bg-accent/10">
                     <Icons.alert className="h-4 w-4 !text-accent-foreground" />
-                    <AlertDescription className="text-accent-foreground">
-                      YouTube URL analysis can be unreliable due to platform changes. For guaranteed results, please use the file upload option.
+                    <AlertTitle className="text-accent-foreground/90">Recommendation</AlertTitle>
+                    <AlertDescription className="text-accent-foreground/80">
+                      YouTube URL analysis can be unreliable. For guaranteed results and faster processing, please use the file upload option.
                     </AlertDescription>
                   </Alert>
                 </>
@@ -249,7 +255,7 @@ export function VideoIntegrity() {
           {isLoading && (
             <div className="flex flex-col items-center justify-center gap-4 p-8">
               <Icons.spinner className="h-10 w-10 text-primary" />
-              <p className="text-muted-foreground">Analyzing video... this can take some time.</p>
+              <p className="text-muted-foreground text-center">Analyzing video... <br/>This can take some time, especially for longer videos.</p>
             </div>
           )}
           {!isLoading && !result && (
