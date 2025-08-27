@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Icons } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Progress } from "@/components/ui/progress";
 
 const formSchema = z.object({
   audioFile: z
@@ -60,6 +61,37 @@ export function AudioAuthenticator() {
       setIsLoading(false);
     }
   }
+
+  const getProgressIndicatorClassName = (score: number) => {
+    if (score < 40) return "bg-destructive";
+    if (score < 70) return "bg-accent";
+    return "bg-primary";
+  };
+
+  const getVerdictBadgeVariant = (verdict: 'Likely Authentic' | 'Potential AI/Manipulation' | 'Uncertain') => {
+    switch (verdict) {
+      case 'Likely Authentic':
+        return 'default';
+      case 'Potential AI/Manipulation':
+        return 'destructive';
+      case 'Uncertain':
+      default:
+        return 'secondary';
+    }
+  };
+
+  const getVerdictIcon = (verdict: 'Likely Authentic' | 'Potential AI/Manipulation' | 'Uncertain') => {
+    switch (verdict) {
+      case 'Likely Authentic':
+        return <Icons.check className="mr-1.5" />;
+      case 'Potential AI/Manipulation':
+        return <Icons.alert className="mr-1.5" />;
+      case 'Uncertain':
+      default:
+        return <Icons.help className="mr-1.5" />;
+    }
+  };
+
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
@@ -133,17 +165,20 @@ export function AudioAuthenticator() {
             </div>
           )}
           {result && (
-            <div className="space-y-4">
-              <div>
-                <h3 className="font-semibold text-lg mb-2">Authenticity Assessment</h3>
-                <Badge variant={result.isAuthentic ? "default" : "destructive"} className="text-base px-3 py-1">
-                  {result.isAuthentic ? (
-                    <Icons.check className="mr-2" />
-                  ) : (
-                    <Icons.alert className="mr-2" />
-                  )}
-                  {result.isAuthentic ? 'Likely Authentic' : 'Potential Manipulation or AI Generation'}
-                </Badge>
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-lg">Verdict</h3>
+                  <Badge variant={getVerdictBadgeVariant(result.verdict)} className="text-sm px-3 py-1">
+                    {getVerdictIcon(result.verdict)}
+                    {result.verdict}
+                  </Badge>
+                </div>
+                <div className="flex justify-between items-center">
+                    <h3 className="font-semibold text-lg">Confidence Score</h3>
+                    <span className="font-bold text-2xl text-primary">{result.confidenceScore}/100</span>
+                </div>
+                <Progress value={result.confidenceScore} indicatorClassName={getProgressIndicatorClassName(result.confidenceScore)} />
               </div>
               <Separator />
               <div>

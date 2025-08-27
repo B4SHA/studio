@@ -10,20 +10,20 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import wav from 'wav';
 
 const AudioAuthenticatorInputSchema = z.object({
   audioDataUri: z
     .string()
     .describe(
-      'The audio clip to analyze, as a data URI that must include a MIME type and use Base64 encoding. Expected format: \'data:<mimetype>;base64,<encoded_data>\'.' // shorter description
+      "The audio clip to analyze, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
 });
 export type AudioAuthenticatorInput = z.infer<typeof AudioAuthenticatorInputSchema>;
 
 const AudioAuthenticatorOutputSchema = z.object({
-  isAuthentic: z.boolean().describe('Whether the audio is likely authentic.'),
-  report: z.string().describe('A detailed report of the analysis results.'),
+  verdict: z.enum(['Likely Authentic', 'Potential AI/Manipulation', 'Uncertain']).describe("The final verdict on the audio's authenticity."),
+  confidenceScore: z.number().min(0).max(100).describe('The confidence score for the verdict (0-100).'),
+  report: z.string().describe('A detailed report of the analysis results, explaining the verdict.'),
 });
 export type AudioAuthenticatorOutput = z.infer<typeof AudioAuthenticatorOutputSchema>;
 
@@ -39,8 +39,20 @@ const prompt = ai.definePrompt({
   output: {schema: AudioAuthenticatorOutputSchema},
   prompt: `You are an expert in audio forensics and AI-generated content detection.
 
-  Analyze the provided audio clip and determine if it has been manipulated or if it is AI-generated.
-  Provide a detailed report including the likelihood of authenticity and the reasons for your determination.
+  Your task is to analyze the provided audio clip to determine if it has been manipulated or is AI-generated.
+  
+  Characteristics of authentic audio may include:
+  - Natural speech patterns, including "ums", "ahs", and pauses.
+  - Consistent background noise or room ambiance.
+  - Natural emotional intonation and pitch variation.
+
+  Characteristics of AI-generated or manipulated audio may include:
+  - Unnatural cadence or rhythm.
+  - Lack of typical background noise or sterile silence between words.
+  - Metallic or robotic artifacts in the voice.
+  - Abrupt cuts or changes in audio quality.
+
+  Based on your analysis, provide a verdict ('Likely Authentic', 'Potential AI/Manipulation', or 'Uncertain'), a confidence score for your verdict, and a detailed report explaining your reasoning. The report should cite specific timestamps or characteristics you observed.
 
   Audio: {{media url=audioDataUri}}`,
 });
@@ -58,7 +70,8 @@ const audioAuthenticatorFlow = ai.defineFlow(
     } catch (e: any) {
       console.error('Error during audio analysis:', e);
       return {
-        isAuthentic: false,
+        verdict: 'Uncertain',
+        confidenceScore: 0,
         report: `An error occurred during analysis: ${e.message || 'Unknown error'}`,
       };
     }
