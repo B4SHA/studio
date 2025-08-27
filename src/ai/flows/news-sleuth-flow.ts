@@ -60,6 +60,7 @@ const fetcherTool = ai.defineTool(
 
 const prompt = ai.definePrompt({
   name: 'newsSleuthPrompt',
+  model: 'googleai/gemini-1.5-pro-latest',
   tools: [fetcherTool],
   input: {schema: NewsSleuthInputObjectSchema.extend({ currentDate: z.string() })},
   output: {schema: NewsSleuthOutputSchema},
