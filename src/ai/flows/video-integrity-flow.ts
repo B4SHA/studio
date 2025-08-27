@@ -96,7 +96,6 @@ const videoIntegrityFlow = ai.defineFlow(
         }
         
         const videoInfo = await ytdl.getInfo(input.videoUrl);
-        // A more robust way to select a format. Prioritize low-quality, video-only mp4 streams.
         const format = ytdl.chooseFormat(videoInfo.formats, { 
           quality: 'lowestvideo',
           filter: (format) => format.container === 'mp4' && !format.hasAudio,
@@ -112,7 +111,7 @@ const videoIntegrityFlow = ai.defineFlow(
                     syntheticVoice: false,
                     fullyAiGenerated: false,
                     confidenceScore: 0,
-                    summary: "Could not find a suitable video format to download from the provided URL. The video might be private, removed, or in an unsupported format.",
+                    summary: "Could not find a suitable video format to download from the provided URL. The YouTube URL analysis feature can be unreliable due to frequent changes in YouTube's platform. For best results, please download the video and use the 'File Upload' option.",
                 }
             };
         }
@@ -131,7 +130,7 @@ const videoIntegrityFlow = ai.defineFlow(
                 syntheticVoice: false,
                 fullyAiGenerated: false,
                 confidenceScore: 0,
-                summary: `I was unable to process the video from the provided URL. Please make sure it's a valid, public YouTube link. The tool returned the following error: ${error.message}`,
+                summary: `I was unable to process the video from the provided URL. This can happen due to YouTube's backend changes. For guaranteed analysis, please download the video and upload the file directly. The tool returned the following error: ${error.message}`,
             }
         };
       }

@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Icons } from "@/components/icons";
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const formSchema = z.object({
   inputType: z.enum(["file", "url"]).default("file"),
@@ -37,7 +38,6 @@ const formSchema = z.object({
     if (!data.videoUrl) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['videoUrl'], message: 'URL is required.' });
     } else {
-      // Basic URL validation, the backend will do a more specific one.
       if (!data.videoUrl.startsWith('https://www.youtube.com/') && !data.videoUrl.startsWith('https://youtu.be/')) {
         ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['videoUrl'], message: 'Please enter a valid YouTube URL.' });
       }
@@ -135,7 +135,7 @@ export function VideoIntegrity() {
             Video Integrity Analysis
           </CardTitle>
           <CardDescription>
-            Upload a video or provide a YouTube URL to detect deepfakes, manipulations, and other forms of AI-generated content.
+            Upload a video file or provide a YouTube URL to detect deepfakes and manipulations. File upload is recommended for best results.
           </CardDescription>
         </CardHeader>
         <Form {...form}>
@@ -162,7 +162,7 @@ export function VideoIntegrity() {
                           <FormControl>
                             <RadioGroupItem value="file" id="file" />
                           </FormControl>
-                          <FormLabel htmlFor="file" className="font-normal">File Upload</FormLabel>
+                          <FormLabel htmlFor="file" className="font-normal">File Upload (Recommended)</FormLabel>
                         </FormItem>
                         <FormItem className="flex items-center space-x-2 space-y-0">
                           <FormControl>
@@ -199,19 +199,27 @@ export function VideoIntegrity() {
               )}
               
               {inputType === 'url' && (
-                 <FormField
-                  control={form.control}
-                  name="videoUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>YouTube Video URL</FormLabel>
-                      <FormControl>
-                        <Input placeholder="https://www.youtube.com/watch?v=..." {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <>
+                  <FormField
+                    control={form.control}
+                    name="videoUrl"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>YouTube Video URL</FormLabel>
+                        <FormControl>
+                          <Input placeholder="https://www.youtube.com/watch?v=..." {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Alert variant="default" className="border-accent">
+                    <Icons.alert className="h-4 w-4 !text-accent-foreground" />
+                    <AlertDescription className="text-accent-foreground">
+                      YouTube URL analysis can be unreliable due to platform changes. For guaranteed results, please use the file upload option.
+                    </AlertDescription>
+                  </Alert>
+                </>
               )}
 
               {videoPreview && (
