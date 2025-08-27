@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -71,6 +72,8 @@ const prompt = ai.definePrompt({
 
   - If the user provides a URL, you MUST use the 'getArticleContentFromUrl' tool to fetch the article's text content first.
   - If the tool returns an error, explain to the user that you were unable to retrieve the content from the URL and that they should try pasting the article text directly. In this case, set the verdict to 'Uncertain' and the score to 0.
+  - If the user provides ONLY a headline, use your internal knowledge to search for information about the event described in the headline. Base your analysis on the information you find. Your reasoning should state that the analysis is based on public information regarding the headline.
+  - If you can't find any information on the headline, explain that and set the verdict to 'Uncertain'.
   - Your analysis should be based on the provided or fetched information.
 
   {{#if articleText}}
