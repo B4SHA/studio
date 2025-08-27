@@ -72,7 +72,7 @@ const prompt = ai.definePrompt({
   4. A list of potential biases identified.
   5. Specific content flagged for low credibility.
   6. The reasoning behind your assessment, explicitly mentioning the sources you consulted.
-  7. A list of 3-5 hyperlink URLs for the primary sources you consulted to generate the report.
+  7. A list of 3-5 specific hyperlink URLs for the primary source articles you consulted to generate the report. DO NOT cite homepages like google.com or cnn.com; cite the actual news articles.
   
   IMPORTANT: The current date is {{currentDate}}. Use this as your reference point for any temporal analysis.
 
@@ -80,8 +80,8 @@ const prompt = ai.definePrompt({
 
   - If the user provides a URL, you MUST use the 'getArticleContentFromUrl' tool to fetch the article's text content first. Then, use your search capabilities to analyze the fetched content.
   - If the tool returns an error, explain to the user that you were unable to retrieve the content from the URL and that they should try pasting the article text directly. In this case, set the verdict to 'Uncertain' and the score to 0.
-  - If the user provides ONLY a headline or article text, you MUST use your internal search and reasoning capabilities to find corroborating information, verify claims, and check the reputation of the sources involved. Your reasoning must state that the analysis is based on public information and cite the sources you found.
-  - If you can't find any information on the headline or text, explain that and set the verdict to 'Uncertain'.
+  - If the user provides ONLY a headline or article text, you MUST perform a detailed web search to find the story. Formulate search queries based on the headline's content. Find and analyze multiple high-quality news sources that have reported on this event. Your credibility assessment and summary MUST be based on the content of the articles you discover. Your reasoning must state that the analysis is based on public information and cite the specific articles you found.
+  - If, after a thorough search, you can't find any information on the headline or text, explain that and set the verdict to 'Uncertain'.
   - Your analysis should be based on a comprehensive evaluation of the provided information and what you can verify from other online sources.
 
   {{#if articleText}}
