@@ -46,7 +46,7 @@ export async function newsSleuthAnalysis(input: NewsSleuthInput): Promise<NewsSl
 const fetcherTool = ai.defineTool(
   {
     name: 'getArticleContentFromUrl',
-    description: 'Fetches the text content of a news article from a given URL. Use this tool if the user provides a URL.',
+    description: 'Fetches the text content of a news article from a given URL. Use this tool if the user provides a URL or if you need to find and fetch an article based on a headline.',
     inputSchema: z.object({
       url: z.string().url().describe('The URL of the news article to fetch.'),
     }),
@@ -79,8 +79,8 @@ const prompt = ai.definePrompt({
   The user has provided one of the following: the full text of a news article, its URL, or just its headline.
 
   - If the user provides a URL, you MUST use the 'getArticleContentFromUrl' tool to fetch the article's text content first. Then, use your search capabilities to analyze the fetched content.
+  - If the user provides ONLY a headline, you MUST use your internal search capabilities to find a credible news article URL that matches the headline. Once you find a suitable URL, you MUST then use the 'getArticleContentFromUrl' tool to fetch its content and perform your analysis.
   - If the tool returns an error, explain to the user that you were unable to retrieve the content from the URL and that they should try pasting the article text directly. In this case, set the verdict to 'Uncertain' and the score to 0.
-  - If the user provides ONLY a headline, you MUST state that a headline alone is insufficient for a full analysis. Explain that you cannot verify the story or perform a credibility assessment without the article's content. Set the verdict to 'Uncertain', the score to 0, and explain in the reasoning that a full article text or URL is required.
   - If the user provides the article text, your analysis should be based on a comprehensive evaluation of the provided information and what you can verify from other online sources.
 
   {{#if articleText}}
@@ -112,12 +112,14 @@ const newsSleuthFlow = ai.defineFlow(
 
     const llmResponse = await prompt(inputWithDate);
     
+    // Check if the model decided to use the fetcher tool.
     const toolRequest = llmResponse.toolRequest;
     if (toolRequest && toolRequest.tool.name === 'getArticleContentFromUrl') {
       const toolResponse = await toolRequest.run();
       const articleContent = (toolResponse as any)?.textContent;
       const fetchError = (toolResponse as any)?.error;
 
+      // Handle the case where fetching the URL failed.
       if (fetchError || !articleContent) {
         return {
           credibilityReport: {
@@ -132,11 +134,15 @@ const newsSleuthFlow = ai.defineFlow(
         };
       }
       
-      const finalInput = { articleText: articleContent, currentDate };
-      const finalResponse = await prompt(finalInput);
+      // If fetching was successful, send the content back to the LLM for the final analysis.
+      // We pass the fetched text, the current date, and crucially, we also pass the original input
+      // so the model has the full context of what it's been asked to do.
+      const finalInput = { ...inputWithDate, articleText: articleContent };
+      const finalResponse = await prompt(finalInput, {toolResponses: [toolResponse]});
       return finalResponse.output!;
 
     } else {
+      // If no tool was called (e.g., user provided text directly), return the direct output.
       return llmResponse.output!;
     }
   }
