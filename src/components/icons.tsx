@@ -9,6 +9,7 @@ import {
   AlertTriangle,
   BarChart,
   Check,
+  HelpCircle,
 } from 'lucide-react';
 
 export const Icons = {
@@ -22,6 +23,7 @@ export const Icons = {
   alert: AlertTriangle,
   barChart: BarChart,
   check: Check,
+  help: HelpCircle,
 };
 
 function cn(...inputs: any[]) {

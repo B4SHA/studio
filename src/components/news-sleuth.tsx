@@ -16,6 +16,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/icons";
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   inputType: z.enum(["text", "url", "headline"]).default("text"),
@@ -113,6 +114,31 @@ export function NewsSleuth() {
     if (score < 70) return "bg-accent";
     return "bg-primary";
   };
+  
+  const getVerdictBadgeVariant = (verdict: 'Likely Real' | 'Likely Fake' | 'Uncertain') => {
+    switch (verdict) {
+      case 'Likely Real':
+        return 'default';
+      case 'Likely Fake':
+        return 'destructive';
+      case 'Uncertain':
+      default:
+        return 'secondary';
+    }
+  };
+
+  const getVerdictIcon = (verdict: 'Likely Real' | 'Likely Fake' | 'Uncertain') => {
+    switch (verdict) {
+      case 'Likely Real':
+        return <Icons.check className="mr-1.5" />;
+      case 'Likely Fake':
+        return <Icons.alert className="mr-1.5" />;
+      case 'Uncertain':
+      default:
+        return <Icons.help className="mr-1.5" />;
+    }
+  };
+
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
@@ -250,9 +276,16 @@ export function NewsSleuth() {
           )}
           {result && result.credibilityReport && (
             <div className="space-y-6">
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                    <h3 className="font-semibold text-lg">Overall Credibility Score</h3>
+              <div className="space-y-4">
+                 <div className="flex items-center justify-between">
+                    <h3 className="font-semibold text-lg">Verdict</h3>
+                     <Badge variant={getVerdictBadgeVariant(result.credibilityReport.verdict)} className="text-sm px-3 py-1">
+                      {getVerdictIcon(result.credibilityReport.verdict)}
+                      {result.credibilityReport.verdict}
+                    </Badge>
+                  </div>
+                <div className="flex justify-between items-center">
+                    <h3 className="font-semibold text-lg">Credibility Score</h3>
                     <span className="font-bold text-2xl text-primary">{result.credibilityReport.overallScore}/100</span>
                 </div>
                 <Progress value={result.credibilityReport.overallScore} indicatorClassName={getProgressIndicatorClassName(result.credibilityReport.overallScore)} />
