@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -22,27 +22,27 @@ const formSchema = z.object({
     .refine((files) => files?.[0]?.size <= 50 * 1024 * 1024, "File size should be less than 50MB."),
 });
 
-function AnalysisItem({ label, value }: { label: string; value: boolean }) {
-  return (
-    <div className="flex items-center justify-between text-sm py-2 px-4">
-      <span className="text-muted-foreground">{label}</span>
-      {value ? (
-        <span className="flex items-center font-medium text-destructive"><Icons.alert className="mr-1.5 h-4 w-4" /> Detected</span>
-      ) : (
-        <span className="flex items-center font-medium text-primary"><Icons.checkCircle className="mr-1.5 h-4 w-4" /> Not Detected</span>
-      )}
-    </div>
-  );
+function getProgressIndicatorClassName(score: number) {
+    if (score < 40) {
+        return "bg-destructive";
+    }
+    if (score < 70) {
+        return "bg-accent";
+    }
+    return "bg-primary";
 }
 
-function getProgressIndicatorClassName(score: number) {
-  if (score < 40) {
-    return "bg-destructive";
-  }
-  if (score < 70) {
-    return "bg-accent";
-  }
-  return "bg-primary";
+function AnalysisItem({ label, value }: { label: string; value: boolean }) {
+    return (
+        <div className="flex items-center justify-between text-sm py-2 px-4">
+            <span className="text-muted-foreground">{label}</span>
+            {value ? (
+                <span className="flex items-center font-medium text-destructive"><Icons.alert className="mr-1.5 h-4 w-4" /> Detected</span>
+            ) : (
+                <span className="flex items-center font-medium text-primary"><Icons.checkCircle className="mr-1.5 h-4 w-4" /> Not Detected</span>
+            )}
+        </div>
+    );
 }
 
 export function VideoIntegrity() {
@@ -58,14 +58,20 @@ export function VideoIntegrity() {
     },
   });
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      form.setValue("videoFile", event.target.files as FileList);
+  const videoFile = form.watch("videoFile");
+
+  useEffect(() => {
+    if (videoFile && videoFile.length > 0) {
+      const file = videoFile[0];
       const objectUrl = URL.createObjectURL(file);
       setVideoPreview(objectUrl);
+
+      return () => {
+        URL.revokeObjectURL(objectUrl);
+      };
     }
-  };
+  }, [videoFile]);
+
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -105,14 +111,14 @@ export function VideoIntegrity() {
               <FormField
                 control={form.control}
                 name="videoFile"
-                render={() => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Video File (Max 50MB)</FormLabel>
                     <FormControl>
                       <Input
                         type="file"
                         accept="video/*"
-                        onChange={handleFileChange}
+                        onChange={(e) => field.onChange(e.target.files)}
                         className="file:text-foreground"
                       />
                     </FormControl>
@@ -142,7 +148,7 @@ export function VideoIntegrity() {
           <CardTitle className="text-xl">Analysis Report</CardTitle>
           <CardDescription>
             The results of the video integrity analysis will appear here.
-          </Description>
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading && (
