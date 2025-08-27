@@ -78,8 +78,12 @@ export function VideoIntegrity() {
   }
   
   const getProgressIndicatorClassName = (score: number) => {
-    if (score < 40) return "bg-destructive";
-    if (score < 70) return "bg-accent";
+    if (score < 40) {
+      return "bg-destructive";
+    }
+    if (score < 70) {
+      return "bg-accent";
+    }
     return "bg-primary";
   };
 
