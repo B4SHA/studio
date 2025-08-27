@@ -23,7 +23,7 @@ export default function RootLayout({
       </head>
       <body className={cn("font-body antialiased h-full flex flex-col")}>
         <Header />
-        <main className="flex-1">
+        <main className="flex-1 flex flex-col items-center justify-center">
           {children}
         </main>
         <footer className="py-6 md:px-8 md:py-0 border-t">
