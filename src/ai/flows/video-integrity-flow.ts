@@ -98,18 +98,10 @@ const videoIntegrityFlow = ai.defineFlow(
             };
         }
         
-        const info = await ytdl.getInfo(input.videoUrl);
-        // Find a format that has video and audio, is mp4, and is not too high quality to speed up processing
-        const format = ytdl.chooseFormat(info.formats, { 
-            quality: 'lowestvideo', 
-            filter: (format) => format.container === 'mp4' && format.hasAudio && format.hasVideo
+        const videoStream = ytdl(input.videoUrl, { 
+            quality: 'lowest', 
+            filter: 'audioandvideo'
         });
-        
-        if (!format) {
-            throw new Error("Could not find a suitable video format to download.");
-        }
-
-        const videoStream = ytdl(input.videoUrl, { format });
         videoDataUri = await streamToDataUri(videoStream, 'video/mp4');
 
       } catch (error: any) {
