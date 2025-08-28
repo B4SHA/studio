@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Icons } from '@/components/icons';
 import { cn } from '@/lib/utils';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from './ui/button';
 import { Menu } from 'lucide-react';
 import { ThemeToggle } from './theme-toggle';
@@ -58,13 +58,20 @@ export function Header() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right">
+                <SheetHeader className="text-left">
+                  <SheetTitle>
+                    <Link href="/" className="flex items-center space-x-2">
+                      <Icons.shield className="h-8 w-8 text-primary" />
+                      <span className="text-xl font-bold tracking-tight text-foreground">
+                        Veritas Vision
+                      </span>
+                    </Link>
+                  </SheetTitle>
+                  <SheetDescription>
+                    Navigate between the different analysis tools.
+                  </SheetDescription>
+                </SheetHeader>
                 <div className="grid gap-4 py-6">
-                <Link href="/" className="flex items-center space-x-2 px-4 mb-4">
-                  <Icons.shield className="h-8 w-8 text-primary" />
-                  <span className="text-xl font-bold tracking-tight text-foreground">
-                    Veritas Vision
-                  </span>
-                </Link>
                   {navigationLinks.map((link) => (
                     <Link
                       key={link.href}
