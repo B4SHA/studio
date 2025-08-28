@@ -86,7 +86,7 @@ export function VideoIntegrity() {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full max-w-5xl">
+    <div className="flex flex-col gap-8 w-full max-w-5xl">
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
@@ -142,7 +142,7 @@ export function VideoIntegrity() {
             The results of the video integrity analysis will appear here.
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex-1 min-h-0">
+        <CardContent className="flex-1 flex flex-col min-h-0">
           {isLoading && (
             <div className="flex flex-col items-center justify-center gap-4 p-8 h-full">
               <Icons.spinner className="h-10 w-10 text-primary" />
