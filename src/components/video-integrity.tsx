@@ -85,7 +85,7 @@ export function VideoIntegrity() {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
+    <div className="flex flex-col gap-8 w-full max-w-2xl">
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
