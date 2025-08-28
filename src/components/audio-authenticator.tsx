@@ -16,6 +16,7 @@ import { Icons } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
+import { ScrollArea } from "./ui/scroll-area";
 
 const formSchema = z.object({
   audioFile: z
@@ -95,7 +96,7 @@ export function AudioAuthenticator() {
 
 
   return (
-    <div className="flex flex-col gap-8 w-full max-w-2xl">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full max-w-5xl">
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
@@ -145,48 +146,50 @@ export function AudioAuthenticator() {
         </Form>
       </Card>
       
-      <Card className="shadow-lg h-fit">
+      <Card className="shadow-lg h-fit lg:h-full flex flex-col">
         <CardHeader>
           <CardTitle className="text-xl">Analysis Report</CardTitle>
           <CardDescription>
             The results of the audio analysis will be displayed here.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex-1">
           {isLoading && (
-            <div className="flex flex-col items-center justify-center gap-4 p-8">
+            <div className="flex flex-col items-center justify-center gap-4 p-8 h-full">
               <Icons.spinner className="h-10 w-10 text-primary" />
               <p className="text-muted-foreground text-center">Analyzing audio... <br /> This may take a moment.</p>
             </div>
           )}
           {!isLoading && !result && (
-            <div className="text-center p-8 text-muted-foreground">
+            <div className="text-center p-8 text-muted-foreground h-full flex flex-col justify-center items-center">
               <Icons.barChart className="h-10 w-10 mx-auto mb-4" />
               <p>Your report is pending analysis.</p>
             </div>
           )}
           {result && (
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-lg">Verdict</h3>
-                  <Badge variant={getVerdictBadgeVariant(result.verdict)} className="text-sm px-3 py-1">
-                    {getVerdictIcon(result.verdict)}
-                    {result.verdict}
-                  </Badge>
+            <ScrollArea className="h-full max-h-[calc(100vh-22rem)] pr-4">
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold text-lg">Verdict</h3>
+                    <Badge variant={getVerdictBadgeVariant(result.verdict)} className="text-sm px-3 py-1">
+                      {getVerdictIcon(result.verdict)}
+                      {result.verdict}
+                    </Badge>
+                  </div>
+                  <div className="flex justify-between items-center">
+                      <h3 className="font-semibold text-lg">Confidence Score</h3>
+                      <span className="font-bold text-2xl text-primary">{result.confidenceScore}/100</span>
+                  </div>
+                  <Progress value={result.confidenceScore} indicatorClassName={getProgressIndicatorClassName(result.confidenceScore)} />
                 </div>
-                <div className="flex justify-between items-center">
-                    <h3 className="font-semibold text-lg">Confidence Score</h3>
-                    <span className="font-bold text-2xl text-primary">{result.confidenceScore}/100</span>
+                <Separator />
+                <div>
+                  <h3 className="font-semibold text-lg mb-2">Detailed Report</h3>
+                  <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{result.report}</p>
                 </div>
-                <Progress value={result.confidenceScore} indicatorClassName={getProgressIndicatorClassName(result.confidenceScore)} />
               </div>
-              <Separator />
-              <div>
-                <h3 className="font-semibold text-lg mb-2">Detailed Report</h3>
-                <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{result.report}</p>
-              </div>
-            </div>
+            </ScrollArea>
           )}
         </CardContent>
       </Card>

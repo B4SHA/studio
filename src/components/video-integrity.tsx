@@ -14,6 +14,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Icons } from "@/components/icons";
 import { Progress } from "@/components/ui/progress";
+import { ScrollArea } from "./ui/scroll-area";
 
 const formSchema = z.object({
   videoFile: z
@@ -85,7 +86,7 @@ export function VideoIntegrity() {
   }
 
   return (
-    <div className="flex flex-col gap-8 w-full max-w-2xl">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full max-w-5xl">
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
@@ -134,54 +135,56 @@ export function VideoIntegrity() {
         </Form>
       </Card>
 
-      <Card className="shadow-lg h-fit">
+      <Card className="shadow-lg h-fit lg:h-full flex flex-col">
         <CardHeader>
           <CardTitle className="text-xl">Analysis Report</CardTitle>
           <CardDescription>
             The results of the video integrity analysis will appear here.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex-1">
           {isLoading && (
-            <div className="flex flex-col items-center justify-center gap-4 p-8">
+            <div className="flex flex-col items-center justify-center gap-4 p-8 h-full">
               <Icons.spinner className="h-10 w-10 text-primary" />
               <p className="text-muted-foreground text-center">Analyzing video... <br/>This can take some time, especially for longer videos.</p>
             </div>
           )}
           {!isLoading && !result && (
-            <div className="text-center p-8 text-muted-foreground">
+            <div className="text-center p-8 text-muted-foreground h-full flex flex-col justify-center items-center">
               <Icons.barChart className="h-10 w-10 mx-auto mb-4" />
               <p>Your report is pending analysis.</p>
             </div>
           )}
           {result && result.analysis && (
-            <div className="space-y-4">
-               {result.analysis.confidenceScore > 0 && (
-                <>
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                        <h3 className="font-semibold text-lg">Analysis Confidence</h3>
-                        <span className="font-bold text-2xl text-primary">{result.analysis.confidenceScore.toFixed(0)}%</span>
+            <ScrollArea className="h-full max-h-[calc(100vh-22rem)] pr-4">
+              <div className="space-y-4">
+                {result.analysis.confidenceScore > 0 && (
+                  <>
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                          <h3 className="font-semibold text-lg">Analysis Confidence</h3>
+                          <span className="font-bold text-2xl text-primary">{result.analysis.confidenceScore.toFixed(0)}%</span>
+                      </div>
+                      <Progress value={result.analysis.confidenceScore} indicatorClassName="bg-primary" />
                     </div>
-                    <Progress value={result.analysis.confidenceScore} indicatorClassName="bg-primary" />
-                  </div>
-                  
-                  <div className="divide-y rounded-md border">
-                    <AnalysisItem label="Deepfake" value={result.analysis.deepfake} />
-                    <AnalysisItem label="Video Manipulation" value={result.analysis.videoManipulation} />
-                    <AnalysisItem label="Synthetic Voice" value={result.analysis.syntheticVoice} />
-                    <AnalysisItem label="Fully AI-Generated" value={result.analysis.fullyAiGenerated} />
-                    <AnalysisItem label="Satire or Parody" value={result.analysis.satireParody} />
-                    <AnalysisItem label="Mislabeling" value={result.analysis.mislabeling} />
-                  </div>
-                </>
-              )}
+                    
+                    <div className="divide-y rounded-md border">
+                      <AnalysisItem label="Deepfake" value={result.analysis.deepfake} />
+                      <AnalysisItem label="Video Manipulation" value={result.analysis.videoManipulation} />
+                      <AnalysisItem label="Synthetic Voice" value={result.analysis.syntheticVoice} />
+                      <AnalysisItem label="Fully AI-Generated" value={result.analysis.fullyAiGenerated} />
+                      <AnalysisItem label="Satire or Parody" value={result.analysis.satireParody} />
+                      <AnalysisItem label="Mislabeling" value={result.analysis.mislabeling} />
+                    </div>
+                  </>
+                )}
 
-              <div>
-                <h3 className="font-semibold text-lg mb-2">Analysis Summary</h3>
-                <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{result.analysis.summary}</p>
+                <div>
+                  <h3 className="font-semibold text-lg mb-2">Analysis Summary</h3>
+                  <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{result.analysis.summary}</p>
+                </div>
               </div>
-            </div>
+            </ScrollArea>
           )}
         </CardContent>
       </Card>

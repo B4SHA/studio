@@ -19,6 +19,7 @@ import { Icons } from "@/components/icons";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { ScrollArea } from "./ui/scroll-area";
 
 const formSchema = z.object({
   inputType: z.enum(["text", "url", "headline"]).default("text"),
@@ -143,7 +144,7 @@ export function NewsSleuth() {
 
 
   return (
-    <div className="flex flex-col gap-8 w-full max-w-2xl">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full max-w-5xl">
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
@@ -256,101 +257,103 @@ export function NewsSleuth() {
         </Form>
       </Card>
       
-      <Card className="shadow-lg h-fit">
+      <Card className="shadow-lg h-fit lg:h-full flex flex-col">
         <CardHeader>
           <CardTitle className="text-xl">Credibility Report</CardTitle>
           <CardDescription>
             The results of the news analysis will be displayed here.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex-1">
           {isLoading && (
-            <div className="flex flex-col items-center justify-center gap-4 p-8">
+            <div className="flex flex-col items-center justify-center gap-4 p-8 h-full">
               <Icons.spinner className="h-10 w-10 text-primary" />
               <p className="text-muted-foreground text-center">Analyzing article... <br/>This may take a moment.</p>
             </div>
           )}
           {!isLoading && !result && (
-            <div className="text-center p-8 text-muted-foreground">
+            <div className="text-center p-8 text-muted-foreground h-full flex flex-col justify-center items-center">
               <Icons.barChart className="h-10 w-10 mx-auto mb-4" />
               <p>Your report is pending analysis.</p>
             </div>
           )}
           {result && result.credibilityReport && (
-            <div className="space-y-6">
-              <div className="space-y-4">
-                 <div className="flex items-center justify-between">
-                    <h3 className="font-semibold text-lg">Verdict</h3>
-                     <Badge variant={getVerdictBadgeVariant(result.credibilityReport.verdict)} className="text-sm px-3 py-1">
-                      {getVerdictIcon(result.credibilityReport.verdict)}
-                      {result.credibilityReport.verdict}
-                    </Badge>
+            <ScrollArea className="h-full max-h-[calc(100vh-22rem)] pr-4">
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-lg">Verdict</h3>
+                      <Badge variant={getVerdictBadgeVariant(result.credibilityReport.verdict)} className="text-sm px-3 py-1">
+                        {getVerdictIcon(result.credibilityReport.verdict)}
+                        {result.credibilityReport.verdict}
+                      </Badge>
+                    </div>
+                  <div className="flex justify-between items-center">
+                      <h3 className="font-semibold text-lg">Credibility Score</h3>
+                      <span className="font-bold text-2xl text-primary">{result.credibilityReport.overallScore}/100</span>
                   </div>
-                <div className="flex justify-between items-center">
-                    <h3 className="font-semibold text-lg">Credibility Score</h3>
-                    <span className="font-bold text-2xl text-primary">{result.credibilityReport.overallScore}/100</span>
+                  <Progress value={result.credibilityReport.overallScore} indicatorClassName={getProgressIndicatorClassName(result.credibilityReport.overallScore)} />
                 </div>
-                <Progress value={result.credibilityReport.overallScore} indicatorClassName={getProgressIndicatorClassName(result.credibilityReport.overallScore)} />
-              </div>
-              <Separator />
-               <div>
-                <h3 className="font-semibold text-lg mb-2">Summary</h3>
-                <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{result.credibilityReport.summary}</p>
-              </div>
-              <Separator />
-              <div>
-                <h3 className="font-semibold text-lg mb-2">Identified Biases</h3>
-                <div className="flex flex-wrap gap-2">
-                  {result.credibilityReport.biases.length > 0 ? (
-                    result.credibilityReport.biases.map((bias, i) => <Badge key={i} variant="secondary">{bias}</Badge>)
-                  ) : (
-                    <p className="text-sm text-muted-foreground">No significant biases were detected.</p>
-                  )}
+                <Separator />
+                <div>
+                  <h3 className="font-semibold text-lg mb-2">Summary</h3>
+                  <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{result.credibilityReport.summary}</p>
                 </div>
-              </div>
-              <Separator />
-              <div>
-                <h3 className="font-semibold text-lg mb-2">Flagged Content</h3>
-                <div className="space-y-2">
-                  {result.credibilityReport.flaggedContent.length > 0 ? (
-                    result.credibilityReport.flaggedContent.map((flag, i) => (
-                      <div key={i} className="flex items-start gap-2 text-sm text-destructive">
-                        <Icons.alert className="h-4 w-4 mt-0.5 shrink-0" />
-                        <p>{flag}</p>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-sm text-muted-foreground">No specific content was flagged for low credibility.</p>
-                  )}
+                <Separator />
+                <div>
+                  <h3 className="font-semibold text-lg mb-2">Identified Biases</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {result.credibilityReport.biases.length > 0 ? (
+                      result.credibilityReport.biases.map((bias, i) => <Badge key={i} variant="secondary">{bias}</Badge>)
+                    ) : (
+                      <p className="text-sm text-muted-foreground">No significant biases were detected.</p>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <Separator />
-              <div>
-                <h3 className="font-semibold text-lg mb-2">Analyst Reasoning</h3>
-                <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{result.credibilityReport.reasoning}</p>
-              </div>
-              <Separator />
-              <div>
-                 <h3 className="font-semibold text-lg mb-2">Sources Consulted</h3>
-                <div className="flex flex-col gap-2">
-                  {result.credibilityReport.sources.length > 0 ? (
-                    result.credibilityReport.sources.map((source, i) => (
-                      <Link
-                        key={i}
-                        href={source}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-primary hover:underline truncate"
-                      >
-                        {source}
-                      </Link>
-                    ))
-                  ) : (
-                    <p className="text-sm text-muted-foreground">No external sources were cited for this analysis.</p>
-                  )}
+                <Separator />
+                <div>
+                  <h3 className="font-semibold text-lg mb-2">Flagged Content</h3>
+                  <div className="space-y-2">
+                    {result.credibilityReport.flaggedContent.length > 0 ? (
+                      result.credibilityReport.flaggedContent.map((flag, i) => (
+                        <div key={i} className="flex items-start gap-2 text-sm text-destructive">
+                          <Icons.alert className="h-4 w-4 mt-0.5 shrink-0" />
+                          <p>{flag}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-sm text-muted-foreground">No specific content was flagged for low credibility.</p>
+                    )}
+                  </div>
+                </div>
+                <Separator />
+                <div>
+                  <h3 className="font-semibold text-lg mb-2">Analyst Reasoning</h3>
+                  <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{result.credibilityReport.reasoning}</p>
+                </div>
+                <Separator />
+                <div>
+                  <h3 className="font-semibold text-lg mb-2">Sources Consulted</h3>
+                  <div className="flex flex-col gap-2">
+                    {result.credibilityReport.sources.length > 0 ? (
+                      result.credibilityReport.sources.map((source, i) => (
+                        <Link
+                          key={i}
+                          href={source}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-primary hover:underline truncate"
+                        >
+                          {source}
+                        </Link>
+                      ))
+                    ) : (
+                      <p className="text-sm text-muted-foreground">No external sources were cited for this analysis.</p>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
+            </ScrollArea>
           )}
         </CardContent>
       </Card>
