@@ -63,8 +63,27 @@ const videoIntegrityFlow = ai.defineFlow(
     outputSchema: VideoIntegrityOutputSchema,
   },
   async input => {
-    if (!input.videoDataUri) {
-         return {
+    try {
+        if (!input.videoDataUri) {
+             return {
+                analysis: {
+                    deepfake: false,
+                    mislabeling: false,
+                    videoManipulation: false,
+                    satireParody: false,
+                    syntheticVoice: false,
+                    fullyAiGenerated: false,
+                    confidenceScore: 0,
+                    summary: "No video data was provided for analysis.",
+                }
+            };
+        }
+
+        const {output} = await prompt({ videoDataUri: input.videoDataUri });
+        return output!;
+    } catch (e: any) {
+        console.error('Error during video analysis:', e);
+        return {
             analysis: {
                 deepfake: false,
                 mislabeling: false,
@@ -73,12 +92,9 @@ const videoIntegrityFlow = ai.defineFlow(
                 syntheticVoice: false,
                 fullyAiGenerated: false,
                 confidenceScore: 0,
-                summary: "No video data was provided for analysis.",
+                summary: `An error occurred during analysis: ${e.message || 'Unknown error'}. This may be due to a temporary issue with the AI service. Please try again later.`,
             }
         };
     }
-
-    const {output} = await prompt({ videoDataUri: input.videoDataUri });
-    return output!;
   }
 );
