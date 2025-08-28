@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
-  title: 'Misinformation Mitigator',
+  title: 'Veritas Vision',
   description: 'AI-powered content analysis for news, video, and audio.',
 };
 

@@ -24,8 +24,8 @@ export function Header() {
       <div className="container flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center space-x-2">
           <Icons.shield className="h-8 w-8 text-primary" />
-          <span className="text-xl font-bold tracking-tight text-foreground hidden sm:inline-block">
-            Misinformation Mitigator
+          <span className="text-xl font-bold tracking-tight text-foreground">
+            Veritas Vision
           </span>
         </Link>
         
@@ -62,7 +62,7 @@ export function Header() {
                 <Link href="/" className="flex items-center space-x-2 px-4 mb-4">
                   <Icons.shield className="h-8 w-8 text-primary" />
                   <span className="text-xl font-bold tracking-tight text-foreground">
-                    Misinformation Mitigator
+                    Veritas Vision
                   </span>
                 </Link>
                   {navigationLinks.map((link) => (

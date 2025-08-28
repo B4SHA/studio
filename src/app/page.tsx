@@ -30,7 +30,7 @@ export default function Home() {
     <div className="flex flex-col items-center justify-center container py-12 md:py-20">
       <div className="max-w-3xl text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-bold tracking-tighter text-foreground mb-4">
-          Uncover the Truth with Misinformation Mitigator
+          Uncover the Truth with Veritas Vision
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground">
           Your AI-powered toolkit for analyzing news, video, and audio content. We help you navigate the digital world with confidence by detecting manipulation and verifying authenticity.

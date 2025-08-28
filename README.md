@@ -1,6 +1,6 @@
-# Misinformation Mitigator
+# Veritas Vision
 
-The Misinformation Mitigator is an AI-powered web application designed to help users critically analyze digital content. In an era of rampant misinformation, this toolkit provides a suite of analysis tools to detect manipulation, assess credibility, and uncover biases in news articles, videos, and audio clips.
+Veritas Vision is an AI-powered web application designed to help users critically analyze digital content. In an era of rampant misinformation, this toolkit provides a suite of analysis tools to detect manipulation, assess credibility, and uncover biases in news articles, videos, and audio clips.
 
 Built with a modern tech stack, it leverages the power of Google's Gemini models through Genkit to deliver sophisticated, real-time content analysis.
 
