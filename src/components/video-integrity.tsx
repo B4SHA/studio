@@ -156,7 +156,7 @@ export function VideoIntegrity() {
             </div>
           )}
           {result && result.analysis && (
-            <ScrollArea className="h-full max-h-[calc(100vh-24rem)] pr-4">
+            <ScrollArea className="h-full pr-4">
               <div className="space-y-4">
                 {result.analysis.confidenceScore > 0 && (
                   <>

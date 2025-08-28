@@ -167,7 +167,7 @@ export function AudioAuthenticator() {
             </div>
           )}
           {result && (
-            <ScrollArea className="h-full max-h-[calc(100vh-24rem)] pr-4">
+            <ScrollArea className="h-full pr-4">
               <div className="space-y-6">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
