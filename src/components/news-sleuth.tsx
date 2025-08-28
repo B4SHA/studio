@@ -257,14 +257,14 @@ export function NewsSleuth() {
         </Form>
       </Card>
       
-      <Card className="shadow-lg h-fit lg:h-full flex flex-col">
+      <Card className="shadow-lg flex flex-col">
         <CardHeader>
           <CardTitle className="text-xl">Credibility Report</CardTitle>
           <CardDescription>
             The results of the news analysis will be displayed here.
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex-1">
+        <CardContent className="flex-1 min-h-0">
           {isLoading && (
             <div className="flex flex-col items-center justify-center gap-4 p-8 h-full">
               <Icons.spinner className="h-10 w-10 text-primary" />
@@ -278,7 +278,7 @@ export function NewsSleuth() {
             </div>
           )}
           {result && result.credibilityReport && (
-            <ScrollArea className="h-full max-h-[calc(100vh-22rem)] pr-4">
+            <ScrollArea className="h-full max-h-[calc(100vh-24rem)] pr-4">
               <div className="space-y-6">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
