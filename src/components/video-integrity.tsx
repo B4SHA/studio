@@ -23,16 +23,6 @@ const formSchema = z.object({
     .refine((files) => files?.[0]?.size <= 50 * 1024 * 1024, "File size should be less than 50MB."),
 });
 
-function getProgressIndicatorClassName(score: number) {
-    if (score < 40) {
-        return "bg-destructive";
-    }
-    if (score < 70) {
-        return "bg-accent";
-    }
-    return "bg-primary";
-}
-
 function AnalysisItem({ label, value }: { label: string; value: boolean }) {
     return (
         <div className="flex items-center justify-between text-sm py-2 px-4">
@@ -170,10 +160,10 @@ export function VideoIntegrity() {
                 <>
                   <div>
                     <div className="flex justify-between items-center mb-2">
-                        <h3 className="font-semibold text-lg">Confidence Score</h3>
-                        <span className="font-bold text-2xl text-primary">{result.analysis.confidenceScore.toFixed(0)}</span>
+                        <h3 className="font-semibold text-lg">Analysis Confidence</h3>
+                        <span className="font-bold text-2xl text-primary">{result.analysis.confidenceScore.toFixed(0)}%</span>
                     </div>
-                    <Progress value={result.analysis.confidenceScore} indicatorClassName={getProgressIndicatorClassName(result.analysis.confidenceScore)} />
+                    <Progress value={result.analysis.confidenceScore} indicatorClassName="bg-primary" />
                   </div>
                   
                   <div className="divide-y rounded-md border">
