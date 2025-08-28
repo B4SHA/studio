@@ -72,15 +72,15 @@ const prompt = ai.definePrompt({
   4. A list of potential biases identified.
   5. Specific content flagged for low credibility.
   6. The reasoning behind your assessment, explicitly mentioning the sources you consulted.
-  7. A list of 3-5 specific hyperlink URLs for the primary source articles you consulted to generate the report. DO NOT cite homepages like google.com or cnn.com; cite the actual news articles. If you cannot find any credible source URLs, you MUST return an empty array for the 'sources' field.
+  7. A list of 3-5 specific hyperlink URLs for the primary source articles you consulted to generate the report. If you cannot find any credible source URLs, you MUST return an empty array for the 'sources' field.
 
   IMPORTANT: The current date is {{currentDate}}. Use this as your reference point for any temporal analysis.
 
-  The user has provided one of the following: the full text of a news article, its URL, or just its headline.
+  The user has provided one of the following: the full text of a news article, its URL, or just its headline. Your analysis process MUST adapt to the input:
 
-  - If the user provides a URL (articleUrl), you MUST use the 'getArticleContentFromUrl' tool to fetch the article's text content first. Then, perform your analysis on the fetched content.
-  - If the user provides ONLY a headline (articleHeadline), your FIRST step is to use your internal search capabilities to find a credible URL for a news article that matches the headline. Then, you MUST use the 'getArticleContentFromUrl' tool with that URL to get the article text. All subsequent analysis MUST be based on the text returned by the tool. If the tool returns an error, try to find a different URL and use the tool again. If multiple attempts fail, set the verdict to 'Uncertain' and the score to 0.
-  - If the user provides only the article text, you must use your own internal web search and reasoning capabilities to find corroborating information and real news articles to verify the content.
+  - If the user provides an 'articleUrl', you MUST use the 'getArticleContentFromUrl' tool to fetch the article's text content first. Then, perform your analysis on the fetched content.
+  - If the user provides ONLY an 'articleHeadline', your FIRST step is to use your internal search capabilities to find a credible URL for a news article that matches the headline. Then, you MUST use the 'getArticleContentFromUrl' tool with that URL to get the article text. All subsequent analysis MUST be based on the text returned by the tool. If the tool returns an error, try to find a different URL and use the tool again. If multiple attempts fail, set the verdict to 'Uncertain' and the score to 0.
+  - If the user provides only the 'articleText', you must treat it as a news report and use your own internal web search and reasoning capabilities to find corroborating information and real news articles to verify the content and its context. Your analysis should determine if the event/story is real and reported elsewhere, not just if the text itself is internally consistent.
 
   {{#if articleText}}
   News Article Text:
