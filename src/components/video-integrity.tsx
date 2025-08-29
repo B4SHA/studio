@@ -10,7 +10,7 @@ import { fileToDataUri } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Icons } from "@/components/icons";
 import { Progress } from "@/components/ui/progress";
@@ -27,10 +27,10 @@ const formSchema = z.object({
 
 function AnalysisItem({ label, value }: { label: string; value: boolean }) {
     return (
-        <div className="flex items-center justify-between text-sm py-2.5 px-4 rounded-lg transition-colors hover:bg-foreground/5">
+        <div className="flex items-center justify-between text-sm py-3 px-4 rounded-lg transition-colors hover:bg-muted/50">
             <span className="text-muted-foreground">{label}</span>
             {value ? (
-                <span className="flex items-center font-medium text-destructive"><Icons.alert className="mr-1.5 h-4 w-4" /> Detected</span>
+                <span className="flex items-center font-semibold text-destructive"><Icons.alert className="mr-1.5 h-4 w-4" /> Detected</span>
             ) : (
                 <span className="flex items-center font-medium text-primary"><Icons.checkCircle className="mr-1.5 h-4 w-4" /> Not Detected</span>
             )}
@@ -62,6 +62,8 @@ export function VideoIntegrity() {
       return () => {
         URL.revokeObjectURL(objectUrl);
       };
+    } else {
+        setVideoPreview(null);
     }
   }, [videoFile]);
 
@@ -74,12 +76,12 @@ export function VideoIntegrity() {
       const videoDataUri = await fileToDataUri(values.videoFile[0]);
       const analysisResult = await videoIntegrityAnalysis({ videoDataUri });
       setResult(analysisResult);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       toast({
         variant: "destructive",
         title: "Analysis Failed",
-        description: "An unexpected error occurred. Please try again.",
+        description: error.message || "An unexpected error occurred. Please try again.",
       });
     } finally {
       setIsLoading(false);
@@ -88,29 +90,29 @@ export function VideoIntegrity() {
 
   return (
     <div className="w-full flex-1 bg-gradient-to-br from-background to-muted/40 py-8 px-4">
-        <div className="container mx-auto flex flex-col items-center gap-8 max-w-5xl">
-            <div className="text-center">
-                <h1 className="text-3xl md:text-4xl font-bold tracking-tighter text-foreground mb-2">
+        <div className="container mx-auto flex flex-col items-center gap-8">
+            <div className="text-center max-w-2xl">
+                <h1 className="text-4xl md:text-5xl font-bold tracking-tighter text-foreground mb-3">
                     Video Integrity
                 </h1>
-                <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+                <p className="text-lg md:text-xl text-muted-foreground">
                     Upload a video file to detect deepfakes, manipulations, and other signs of AI-generated content.
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
+            <div className="w-full max-w-2xl">
                 <Card className="w-full shadow-lg border-2 border-border/80 bg-background/80 backdrop-blur-sm">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2 text-xl">
-                            <Icons.video className="h-6 w-6" />
-                            Video Input
-                        </CardTitle>
-                        <CardDescription>
-                            Select a video file for analysis (Max 50MB).
-                        </CardDescription>
-                    </CardHeader>
                     <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-xl">
+                                <Icons.video className="h-6 w-6" />
+                                Video Input
+                            </CardTitle>
+                            <CardDescription>
+                                Select a video file for analysis (Max 50MB).
+                            </CardDescription>
+                        </CardHeader>
                         <CardContent className="space-y-4">
                         <FormField
                             control={form.control}
@@ -145,8 +147,10 @@ export function VideoIntegrity() {
                     </form>
                     </Form>
                 </Card>
+            </div>
 
-                <Card className="w-full shadow-lg border-2 border-border/80 bg-background/80 backdrop-blur-sm flex flex-col min-h-[500px] lg:min-h-[700px]">
+            <div className="w-full max-w-2xl mt-4">
+                <Card className="w-full shadow-lg border-2 border-border/80 bg-background/80 backdrop-blur-sm flex flex-col min-h-[500px]">
                     <CardHeader>
                         <CardTitle className="text-xl">Analysis Report</CardTitle>
                         <CardDescription>
@@ -179,7 +183,7 @@ export function VideoIntegrity() {
                             <div className="flex-1 min-h-0">
                                 <ScrollArea className="h-full pr-4">
                                     <div className="space-y-4">
-                                        <div className="divide-y divide-border/50 rounded-md border border-border/50 bg-background">
+                                        <div className="divide-y divide-border/50 rounded-md border border-border/50 bg-background/95">
                                             <AnalysisItem label="Deepfake" value={result.analysis.deepfake} />
                                             <AnalysisItem label="Video Manipulation" value={result.analysis.videoManipulation} />
                                             <AnalysisItem label="Synthetic Voice" value={result.analysis.syntheticVoice} />
@@ -188,9 +192,9 @@ export function VideoIntegrity() {
                                             <AnalysisItem label="Mislabeling" value={result.analysis.mislabeling} />
                                         </div>
                                     
-                                        <div>
+                                        <div className="pt-2">
                                         <h3 className="font-semibold text-lg mb-2">Analysis Summary</h3>
-                                        <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-wrap break-words">
+                                        <p className="text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap break-words">
                                             {result.analysis.summary}
                                         </p>
                                         </div>
@@ -206,3 +210,5 @@ export function VideoIntegrity() {
     </div>
   );
 }
+
+    
