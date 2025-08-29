@@ -41,7 +41,6 @@ function AnalysisItem({ label, value }: { label: string; value: boolean }) {
 export function VideoIntegrity() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<VideoIntegrityOutput | null>(null);
-  const [videoPreview, setVideoPreview] = useState<string | null>(null);
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -50,6 +49,9 @@ export function VideoIntegrity() {
       videoFile: undefined,
     },
   });
+
+  const videoFile = form.watch("videoFile");
+  const videoPreview = videoFile && videoFile.length > 0 ? URL.createObjectURL(videoFile[0]) : null;
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!values.videoFile || values.videoFile.length === 0) {
@@ -78,91 +80,84 @@ export function VideoIntegrity() {
     } finally {
       setIsLoading(false);
       form.reset();
-      setVideoPreview(null);
     }
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      const file = files[0];
-      const objectUrl = URL.createObjectURL(file);
-      setVideoPreview(objectUrl);
-      form.setValue("videoFile", files);
+        form.setValue("videoFile", files);
     } else {
-      setVideoPreview(null);
-      form.setValue("videoFile", undefined);
+        form.setValue("videoFile", undefined);
     }
   };
 
   return (
-    <div className="w-full max-w-5xl flex-1 bg-gradient-to-br from-background to-muted/40 py-8 px-4">
-        <div className="container mx-auto flex flex-col items-center gap-8">
-            <div className="text-center max-w-3xl">
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tighter text-foreground mb-3">
+    <div className="w-full flex-1 bg-gradient-to-br from-background to-muted/40 py-8 px-4">
+        <div className="container mx-auto flex flex-col items-center gap-8 max-w-2xl">
+            <div className="text-center w-full">
+                <h1 className="text-3xl md:text-4xl font-bold tracking-tighter text-foreground mb-2">
                     Video Integrity
                 </h1>
-                <p className="text-lg md:text-xl text-muted-foreground">
+                <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
                     Upload a video file to detect deepfakes, manipulations, and other signs of AI-generated content.
                 </p>
             </div>
 
-            <div className="w-full max-w-2xl">
-                <Card className="w-full shadow-lg border-2 border-border/80 bg-background/80 backdrop-blur-sm">
-                    <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-xl">
-                                <Icons.video className="h-6 w-6" />
-                                Video Input
-                            </CardTitle>
-                            <CardDescription>
-                                Select a video file for analysis (Max 50MB).
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                        <FormField
-                            control={form.control}
-                            name="videoFile"
-                            render={({ field }) => (
-                            <FormItem>
-                                <FormControl>
-                                <Input
-                                    type="file"
-                                    accept="video/*"
-                                    onChange={handleFileChange}
-                                    className="file:text-foreground h-12 text-base"
-                                />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                            )}
-                        />
-
-                        {videoPreview && (
-                            <div className="mt-4 overflow-hidden rounded-lg border-2 shadow-inner">
-                                <video
-                                    controls
-                                    src={videoPreview}
-                                    className="aspect-video w-full"
-                                    onLoadStart={(e) => (e.currentTarget.volume = 0.5)}
-                                />
-                            </div>
+            <Card className="w-full shadow-lg border-2 border-border/80 bg-background/80 backdrop-blur-sm">
+                <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-xl">
+                            <Icons.video className="h-6 w-6" />
+                            Video Input
+                        </CardTitle>
+                        <CardDescription>
+                            Select a video file for analysis (Max 50MB).
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                    <FormField
+                        control={form.control}
+                        name="videoFile"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormControl>
+                            <Input
+                                type="file"
+                                accept="video/*"
+                                onChange={handleFileChange}
+                                className="file:text-foreground h-12 text-base"
+                            />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
                         )}
-                        </CardContent>
-                        <CardFooter>
-                        <Button type="submit" disabled={isLoading} className="w-full h-12 text-lg font-semibold">
-                            {isLoading && <Icons.spinner className="mr-2" />}
-                            Analyze Video
-                        </Button>
-                        </CardFooter>
-                    </form>
-                    </Form>
-                </Card>
-            </div>
+                    />
+
+                    {videoPreview && (
+                        <div className="mt-4 overflow-hidden rounded-lg border-2 shadow-inner">
+                            <video
+                                controls
+                                src={videoPreview}
+                                className="aspect-video w-full"
+                                onLoadStart={(e) => (e.currentTarget.volume = 0.5)}
+                            />
+                        </div>
+                    )}
+                    </CardContent>
+                    <CardFooter>
+                    <Button type="submit" disabled={isLoading} className="w-full h-12 text-lg font-semibold">
+                        {isLoading && <Icons.spinner className="mr-2" />}
+                        Analyze Video
+                    </Button>
+                    </CardFooter>
+                </form>
+                </Form>
+            </Card>
 
             { (isLoading || result) && (
-                <div className="w-full max-w-2xl mt-4">
+                <div className="w-full mt-8">
                     <Card className="w-full shadow-lg border-2 border-border/80 bg-background/80 backdrop-blur-sm flex flex-col min-h-[500px]">
                         <CardHeader>
                             <CardTitle className="text-xl">Analysis Report</CardTitle>
@@ -175,12 +170,6 @@ export function VideoIntegrity() {
                             <div className="flex-1 flex flex-col items-center justify-center gap-4 p-8">
                                 <Icons.spinner className="h-10 w-10 text-primary" />
                                 <p className="text-center text-muted-foreground">Analyzing video... <br/>This can take some time, especially for longer videos.</p>
-                            </div>
-                            )}
-                            {!isLoading && !result && (
-                            <div className="flex-1 flex flex-col items-center justify-center text-center text-muted-foreground p-8">
-                                <Icons.barChart className="mx-auto mb-4 h-10 w-10" />
-                                <p>Your report is pending analysis.</p>
                             </div>
                             )}
                             {result && result.analysis && (
@@ -224,5 +213,3 @@ export function VideoIntegrity() {
     </div>
   );
 }
-
-    
