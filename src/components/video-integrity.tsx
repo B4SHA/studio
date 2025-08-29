@@ -10,7 +10,7 @@ import { fileToDataUri } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { Form, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Icons } from "@/components/icons";
 import { Progress } from "@/components/ui/progress";
@@ -108,23 +108,13 @@ export function VideoIntegrity() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                    <FormField
-                        control={form.control}
-                        name="videoFile"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormControl>
-                            <Input
-                                type="file"
-                                accept="video/*"
-                                className="file:text-foreground h-12 text-base"
-                                onChange={(e) => field.onChange(e.target.files)}
-                            />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
+                      <Input
+                          type="file"
+                          accept="video/*"
+                          className="file:text-foreground h-12 text-base"
+                          {...form.register("videoFile")}
+                      />
+                      <FormMessage>{form.formState.errors.videoFile?.message}</FormMessage>
 
                     {videoPreview && (
                         <div className="mt-4 overflow-hidden rounded-lg border-2 shadow-inner">
