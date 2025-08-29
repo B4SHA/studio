@@ -74,6 +74,8 @@ const prompt = ai.definePrompt({
   6. The reasoning behind your assessment, explicitly mentioning the sources you consulted.
   7. A list of 3-5 specific hyperlink URLs for the primary source articles you consulted to generate the report. If you cannot find any credible source URLs, you MUST return an empty array for the 'sources' field.
 
+  CRITICAL SELF-CORRECTION: Before finalizing your output, you MUST review your generated summary, reasoning, and sources. Ensure there are no contradictions. For example, if the news is about a visit to Japan, the reasoning should not mention China unless it is directly relevant and explained. The summary and reasoning must be logically consistent with each other.
+
   IMPORTANT: The current date is {{currentDate}}. Use this as your reference point for any temporal analysis.
 
   The user has provided one of the following: the full text of a news article, its URL, or just its headline. Your analysis process MUST adapt to the input:
