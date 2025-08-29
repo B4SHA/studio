@@ -97,7 +97,7 @@ export function AudioAuthenticator() {
 
   return (
     <div className="flex w-full flex-1 flex-col gap-8">
-      <Card className="h-fit shadow-lg">
+      <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
             <Icons.audio className="h-6 w-6" />
@@ -170,7 +170,7 @@ export function AudioAuthenticator() {
               </div>
             )}
             {result && (
-              <ScrollArea className="h-full">
+              <ScrollArea className="h-full max-h-[60vh] lg:max-h-full">
                 <div className="space-y-6 p-1">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
@@ -200,5 +200,3 @@ export function AudioAuthenticator() {
     </div>
   );
 }
-
-    
