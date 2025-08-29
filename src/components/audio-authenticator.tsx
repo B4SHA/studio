@@ -96,7 +96,7 @@ export function AudioAuthenticator() {
 
 
   return (
-    <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 w-full max-w-5xl">
+    <div className="flex flex-col gap-8 w-full max-w-5xl">
       <Card className="shadow-lg h-fit">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
@@ -146,14 +146,14 @@ export function AudioAuthenticator() {
         </Form>
       </Card>
       
-      <Card className="shadow-lg flex flex-col lg:h-full">
+      <Card className="shadow-lg flex flex-col">
         <CardHeader>
           <CardTitle className="text-xl">Analysis Report</CardTitle>
           <CardDescription>
             The results of the audio analysis will be displayed here.
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex-1 flex flex-col min-h-0">
+        <CardContent className="flex-1 flex flex-col min-h-0 max-h-[60vh] lg:max-h-full">
           {isLoading && (
             <div className="flex flex-col items-center justify-center gap-4 p-8 h-full">
               <Icons.spinner className="h-10 w-10 text-primary" />
@@ -167,8 +167,8 @@ export function AudioAuthenticator() {
             </div>
           )}
           {result && (
-            <div className="flex-1 flex flex-col min-h-0 max-h-[60vh] lg:max-h-full">
-              <ScrollArea>
+            <div className="flex-1 flex flex-col min-h-0">
+              <ScrollArea className="h-full">
                 <div className="space-y-6 p-1">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
@@ -187,7 +187,7 @@ export function AudioAuthenticator() {
                   <Separator />
                   <div>
                     <h3 className="font-semibold text-lg mb-2">Detailed Report</h3>
-                    <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap break-words">{result.report}</p>
+                    <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-line">{result.report}</p>
                   </div>
                 </div>
               </ScrollArea>
