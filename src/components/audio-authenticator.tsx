@@ -94,111 +94,120 @@ export function AudioAuthenticator() {
     }
   };
 
-
   return (
-    <div className="w-full max-w-5xl mx-auto flex flex-col items-center gap-8">
-      <Card className="w-full shadow-lg">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-xl">
-            <Icons.audio className="h-6 w-6" />
+     <div className="flex-1 w-full flex flex-col items-center py-8 px-4">
+      <div className="w-full max-w-4xl flex flex-col gap-8">
+        <div className="text-center">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tighter text-foreground mb-2">
             Audio Authenticator
-          </CardTitle>
-          <CardDescription>
+          </h1>
+          <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
             Upload an audio clip to analyze its authenticity and detect potential AI generation or manipulation.
-          </CardDescription>
-        </CardHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <CardContent>
-              <FormField
-                control={form.control}
-                name="audioFile"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Audio File (Max 10MB)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="file"
-                        accept="audio/*"
-                        onChange={handleFileChange}
-                        className="file:text-foreground"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {audioPreview && (
-                 <div className="mt-4">
-                  <audio controls src={audioPreview} className="w-full">
-                    Your browser does not support the audio element.
-                  </audio>
-                </div>
-              )}
-            </CardContent>
-            <CardFooter>
-              <Button type="submit" disabled={isLoading} className="w-full">
-                {isLoading && <Icons.spinner className="mr-2" />}
-                Analyze Audio
-              </Button>
-            </CardFooter>
-          </form>
-        </Form>
-      </Card>
-      
-      <Card className="w-full shadow-lg flex flex-col">
-        <CardHeader>
-          <CardTitle className="text-xl">Analysis Report</CardTitle>
-          <CardDescription>
-            The results of the audio analysis will be displayed here.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex-1 flex flex-col min-h-0">
-          {isLoading && (
-            <div className="flex flex-col items-center justify-center gap-4 p-8 min-h-[300px]">
-              <Icons.spinner className="h-10 w-10 text-primary" />
-              <p className="text-center text-muted-foreground">Analyzing audio... <br /> This may take a moment.</p>
-            </div>
-          )}
-          {!isLoading && !result && (
-            <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 min-h-[300px]">
-              <Icons.barChart className="mx-auto mb-4 h-10 w-10" />
-              <p>Your report is pending analysis.</p>
-            </div>
-          )}
-          {result && (
-            <div className="flex-1 flex flex-col min-h-0">
-              <div className="px-6 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-lg">Verdict</h3>
-                  <Badge variant={getVerdictBadgeVariant(result.verdict)} className="px-3 py-1 text-sm">
-                    {getVerdictIcon(result.verdict)}
-                    {result.verdict}
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                    <h3 className="font-semibold text-lg">Confidence Score</h3>
-                    <span className="font-bold text-2xl text-primary">{result.confidenceScore}/100</span>
-                </div>
-                <Progress value={result.confidenceScore} indicatorClassName={getProgressIndicatorClassName(result.confidenceScore)} />
-              </div>
-              <Separator className="my-4" />
-              <div className="flex-1 min-h-0">
-                <ScrollArea className="h-full px-6">
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="font-semibold text-lg mb-2">Detailed Report</h3>
-                      <p className="text-sm leading-relaxed text-foreground/80" style={{ whiteSpace: 'pre-wrap', overflowWrap: 'break-word' }}>
-                        {result.report}
-                      </p>
-                    </div>
+          </p>
+        </div>
+
+        <Card className="w-full shadow-lg border-2 border-border/80 bg-background/80 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <Icons.audio className="h-6 w-6" />
+              Audio Input
+            </CardTitle>
+            <CardDescription>
+              Select an audio file for analysis (Max 10MB).
+            </CardDescription>
+          </CardHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <CardContent>
+                <FormField
+                  control={form.control}
+                  name="audioFile"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          type="file"
+                          accept="audio/*"
+                          onChange={handleFileChange}
+                          className="file:text-foreground h-12 text-base"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {audioPreview && (
+                  <div className="mt-4 border-2 shadow-inner rounded-lg p-2">
+                    <audio controls src={audioPreview} className="w-full">
+                      Your browser does not support the audio element.
+                    </audio>
                   </div>
-                </ScrollArea>
+                )}
+              </CardContent>
+              <CardFooter>
+                <Button type="submit" disabled={isLoading} className="w-full h-12 text-lg font-semibold">
+                  {isLoading && <Icons.spinner className="mr-2" />}
+                  Analyze Audio
+                </Button>
+              </CardFooter>
+            </form>
+          </Form>
+        </Card>
+        
+        <Card className="w-full shadow-lg border-2 border-border/80 bg-background/80 backdrop-blur-sm flex flex-col min-h-[500px]">
+          <CardHeader>
+            <CardTitle className="text-xl">Analysis Report</CardTitle>
+            <CardDescription>
+              The results of the audio analysis will be displayed here.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex-1 flex flex-col min-h-0">
+            {isLoading && (
+              <div className="flex-1 flex flex-col items-center justify-center gap-4 p-8">
+                <Icons.spinner className="h-10 w-10 text-primary" />
+                <p className="text-center text-muted-foreground">Analyzing audio... <br /> This may take a moment.</p>
               </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            )}
+            {!isLoading && !result && (
+              <div className="flex-1 flex flex-col items-center justify-center text-center text-muted-foreground p-8">
+                <Icons.barChart className="mx-auto mb-4 h-10 w-10" />
+                <p>Your report is pending analysis.</p>
+              </div>
+            )}
+            {result && (
+              <div className="flex-1 flex flex-col min-h-0">
+                <div className="px-1 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold text-lg">Verdict</h3>
+                    <Badge variant={getVerdictBadgeVariant(result.verdict)} className="px-3 py-1 text-sm">
+                      {getVerdictIcon(result.verdict)}
+                      {result.verdict}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-lg">Confidence Score</h3>
+                      <span className="font-bold text-2xl text-primary">{result.confidenceScore}/100</span>
+                  </div>
+                  <Progress value={result.confidenceScore} indicatorClassName={getProgressIndicatorClassName(result.confidenceScore)} />
+                </div>
+                <Separator className="my-4" />
+                <div className="flex-1 min-h-0">
+                    <ScrollArea className="h-full pr-4 -mr-4">
+                        <div className="space-y-4">
+                            <div>
+                                <h3 className="font-semibold text-lg mb-2">Detailed Report</h3>
+                                <p className="text-sm leading-relaxed text-foreground/80" style={{ whiteSpace: 'pre-wrap', overflowWrap: 'break-word', wordBreak: 'break-all' }}>
+                                    {result.report}
+                                </p>
+                            </div>
+                        </div>
+                    </ScrollArea>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
