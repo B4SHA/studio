@@ -79,18 +79,8 @@ export function VideoIntegrity() {
       });
     } finally {
       setIsLoading(false);
-      form.reset();
     }
   }
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-        form.setValue("videoFile", files);
-    } else {
-        form.setValue("videoFile", undefined);
-    }
-  };
 
   return (
     <div className="w-full flex-1 bg-gradient-to-br from-background to-muted/40 py-8 px-4">
@@ -126,8 +116,8 @@ export function VideoIntegrity() {
                             <Input
                                 type="file"
                                 accept="video/*"
-                                onChange={handleFileChange}
                                 className="file:text-foreground h-12 text-base"
+                                onChange={(e) => field.onChange(e.target.files)}
                             />
                             </FormControl>
                             <FormMessage />
