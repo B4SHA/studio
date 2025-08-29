@@ -96,8 +96,8 @@ export function AudioAuthenticator() {
 
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 w-full max-w-5xl">
-      <Card className="shadow-lg lg:w-1/2">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full max-w-5xl">
+      <Card className="shadow-lg h-fit">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
             <Icons.audio className="h-6 w-6" />
@@ -146,7 +146,7 @@ export function AudioAuthenticator() {
         </Form>
       </Card>
       
-      <Card className="shadow-lg flex flex-col lg:w-1/2">
+      <Card className="shadow-lg flex flex-col h-fit lg:h-full">
         <CardHeader>
           <CardTitle className="text-xl">Analysis Report</CardTitle>
           <CardDescription>
@@ -167,8 +167,8 @@ export function AudioAuthenticator() {
             </div>
           )}
           {result && (
-            <ScrollArea className="h-full pr-4">
-              <div className="space-y-6">
+            <ScrollArea className="h-full">
+              <div className="space-y-6 p-1">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="font-semibold text-lg">Verdict</h3>
@@ -186,7 +186,7 @@ export function AudioAuthenticator() {
                 <Separator />
                 <div>
                   <h3 className="font-semibold text-lg mb-2">Detailed Report</h3>
-                  <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{result.report}</p>
+                  <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap break-words">{result.report}</p>
                 </div>
               </div>
             </ScrollArea>

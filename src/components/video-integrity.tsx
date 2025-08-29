@@ -86,8 +86,8 @@ export function VideoIntegrity() {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 w-full max-w-5xl">
-      <Card className="shadow-lg lg:w-1/2">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full max-w-5xl">
+      <Card className="shadow-lg h-fit">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
             <Icons.video className="h-6 w-6" />
@@ -135,7 +135,7 @@ export function VideoIntegrity() {
         </Form>
       </Card>
 
-      <Card className="shadow-lg flex flex-col lg:w-1/2">
+      <Card className="shadow-lg flex flex-col h-fit lg:h-full">
         <CardHeader>
           <CardTitle className="text-xl">Analysis Report</CardTitle>
           <CardDescription>
@@ -156,8 +156,8 @@ export function VideoIntegrity() {
             </div>
           )}
           {result && result.analysis && (
-            <ScrollArea className="h-full pr-4">
-              <div className="space-y-4">
+            <ScrollArea className="h-full">
+              <div className="space-y-4 p-1">
                 {result.analysis.confidenceScore > 0 && (
                   <>
                     <div>
@@ -181,7 +181,7 @@ export function VideoIntegrity() {
 
                 <div>
                   <h3 className="font-semibold text-lg mb-2">Analysis Summary</h3>
-                  <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{result.analysis.summary}</p>
+                  <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap break-words">{result.analysis.summary}</p>
                 </div>
               </div>
             </ScrollArea>
