@@ -142,7 +142,7 @@ export function VideoIntegrity() {
             The results of the video integrity analysis will appear here.
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex-1 flex flex-col min-h-0 max-h-[60vh] lg:max-h-full">
+        <CardContent className="flex-1 flex flex-col min-h-0 max-h-[60vh]">
           {isLoading && (
             <div className="flex flex-col items-center justify-center gap-4 p-8 h-full">
               <Icons.spinner className="h-10 w-10 text-primary" />
@@ -156,37 +156,35 @@ export function VideoIntegrity() {
             </div>
           )}
           {result && result.analysis && (
-            <div className="flex-1 flex flex-col min-h-0">
-              <ScrollArea className="h-full">
-                <div className="space-y-4 p-1">
-                  {result.analysis.confidenceScore > 0 && (
-                    <>
-                      <div>
-                        <div className="flex justify-between items-center mb-2">
-                            <h3 className="font-semibold text-lg">Analysis Confidence</h3>
-                            <span className="font-bold text-2xl text-primary">{result.analysis.confidenceScore.toFixed(0)}%</span>
-                        </div>
-                        <Progress value={result.analysis.confidenceScore} indicatorClassName="bg-primary" />
+            <ScrollArea className="h-full">
+              <div className="space-y-4 p-1">
+                {result.analysis.confidenceScore > 0 && (
+                  <>
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                          <h3 className="font-semibold text-lg">Analysis Confidence</h3>
+                          <span className="font-bold text-2xl text-primary">{result.analysis.confidenceScore.toFixed(0)}%</span>
                       </div>
-                      
-                      <div className="divide-y rounded-md border">
-                        <AnalysisItem label="Deepfake" value={result.analysis.deepfake} />
-                        <AnalysisItem label="Video Manipulation" value={result.analysis.videoManipulation} />
-                        <AnalysisItem label="Synthetic Voice" value={result.analysis.syntheticVoice} />
-                        <AnalysisItem label="Fully AI-Generated" value={result.analysis.fullyAiGenerated} />
-                        <AnalysisItem label="Satire or Parody" value={result.analysis.satireParody} />
-                        <AnalysisItem label="Mislabeling" value={result.analysis.mislabeling} />
-                      </div>
-                    </>
-                  )}
+                      <Progress value={result.analysis.confidenceScore} indicatorClassName="bg-primary" />
+                    </div>
+                    
+                    <div className="divide-y rounded-md border">
+                      <AnalysisItem label="Deepfake" value={result.analysis.deepfake} />
+                      <AnalysisItem label="Video Manipulation" value={result.analysis.videoManipulation} />
+                      <AnalysisItem label="Synthetic Voice" value={result.analysis.syntheticVoice} />
+                      <AnalysisItem label="Fully AI-Generated" value={result.analysis.fullyAiGenerated} />
+                      <AnalysisItem label="Satire or Parody" value={result.analysis.satireParody} />
+                      <AnalysisItem label="Mislabeling" value={result.analysis.mislabeling} />
+                    </div>
+                  </>
+                )}
 
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">Analysis Summary</h3>
-                    <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-line">{result.analysis.summary}</p>
-                  </div>
+                <div>
+                  <h3 className="font-semibold text-lg mb-2">Analysis Summary</h3>
+                  <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre">{result.analysis.summary}</p>
                 </div>
-              </ScrollArea>
-            </div>
+              </div>
+            </ScrollArea>
           )}
         </CardContent>
       </Card>
