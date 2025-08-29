@@ -106,11 +106,24 @@ const newsSleuthFlow = ai.defineFlow(
     outputSchema: NewsSleuthOutputSchema,
   },
   async (input) => {
-    const currentDate = new Date().toDateString();
-    const inputWithDate = { ...input, currentDate };
-
-    const llmResponse = await prompt(inputWithDate);
-    
-    return llmResponse.output!;
+    try {
+      const currentDate = new Date().toDateString();
+      const inputWithDate = { ...input, currentDate };
+      const llmResponse = await prompt(inputWithDate);
+      return llmResponse.output!;
+    } catch (e: any) {
+      console.error('Error during news analysis:', e);
+      return {
+        credibilityReport: {
+          overallScore: 0,
+          verdict: 'Uncertain',
+          summary: 'The analysis could not be completed.',
+          biases: [],
+          flaggedContent: [],
+          reasoning: `An error occurred during the analysis, which prevented a result from being generated. This may be due to a temporary issue with the AI service, such as reaching a rate limit, or a problem with the input provided.\n\nError: ${e.message || 'Unknown error'}`,
+          sources: [],
+        },
+      };
+    }
   }
 );
