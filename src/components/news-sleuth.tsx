@@ -295,11 +295,11 @@ export function NewsSleuth() {
               </div>
               <Separator className="my-4" />
               <div className="flex-1 min-h-0">
-                <ScrollArea className="h-full max-h-[50vh] lg:max-h-full">
-                  <div className="space-y-6 pr-6">
+                <ScrollArea className="h-full">
+                  <div className="space-y-6">
                     <div>
                       <h3 className="font-semibold text-lg mb-2">Summary</h3>
-                      <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-foreground/80">{result.credibilityReport.summary}</p>
+                      <p className="whitespace-pre-wrap break-all text-sm leading-relaxed text-foreground/80">{result.credibilityReport.summary}</p>
                     </div>
                     <Separator />
                     <div>
@@ -320,7 +320,7 @@ export function NewsSleuth() {
                           result.credibilityReport.flaggedContent.map((flag, i) => (
                             <div key={i} className="flex items-start gap-2 text-sm text-destructive">
                               <Icons.alert className="h-4 w-4 mt-0.5 shrink-0" />
-                              <p className="break-words">{flag}</p>
+                              <p className="break-all">{flag}</p>
                             </div>
                           ))
                         ) : (
@@ -331,7 +331,7 @@ export function NewsSleuth() {
                     <Separator />
                     <div>
                       <h3 className="font-semibold text-lg mb-2">Analyst Reasoning</h3>
-                      <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-foreground/80">{result.credibilityReport.reasoning}</p>
+                      <p className="whitespace-pre-wrap break-all text-sm leading-relaxed text-foreground/80">{result.credibilityReport.reasoning}</p>
                     </div>
                     <Separator />
                     <div>
@@ -364,4 +364,3 @@ export function NewsSleuth() {
     </div>
   );
 }
-
