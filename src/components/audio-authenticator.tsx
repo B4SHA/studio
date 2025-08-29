@@ -96,8 +96,8 @@ export function AudioAuthenticator() {
 
 
   return (
-    <div className="w-full mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-      <Card className="shadow-lg">
+    <div className="w-full max-w-5xl mx-auto flex flex-col items-center gap-8">
+      <Card className="w-full shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
             <Icons.audio className="h-6 w-6" />
@@ -146,49 +146,49 @@ export function AudioAuthenticator() {
         </Form>
       </Card>
       
-      <Card className="shadow-lg flex flex-col h-full">
+      <Card className="w-full shadow-lg flex flex-col">
         <CardHeader>
           <CardTitle className="text-xl">Analysis Report</CardTitle>
           <CardDescription>
             The results of the audio analysis will be displayed here.
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex-1 flex flex-col min-h-0 p-6 pt-0">
+        <CardContent className="flex-1 flex flex-col min-h-0">
           {isLoading && (
-            <div className="flex h-full flex-col items-center justify-center gap-4 p-8">
+            <div className="flex flex-col items-center justify-center gap-4 p-8 min-h-[300px]">
               <Icons.spinner className="h-10 w-10 text-primary" />
               <p className="text-center text-muted-foreground">Analyzing audio... <br /> This may take a moment.</p>
             </div>
           )}
           {!isLoading && !result && (
-            <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground">
+            <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 min-h-[300px]">
               <Icons.barChart className="mx-auto mb-4 h-10 w-10" />
               <p>Your report is pending analysis.</p>
             </div>
           )}
           {result && (
             <div className="flex-1 flex flex-col min-h-0">
+              <div className="px-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-lg">Verdict</h3>
+                  <Badge variant={getVerdictBadgeVariant(result.verdict)} className="px-3 py-1 text-sm">
+                    {getVerdictIcon(result.verdict)}
+                    {result.verdict}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                    <h3 className="font-semibold text-lg">Confidence Score</h3>
+                    <span className="font-bold text-2xl text-primary">{result.confidenceScore}/100</span>
+                </div>
+                <Progress value={result.confidenceScore} indicatorClassName={getProgressIndicatorClassName(result.confidenceScore)} />
+              </div>
+              <Separator className="my-4" />
               <div className="flex-1 min-h-0">
-                <ScrollArea className="h-full">
+                <ScrollArea className="h-full px-6">
                   <div className="space-y-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-semibold text-lg">Verdict</h3>
-                        <Badge variant={getVerdictBadgeVariant(result.verdict)} className="px-3 py-1 text-sm">
-                          {getVerdictIcon(result.verdict)}
-                          {result.verdict}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center justify-between">
-                          <h3 className="font-semibold text-lg">Confidence Score</h3>
-                          <span className="font-bold text-2xl text-primary">{result.confidenceScore}/100</span>
-                      </div>
-                      <Progress value={result.confidenceScore} indicatorClassName={getProgressIndicatorClassName(result.confidenceScore)} />
-                    </div>
-                    <Separator />
                     <div>
                       <h3 className="font-semibold text-lg mb-2">Detailed Report</h3>
-                      <p className="text-sm leading-relaxed text-foreground/80 overflow-hidden" style={{ overflowWrap: 'break-word', whiteSpace: 'pre-wrap' }}>
+                      <p className="text-sm leading-relaxed text-foreground/80" style={{ whiteSpace: 'pre-wrap', overflowWrap: 'break-word' }}>
                         {result.report}
                       </p>
                     </div>

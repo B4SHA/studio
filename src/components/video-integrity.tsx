@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Icons } from "@/components/icons";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "./ui/scroll-area";
+import { Separator } from "./ui/separator";
 
 const formSchema = z.object({
   videoFile: z
@@ -26,7 +27,7 @@ const formSchema = z.object({
 
 function AnalysisItem({ label, value }: { label: string; value: boolean }) {
     return (
-        <div className="flex items-center justify-between text-sm py-2 px-4">
+        <div className="flex items-center justify-between text-sm py-2 px-3">
             <span className="text-muted-foreground">{label}</span>
             {value ? (
                 <span className="flex items-center font-medium text-destructive"><Icons.alert className="mr-1.5 h-4 w-4" /> Detected</span>
@@ -86,8 +87,8 @@ export function VideoIntegrity() {
   }
 
   return (
-    <div className="w-full mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-      <Card className="shadow-lg">
+    <div className="w-full max-w-5xl mx-auto flex flex-col items-center gap-8">
+      <Card className="w-full shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
             <Icons.video className="h-6 w-6" />
@@ -135,22 +136,22 @@ export function VideoIntegrity() {
         </Form>
       </Card>
 
-      <Card className="shadow-lg flex flex-col h-full">
+      <Card className="w-full shadow-lg flex flex-col">
         <CardHeader>
           <CardTitle className="text-xl">Analysis Report</CardTitle>
           <CardDescription>
             The results of the video integrity analysis will appear here.
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex-1 flex flex-col min-h-0 p-6 pt-0">
+        <CardContent className="flex-1 flex flex-col min-h-0">
             {isLoading && (
-              <div className="flex h-full flex-col items-center justify-center gap-4 p-8">
+              <div className="flex flex-col items-center justify-center gap-4 p-8 min-h-[300px]">
                 <Icons.spinner className="h-10 w-10 text-primary" />
                 <p className="text-center text-muted-foreground">Analyzing video... <br/>This can take some time, especially for longer videos.</p>
               </div>
             )}
             {!isLoading && !result && (
-              <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground">
+              <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 min-h-[300px]">
                 <Icons.barChart className="mx-auto mb-4 h-10 w-10" />
                 <p>Your report is pending analysis.</p>
               </div>
@@ -158,7 +159,7 @@ export function VideoIntegrity() {
             {result && result.analysis && (
               <div className="flex-1 flex flex-col min-h-0">
                   <div className="flex-1 min-h-0">
-                    <ScrollArea className="h-full">
+                    <ScrollArea className="h-full px-6">
                       <div className="space-y-4">
                         {result.analysis.confidenceScore > 0 && (
                           <>
@@ -170,7 +171,7 @@ export function VideoIntegrity() {
                               <Progress value={result.analysis.confidenceScore} indicatorClassName="bg-primary" />
                             </div>
                             
-                            <div className="divide-y rounded-md border">
+                            <div className="divide-y rounded-md border bg-card-foreground/5">
                               <AnalysisItem label="Deepfake" value={result.analysis.deepfake} />
                               <AnalysisItem label="Video Manipulation" value={result.analysis.videoManipulation} />
                               <AnalysisItem label="Synthetic Voice" value={result.analysis.syntheticVoice} />
@@ -180,10 +181,10 @@ export function VideoIntegrity() {
                             </div>
                           </>
                         )}
-
+                        <Separator />
                         <div>
                           <h3 className="font-semibold text-lg mb-2">Analysis Summary</h3>
-                          <p className="text-sm leading-relaxed text-foreground/80 overflow-hidden" style={{ overflowWrap: 'break-word', whiteSpace: 'pre-wrap' }}>
+                          <p className="text-sm leading-relaxed text-foreground/80" style={{ whiteSpace: 'pre-wrap', overflowWrap: 'break-word' }}>
                             {result.analysis.summary}
                           </p>
                         </div>

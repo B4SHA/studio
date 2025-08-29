@@ -20,7 +20,7 @@ const NewsSleuth = dynamic(
 
 export default function NewsSleuthPage() {
   return (
-    <div className="container py-8 flex-1 flex justify-center">
+    <div className="container py-8 flex flex-col items-center justify-center">
       <NewsSleuth />
     </div>
   );
