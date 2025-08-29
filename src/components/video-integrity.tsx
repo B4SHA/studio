@@ -52,9 +52,17 @@ export function VideoIntegrity() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!values.videoFile || values.videoFile.length === 0) {
+      toast({
+        variant: 'destructive',
+        title: 'No file selected',
+        description: 'Please select a video file before analyzing.',
+      });
+      return;
+    }
+
     setIsLoading(true);
     setResult(null);
-    form.reset();
     
     try {
       const videoDataUri = await fileToDataUri(values.videoFile[0]);
@@ -69,19 +77,21 @@ export function VideoIntegrity() {
       });
     } finally {
       setIsLoading(false);
+      form.reset();
+      setVideoPreview(null);
     }
   }
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, fieldChange: (files: FileList | null) => void) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
       const file = files[0];
       const objectUrl = URL.createObjectURL(file);
       setVideoPreview(objectUrl);
-      fieldChange(files);
+      form.setValue("videoFile", files);
     } else {
       setVideoPreview(null);
-      fieldChange(null);
+      form.setValue("videoFile", undefined);
     }
   };
 
@@ -120,7 +130,7 @@ export function VideoIntegrity() {
                                 <Input
                                     type="file"
                                     accept="video/*"
-                                    onChange={(e) => handleFileChange(e, field.onChange)}
+                                    onChange={handleFileChange}
                                     className="file:text-foreground h-12 text-base"
                                 />
                                 </FormControl>
@@ -214,3 +224,5 @@ export function VideoIntegrity() {
     </div>
   );
 }
+
+    
