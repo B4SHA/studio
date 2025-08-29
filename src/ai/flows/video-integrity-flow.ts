@@ -11,6 +11,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import {googleAI} from '@genkit-ai/googleai';
 
 const VideoIntegrityInputSchema = z.object({
   videoDataUri: z
@@ -44,6 +45,7 @@ const prompt = ai.definePrompt({
   name: 'videoIntegrityPrompt',
   input: {schema: VideoIntegrityInputSchema},
   output: {schema: VideoIntegrityOutputSchema},
+  model: googleAI('gemini-1.5-pro-latest'),
   prompt: `You are an expert in detecting AI-generated and manipulated videos.
 
 You will analyze the video and determine if it is a deepfake, mislabeled, manipulated, satire/parody, contains a synthetic voice, or is fully AI-generated.
@@ -83,6 +85,13 @@ const videoIntegrityFlow = ai.defineFlow(
         return output!;
     } catch (e: any) {
         console.error('Error during video analysis:', e);
+        const errorMessage = e.message || 'Unknown error';
+        let userFriendlyMessage = `An error occurred during analysis: ${errorMessage}. This may be due to a temporary issue with the AI service. Please try again later.`;
+
+        if (typeof errorMessage === 'string' && errorMessage.includes('503 Service Unavailable')) {
+            userFriendlyMessage = "The analysis service is currently overloaded. We are working to resolve this. Please try again in a few moments."
+        }
+        
         return {
             analysis: {
                 deepfake: false,
@@ -92,7 +101,7 @@ const videoIntegrityFlow = ai.defineFlow(
                 syntheticVoice: false,
                 fullyAiGenerated: false,
                 confidenceScore: 0,
-                summary: `An error occurred during analysis: ${e.message || 'Unknown error'}. This may be due to a temporary issue with the AI service. Please try again later.`,
+                summary: userFriendlyMessage,
             }
         };
     }
