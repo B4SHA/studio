@@ -181,7 +181,7 @@ export function VideoIntegrity() {
 
                 <div>
                   <h3 className="font-semibold text-lg mb-2">Analysis Summary</h3>
-                  <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/80">{result.analysis.summary}</p>
+                  <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-foreground/80">{result.analysis.summary}</p>
                 </div>
               </div>
             </ScrollArea>
@@ -191,5 +191,7 @@ export function VideoIntegrity() {
     </div>
   );
 }
+
+    
 
     

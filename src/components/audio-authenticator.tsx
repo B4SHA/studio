@@ -186,7 +186,7 @@ export function AudioAuthenticator() {
                 <Separator />
                 <div>
                   <h3 className="font-semibold text-lg mb-2">Detailed Report</h3>
-                  <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/80">{result.report}</p>
+                  <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-foreground/80">{result.report}</p>
                 </div>
               </div>
             </ScrollArea>
@@ -196,5 +196,7 @@ export function AudioAuthenticator() {
     </div>
   );
 }
+
+    
 
     

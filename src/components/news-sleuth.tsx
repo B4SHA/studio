@@ -297,7 +297,7 @@ export function NewsSleuth() {
                 <Separator />
                 <div>
                   <h3 className="font-semibold text-lg mb-2">Summary</h3>
-                  <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/80">{result.credibilityReport.summary}</p>
+                  <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-foreground/80">{result.credibilityReport.summary}</p>
                 </div>
                 <Separator />
                 <div>
@@ -329,7 +329,7 @@ export function NewsSleuth() {
                 <Separator />
                 <div>
                   <h3 className="font-semibold text-lg mb-2">Analyst Reasoning</h3>
-                  <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/80">{result.credibilityReport.reasoning}</p>
+                  <p className="whitespace-pre-wrap break-words text-sm leading-relaxed text-foreground/80">{result.credibilityReport.reasoning}</p>
                 </div>
                 <Separator />
                 <div>
@@ -360,5 +360,7 @@ export function NewsSleuth() {
     </div>
   );
 }
+
+    
 
     
