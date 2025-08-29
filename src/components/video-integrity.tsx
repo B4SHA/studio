@@ -19,11 +19,11 @@ import { Separator } from "./ui/separator";
 
 const formSchema = z.object({
   videoFile: z
-    .custom<FileList>()
-    .refine((files) => files?.length === 1, "Video file is required.")
-    .refine((files) => !!files?.[0], "Video file is required.")
-    .refine((files) => files?.[0]?.type.startsWith("video/"), "Please upload a valid video file.")
-    .refine((files) => files?.[0]?.size <= 50 * 1024 * 1024, "File size should be less than 50MB."),
+    .any()
+    .transform((val) => (val instanceof FileList ? val : null))
+    .refine((files) => files && files.length > 0, 'Video file is required.')
+    .refine((files) => files?.[0]?.type.startsWith('video/'), 'Please upload a valid video file.')
+    .refine((files) => files?.[0]?.size <= 50 * 1024 * 1024, 'File size should be less than 50MB.'),
 });
 
 function AnalysisItem({ label, value }: { label: string; value: boolean }) {
@@ -109,6 +109,7 @@ export function VideoIntegrity() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <Input
+                          id="videoFile"
                           type="file"
                           accept="video/*"
                           className="file:text-foreground h-12 text-base"
