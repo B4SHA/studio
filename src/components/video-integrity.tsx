@@ -190,7 +190,7 @@ export function VideoIntegrity() {
                                     
                                         <div>
                                         <h3 className="font-semibold text-lg mb-2">Analysis Summary</h3>
-                                        <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-wrap break-all">
+                                        <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-wrap break-words">
                                             {result.analysis.summary}
                                         </p>
                                         </div>

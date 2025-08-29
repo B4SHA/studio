@@ -321,7 +321,7 @@ export function NewsSleuth() {
                             <div className="space-y-6">
                                 <div>
                                     <h3 className="font-semibold text-lg mb-2">Summary</h3>
-                                    <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-wrap break-all">
+                                    <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-wrap break-words">
                                         {result.credibilityReport.summary}
                                     </p>
                                 </div>
@@ -355,7 +355,7 @@ export function NewsSleuth() {
                                 <Separator />
                                 <div>
                                     <h3 className="font-semibold text-lg mb-2">Analyst Reasoning</h3>
-                                    <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-wrap break-all">
+                                    <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-wrap break-words">
                                         {result.credibilityReport.reasoning}
                                     </p>
                                 </div>
@@ -370,7 +370,7 @@ export function NewsSleuth() {
                                             href={source}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="text-sm text-primary hover:underline break-all"
+                                            className="text-sm text-primary hover:underline break-words"
                                         >
                                             {source}
                                         </Link>
