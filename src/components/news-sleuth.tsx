@@ -93,17 +93,13 @@ export function NewsSleuth() {
     setIsLoading(true);
     setResult(null);
 
-    let analysisInput: { [key: string]: string } = {};
-    if (values.inputType === 'text' && values.articleText) {
+    let analysisInput: { [key: string]: string | undefined } = {};
+    if (values.inputType === 'text') {
       analysisInput = { articleText: values.articleText };
-    } else if (values.inputType === 'url' && values.articleUrl) {
+    } else if (values.inputType === 'url') {
       analysisInput = { articleUrl: values.articleUrl };
-    } else if (values.inputType === 'headline' && values.articleHeadline) {
+    } else if (values.inputType === 'headline') {
       analysisInput = { articleHeadline: values.articleHeadline };
-    } else {
-      // This should ideally not be reached due to zod validation
-      setIsLoading(false);
-      return;
     }
     
     try {
@@ -163,7 +159,7 @@ export function NewsSleuth() {
           </p>
         </div>
 
-        <div className="w-full flex flex-col gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
           <Card className="w-full shadow-lg border-2 border-border/80 bg-background/80 backdrop-blur-sm">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
@@ -283,7 +279,7 @@ export function NewsSleuth() {
             </Form>
           </Card>
           
-          <Card className="w-full shadow-lg border-2 border-border/80 bg-background/80 backdrop-blur-sm flex flex-col min-h-[500px]">
+          <Card className="w-full shadow-lg border-2 border-border/80 bg-background/80 backdrop-blur-sm flex flex-col min-h-[500px] lg:min-h-[700px]">
             <CardHeader>
               <CardTitle className="text-xl">Credibility Report</CardTitle>
               <CardDescription>
@@ -304,8 +300,8 @@ export function NewsSleuth() {
                 </div>
               )}
               {result && result.credibilityReport && (
-                 <div className="flex-1 flex flex-col min-h-0 p-1">
-                    <div className="space-y-4">
+                 <div className="flex-1 flex flex-col min-h-0">
+                    <div className="px-1 space-y-4">
                         <div className="flex items-center justify-between">
                             <h3 className="font-semibold text-lg">Verdict</h3>
                             <Badge variant={getVerdictBadgeVariant(result.credibilityReport.verdict)} className="px-3 py-1 text-sm">
@@ -325,7 +321,7 @@ export function NewsSleuth() {
                             <div className="space-y-6">
                                 <div>
                                     <h3 className="font-semibold text-lg mb-2">Summary</h3>
-                                    <p className="text-sm leading-relaxed text-foreground/80" style={{ whiteSpace: 'pre-wrap', overflowWrap: 'break-word', wordBreak: 'break-all' }}>
+                                    <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-wrap break-all">
                                         {result.credibilityReport.summary}
                                     </p>
                                 </div>
@@ -359,7 +355,7 @@ export function NewsSleuth() {
                                 <Separator />
                                 <div>
                                     <h3 className="font-semibold text-lg mb-2">Analyst Reasoning</h3>
-                                    <p className="text-sm leading-relaxed text-foreground/80" style={{ whiteSpace: 'pre-wrap', overflowWrap: 'break-word', wordBreak: 'break-all' }}>
+                                    <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-wrap break-all">
                                         {result.credibilityReport.reasoning}
                                     </p>
                                 </div>
@@ -374,8 +370,7 @@ export function NewsSleuth() {
                                             href={source}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="truncate text-sm text-primary hover:underline"
-                                            style={{ overflowWrap: 'break-word', wordBreak: 'break-all' }}
+                                            className="text-sm text-primary hover:underline break-all"
                                         >
                                             {source}
                                         </Link>
