@@ -97,7 +97,7 @@ export function AudioAuthenticator() {
 
   return (
     <div className="grid w-full flex-1 grid-cols-1 gap-8 lg:grid-cols-2">
-      <Card className="shadow-lg h-fit lg:h-full">
+      <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
             <Icons.audio className="h-6 w-6" />
@@ -186,7 +186,7 @@ export function AudioAuthenticator() {
                 <Separator />
                 <div>
                   <h3 className="font-semibold text-lg mb-2">Detailed Report</h3>
-                  <p className="whitespace-pre text-sm leading-relaxed text-foreground/80">{result.report}</p>
+                  <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/80">{result.report}</p>
                 </div>
               </div>
             </ScrollArea>
@@ -196,3 +196,5 @@ export function AudioAuthenticator() {
     </div>
   );
 }
+
+    

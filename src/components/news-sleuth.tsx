@@ -145,7 +145,7 @@ export function NewsSleuth() {
 
   return (
     <div className="grid w-full flex-1 grid-cols-1 gap-8 lg:grid-cols-2">
-      <Card className="shadow-lg h-fit lg:h-full">
+      <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
             <Icons.news className="h-6 w-6" />
@@ -264,7 +264,7 @@ export function NewsSleuth() {
             The results of the news analysis will be displayed here.
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex-1 flex flex-col min-h-0">
+        <CardContent className="flex flex-1 flex-col min-h-0">
           {isLoading && (
             <div className="flex h-full flex-col items-center justify-center gap-4 p-8">
               <Icons.spinner className="h-10 w-10 text-primary" />
@@ -297,7 +297,7 @@ export function NewsSleuth() {
                 <Separator />
                 <div>
                   <h3 className="font-semibold text-lg mb-2">Summary</h3>
-                  <p className="whitespace-pre text-sm leading-relaxed text-foreground/80">{result.credibilityReport.summary}</p>
+                  <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/80">{result.credibilityReport.summary}</p>
                 </div>
                 <Separator />
                 <div>
@@ -329,7 +329,7 @@ export function NewsSleuth() {
                 <Separator />
                 <div>
                   <h3 className="font-semibold text-lg mb-2">Analyst Reasoning</h3>
-                  <p className="whitespace-pre text-sm leading-relaxed text-foreground/80">{result.credibilityReport.reasoning}</p>
+                  <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/80">{result.credibilityReport.reasoning}</p>
                 </div>
                 <Separator />
                 <div>
@@ -360,3 +360,5 @@ export function NewsSleuth() {
     </div>
   );
 }
+
+    
