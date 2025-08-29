@@ -11,14 +11,13 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import {googleAI} from '@genkit-ai/googleai';
 
 const VideoIntegrityInputSchema = z.object({
   videoDataUri: z
     .string()
     .describe(
       "A video, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'"
-    ),
+    )
 });
 
 export type VideoIntegrityInput = z.infer<typeof VideoIntegrityInputSchema>;
@@ -45,14 +44,15 @@ const prompt = ai.definePrompt({
   name: 'videoIntegrityPrompt',
   input: {schema: VideoIntegrityInputSchema},
   output: {schema: VideoIntegrityOutputSchema},
-  model: googleAI('gemini-1.5-pro-latest'),
-  prompt: `You are an expert in detecting AI-generated and manipulated videos. Your task is to analyze the provided video and determine if it shows any signs of being a deepfake, mislabeled, manipulated, satire/parody, contains a synthetic voice, or is fully AI-generated.
+  prompt: `You are an expert in detecting AI-generated and manipulated videos.
+
+You will analyze the video and determine if it is a deepfake, mislabeled, manipulated, satire/parody, contains a synthetic voice, or is fully AI-generated.
 
 Analyze the following video:
 {{media url=videoDataUri}}
 
-Provide a confidence score for your analysis. The confidence score should reflect how certain you are about your overall analysis. A high score (e.g., 95) means you are very sure of your findings, regardless of whether the video is real or fake.
-Finally, write a concise summary explaining your findings.
+Provide a confidence score for your analysis. The confidence score should reflect how certain you are about your overall analysis. A high score (e.g., 95) means you are very sure of your findings, whether the video is real or fake.
+Write a short summary of your analysis.
 `,
 });
 
@@ -63,56 +63,38 @@ const videoIntegrityFlow = ai.defineFlow(
     outputSchema: VideoIntegrityOutputSchema,
   },
   async input => {
-    // 1. Definitive input validation
-    if (!input || !input.videoDataUri) {
-      return {
-        analysis: {
-          deepfake: false,
-          mislabeling: false,
-          videoManipulation: false,
-          satireParody: false,
-          syntheticVoice: false,
-          fullyAiGenerated: false,
-          confidenceScore: 0,
-          summary: 'No video data was provided for analysis. Please select a file and try again.',
-        },
-      };
-    }
-
-    // 2. Comprehensive try/catch for robust error handling
     try {
-      const {output} = await prompt(input);
-      if (!output) {
-        throw new Error('The AI model did not return a valid analysis.');
-      }
-      return output;
-    } catch (e: any) {
-      console.error('Error during video analysis flow:', e);
-
-      // 3. User-friendly error messages for common API issues
-      const errorMessage = e.message || 'Unknown error';
-      let userFriendlyMessage = `An unexpected error occurred during analysis: ${errorMessage}. This could be due to a temporary issue with the AI service or a problem with the video file. Please try again later.`;
-
-      if (typeof errorMessage === 'string') {
-        if (errorMessage.includes('503') || errorMessage.includes('Service Unavailable') || errorMessage.includes('overloaded')) {
-          userFriendlyMessage = 'The analysis service is currently under heavy load or unavailable. This is a temporary issue. Please try again in a few moments.';
-        } else if (errorMessage.includes('API key not valid')) {
-            userFriendlyMessage = "The server is not configured correctly. Please contact support."
+        if (!input.videoDataUri) {
+             return {
+                analysis: {
+                    deepfake: false,
+                    mislabeling: false,
+                    videoManipulation: false,
+                    satireParody: false,
+                    syntheticVoice: false,
+                    fullyAiGenerated: false,
+                    confidenceScore: 0,
+                    summary: "No video data was provided for analysis.",
+                }
+            };
         }
-      }
 
-      return {
-        analysis: {
-          deepfake: false,
-          mislabeling: false,
-          videoManipulation: false,
-          satireParody: false,
-          syntheticVoice: false,
-          fullyAiGenerated: false,
-          confidenceScore: 0,
-          summary: userFriendlyMessage,
-        },
-      };
+        const {output} = await prompt({ videoDataUri: input.videoDataUri });
+        return output!;
+    } catch (e: any) {
+        console.error('Error during video analysis:', e);
+        return {
+            analysis: {
+                deepfake: false,
+                mislabeling: false,
+                videoManipulation: false,
+                satireParody: false,
+                syntheticVoice: false,
+                fullyAiGenerated: false,
+                confidenceScore: 0,
+                summary: `An error occurred during analysis: ${e.message || 'Unknown error'}. This may be due to a temporary issue with the AI service. Please try again later.`,
+            }
+        };
     }
   }
 );
