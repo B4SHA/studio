@@ -17,7 +17,7 @@ import { Progress } from "@/components/ui/progress";
 
 const formSchema = z.object({
   videoFile: z
-    .custom<FileList>()
+    .instanceof(FileList)
     .refine((files) => files?.length === 1, "Video file is required.")
     .refine((files) => files?.[0]?.type.startsWith("video/"), "Please upload a valid video file.")
     .refine((files) => files?.[0]?.size <= 50 * 1024 * 1024, "File size should be less than 50MB."),
@@ -60,6 +60,8 @@ export function VideoIntegrity() {
       return () => {
         URL.revokeObjectURL(objectUrl);
       };
+    } else {
+        setVideoPreview(null);
     }
   }, [videoFile]);
 
