@@ -86,7 +86,7 @@ export function VideoIntegrity() {
   }
 
   return (
-    <div className="w-full max-w-5xl flex flex-col gap-8">
+    <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
@@ -135,14 +135,14 @@ export function VideoIntegrity() {
         </Form>
       </Card>
 
-      <Card className="flex flex-col shadow-lg">
+      <Card className="shadow-lg flex flex-col h-full">
         <CardHeader>
           <CardTitle className="text-xl">Analysis Report</CardTitle>
           <CardDescription>
             The results of the video integrity analysis will appear here.
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-1 flex-col min-h-0">
+        <CardContent className="flex-1 flex flex-col min-h-0">
             {isLoading && (
               <div className="flex h-full flex-col items-center justify-center gap-4 p-8">
                 <Icons.spinner className="h-10 w-10 text-primary" />
@@ -156,8 +156,8 @@ export function VideoIntegrity() {
               </div>
             )}
             {result && result.analysis && (
-              <div className="flex flex-1 flex-col min-h-0">
-                 <ScrollArea className="h-full">
+              <div className="flex-1 flex flex-col min-h-0">
+                <ScrollArea className="h-full overflow-x-auto">
                   <div className="space-y-4 p-6">
                     {result.analysis.confidenceScore > 0 && (
                       <>
@@ -182,7 +182,7 @@ export function VideoIntegrity() {
 
                     <div>
                       <h3 className="font-semibold text-lg mb-2">Analysis Summary</h3>
-                      <p className="whitespace-pre-wrap break-all text-sm leading-relaxed text-foreground/80">{result.analysis.summary}</p>
+                      <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/80">{result.analysis.summary}</p>
                     </div>
                   </div>
                 </ScrollArea>
@@ -193,5 +193,3 @@ export function VideoIntegrity() {
     </div>
   );
 }
-
-    

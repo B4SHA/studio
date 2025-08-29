@@ -142,9 +142,8 @@ export function NewsSleuth() {
     }
   };
 
-
   return (
-    <div className="w-full max-w-5xl flex flex-col gap-8">
+    <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
@@ -257,14 +256,14 @@ export function NewsSleuth() {
         </Form>
       </Card>
       
-      <Card className="flex flex-col shadow-lg">
+      <Card className="shadow-lg flex flex-col h-full">
         <CardHeader>
           <CardTitle className="text-xl">Credibility Report</CardTitle>
           <CardDescription>
             The results of the news analysis will be displayed here.
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-1 flex-col min-h-0">
+        <CardContent className="flex-1 flex flex-col min-h-0">
           {isLoading && (
             <div className="flex h-full flex-col items-center justify-center gap-4 p-8">
               <Icons.spinner className="h-10 w-10 text-primary" />
@@ -280,26 +279,26 @@ export function NewsSleuth() {
           {result && result.credibilityReport && (
             <div className="flex flex-1 flex-col min-h-0">
               <div className="space-y-4 px-6 pt-0">
-                  <div className="flex items-center justify-between">
-                      <h3 className="font-semibold text-lg">Verdict</h3>
-                      <Badge variant={getVerdictBadgeVariant(result.credibilityReport.verdict)} className="px-3 py-1 text-sm">
-                        {getVerdictIcon(result.credibilityReport.verdict)}
-                        {result.credibilityReport.verdict}
-                      </Badge>
-                    </div>
-                  <div className="flex items-center justify-between">
-                      <h3 className="font-semibold text-lg">Credibility Score</h3>
-                      <span className="font-bold text-2xl text-primary">{result.credibilityReport.overallScore}/100</span>
-                  </div>
-                  <Progress value={result.credibilityReport.overallScore} indicatorClassName={getProgressIndicatorClassName(result.credibilityReport.overallScore)} />
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-lg">Verdict</h3>
+                  <Badge variant={getVerdictBadgeVariant(result.credibilityReport.verdict)} className="px-3 py-1 text-sm">
+                    {getVerdictIcon(result.credibilityReport.verdict)}
+                    {result.credibilityReport.verdict}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-lg">Credibility Score</h3>
+                  <span className="font-bold text-2xl text-primary">{result.credibilityReport.overallScore}/100</span>
+                </div>
+                <Progress value={result.credibilityReport.overallScore} indicatorClassName={getProgressIndicatorClassName(result.credibilityReport.overallScore)} />
               </div>
               <Separator className="my-4" />
               <div className="flex-1 min-h-0 px-6 pb-6 pt-0">
-                <ScrollArea className="h-full">
+                <ScrollArea className="h-full overflow-x-auto">
                   <div className="space-y-6">
                     <div>
                       <h3 className="font-semibold text-lg mb-2">Summary</h3>
-                      <p className="whitespace-pre-wrap break-all text-sm leading-relaxed text-foreground/80">{result.credibilityReport.summary}</p>
+                      <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/80">{result.credibilityReport.summary}</p>
                     </div>
                     <Separator />
                     <div>
@@ -320,7 +319,7 @@ export function NewsSleuth() {
                           result.credibilityReport.flaggedContent.map((flag, i) => (
                             <div key={i} className="flex items-start gap-2 text-sm text-destructive">
                               <Icons.alert className="h-4 w-4 mt-0.5 shrink-0" />
-                              <p className="break-all">{flag}</p>
+                              <p>{flag}</p>
                             </div>
                           ))
                         ) : (
@@ -331,7 +330,7 @@ export function NewsSleuth() {
                     <Separator />
                     <div>
                       <h3 className="font-semibold text-lg mb-2">Analyst Reasoning</h3>
-                      <p className="whitespace-pre-wrap break-all text-sm leading-relaxed text-foreground/80">{result.credibilityReport.reasoning}</p>
+                      <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/80">{result.credibilityReport.reasoning}</p>
                     </div>
                     <Separator />
                     <div>
@@ -364,5 +363,3 @@ export function NewsSleuth() {
     </div>
   );
 }
-
-    
