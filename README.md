@@ -71,21 +71,35 @@ To run this project locally, you will need Node.js and npm installed.
 
 ### 1. Set Up Environment Variables
 
-The project uses Google's Generative AI models. You will need to obtain an API key from [Google AI Studio](https://aistudio.google.com/) and add it to a `.env` file in the root of the project.
+Create a file named `.env` in the project's root directory. You will need to get a Gemini API key.
 
-Create a file named `.env` and add the following line:
+- Go to [Google AI Studio](https://aistudio.google.com/) to create your API key.
+- Add the key to your `.env` file:
 ```
 GEMINI_API_KEY=YOUR_API_KEY_HERE
 ```
 
-### 2. Install Dependencies
+### 2. Enable the AI Service in Google Cloud
+
+**THIS STEP IS CRUCIAL.** To avoid `403 Forbidden` errors, you must enable the necessary AI services in the Google Cloud project associated with your API key.
+
+1.  **Find your Project ID:** When you create an API key, it is associated with a Google Cloud project. You can find your project ID in the [Google Cloud Console](https://console.cloud.google.com/).
+2.  **Enable the API:**
+    - Go to the **APIs & Services Dashboard** for your project.
+    - Click **"+ ENABLE APIS AND SERVICES"**.
+    - Search for **"Vertex AI API"** and **enable it**. This is the recommended API for most use cases.
+    - In some cases, you may also need to enable the **"Generative Language API"**.
+
+It may take a few minutes for the services to become active after you enable them.
+
+### 3. Install Dependencies
 
 Install the required npm packages:
 ```bash
 npm install
 ```
 
-### 3. Run the Development Server
+### 4. Run the Development Server
 
 Start the Next.js development server and the Genkit development server in parallel.
 
