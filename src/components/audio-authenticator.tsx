@@ -96,8 +96,8 @@ export function AudioAuthenticator() {
 
 
   return (
-    <div className="flex flex-col gap-8 w-full max-w-5xl">
-      <Card className="shadow-lg h-fit">
+    <div className="flex w-full flex-1 flex-col gap-8 lg:grid lg:grid-cols-2">
+      <Card className="h-fit shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
             <Icons.audio className="h-6 w-6" />
@@ -146,52 +146,56 @@ export function AudioAuthenticator() {
         </Form>
       </Card>
       
-      <Card className="shadow-lg flex flex-col">
-        <CardHeader>
-          <CardTitle className="text-xl">Analysis Report</CardTitle>
-          <CardDescription>
-            The results of the audio analysis will be displayed here.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex-1 flex flex-col min-h-0 max-h-[60vh]">
-          {isLoading && (
-            <div className="flex flex-col items-center justify-center gap-4 p-8 h-full">
-              <Icons.spinner className="h-10 w-10 text-primary" />
-              <p className="text-muted-foreground text-center">Analyzing audio... <br /> This may take a moment.</p>
-            </div>
-          )}
-          {!isLoading && !result && (
-            <div className="text-center p-8 text-muted-foreground h-full flex flex-col justify-center items-center">
-              <Icons.barChart className="h-10 w-10 mx-auto mb-4" />
-              <p>Your report is pending analysis.</p>
-            </div>
-          )}
-          {result && (
-            <ScrollArea className="h-full">
-              <div className="space-y-6 p-1">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-semibold text-lg">Verdict</h3>
-                    <Badge variant={getVerdictBadgeVariant(result.verdict)} className="text-sm px-3 py-1">
-                      {getVerdictIcon(result.verdict)}
-                      {result.verdict}
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                      <h3 className="font-semibold text-lg">Confidence Score</h3>
-                      <span className="font-bold text-2xl text-primary">{result.confidenceScore}/100</span>
-                  </div>
-                  <Progress value={result.confidenceScore} indicatorClassName={getProgressIndicatorClassName(result.confidenceScore)} />
-                </div>
-                <Separator />
-                <div>
-                  <h3 className="font-semibold text-lg mb-2">Detailed Report</h3>
-                  <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre">{result.report}</p>
-                </div>
+      <Card className="flex flex-col shadow-lg">
+         <div>
+          <CardHeader>
+            <CardTitle className="text-xl">Analysis Report</CardTitle>
+            <CardDescription>
+              The results of the audio analysis will be displayed here.
+            </CardDescription>
+          </CardHeader>
+        </div>
+        <div className="flex flex-1 flex-col min-h-0">
+          <CardContent className="flex-1">
+            {isLoading && (
+              <div className="flex h-full flex-col items-center justify-center gap-4 p-8">
+                <Icons.spinner className="h-10 w-10 text-primary" />
+                <p className="text-center text-muted-foreground">Analyzing audio... <br /> This may take a moment.</p>
               </div>
-            </ScrollArea>
-          )}
-        </CardContent>
+            )}
+            {!isLoading && !result && (
+              <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground">
+                <Icons.barChart className="mx-auto mb-4 h-10 w-10" />
+                <p>Your report is pending analysis.</p>
+              </div>
+            )}
+            {result && (
+              <ScrollArea className="h-full">
+                <div className="space-y-6 p-1">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-lg">Verdict</h3>
+                      <Badge variant={getVerdictBadgeVariant(result.verdict)} className="px-3 py-1 text-sm">
+                        {getVerdictIcon(result.verdict)}
+                        {result.verdict}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                        <h3 className="font-semibold text-lg">Confidence Score</h3>
+                        <span className="font-bold text-2xl text-primary">{result.confidenceScore}/100</span>
+                    </div>
+                    <Progress value={result.confidenceScore} indicatorClassName={getProgressIndicatorClassName(result.confidenceScore)} />
+                  </div>
+                  <Separator />
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2">Detailed Report</h3>
+                    <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/80">{result.report}</p>
+                  </div>
+                </div>
+              </ScrollArea>
+            )}
+          </CardContent>
+        </div>
       </Card>
     </div>
   );

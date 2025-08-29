@@ -86,8 +86,8 @@ export function VideoIntegrity() {
   }
 
   return (
-    <div className="flex flex-col gap-8 w-full max-w-5xl">
-      <Card className="shadow-lg h-fit">
+    <div className="flex w-full flex-1 flex-col gap-8 lg:grid lg:grid-cols-2">
+      <Card className="h-fit shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
             <Icons.video className="h-6 w-6" />
@@ -120,8 +120,8 @@ export function VideoIntegrity() {
               />
 
               {videoPreview && (
-                <div className="mt-4 rounded-lg overflow-hidden border">
-                   <video controls src={videoPreview} className="w-full aspect-video" />
+                <div className="mt-4 overflow-hidden rounded-lg border">
+                   <video controls src={videoPreview} className="aspect-video w-full" />
                 </div>
               )}
             </CardContent>
@@ -135,58 +135,62 @@ export function VideoIntegrity() {
         </Form>
       </Card>
 
-      <Card className="shadow-lg flex flex-col">
-        <CardHeader>
-          <CardTitle className="text-xl">Analysis Report</CardTitle>
-          <CardDescription>
-            The results of the video integrity analysis will appear here.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex-1 flex flex-col min-h-0 max-h-[60vh]">
-          {isLoading && (
-            <div className="flex flex-col items-center justify-center gap-4 p-8 h-full">
-              <Icons.spinner className="h-10 w-10 text-primary" />
-              <p className="text-muted-foreground text-center">Analyzing video... <br/>This can take some time, especially for longer videos.</p>
-            </div>
-          )}
-          {!isLoading && !result && (
-            <div className="text-center p-8 text-muted-foreground h-full flex flex-col justify-center items-center">
-              <Icons.barChart className="h-10 w-10 mx-auto mb-4" />
-              <p>Your report is pending analysis.</p>
-            </div>
-          )}
-          {result && result.analysis && (
-            <ScrollArea className="h-full">
-              <div className="space-y-4 p-1">
-                {result.analysis.confidenceScore > 0 && (
-                  <>
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                          <h3 className="font-semibold text-lg">Analysis Confidence</h3>
-                          <span className="font-bold text-2xl text-primary">{result.analysis.confidenceScore.toFixed(0)}%</span>
-                      </div>
-                      <Progress value={result.analysis.confidenceScore} indicatorClassName="bg-primary" />
-                    </div>
-                    
-                    <div className="divide-y rounded-md border">
-                      <AnalysisItem label="Deepfake" value={result.analysis.deepfake} />
-                      <AnalysisItem label="Video Manipulation" value={result.analysis.videoManipulation} />
-                      <AnalysisItem label="Synthetic Voice" value={result.analysis.syntheticVoice} />
-                      <AnalysisItem label="Fully AI-Generated" value={result.analysis.fullyAiGenerated} />
-                      <AnalysisItem label="Satire or Parody" value={result.analysis.satireParody} />
-                      <AnalysisItem label="Mislabeling" value={result.analysis.mislabeling} />
-                    </div>
-                  </>
-                )}
-
-                <div>
-                  <h3 className="font-semibold text-lg mb-2">Analysis Summary</h3>
-                  <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre">{result.analysis.summary}</p>
-                </div>
+      <Card className="flex flex-col shadow-lg">
+        <div>
+          <CardHeader>
+            <CardTitle className="text-xl">Analysis Report</CardTitle>
+            <CardDescription>
+              The results of the video integrity analysis will appear here.
+            </CardDescription>
+          </CardHeader>
+        </div>
+        <div className="flex flex-1 flex-col min-h-0">
+          <CardContent className="flex-1">
+            {isLoading && (
+              <div className="flex h-full flex-col items-center justify-center gap-4 p-8">
+                <Icons.spinner className="h-10 w-10 text-primary" />
+                <p className="text-center text-muted-foreground">Analyzing video... <br/>This can take some time, especially for longer videos.</p>
               </div>
-            </ScrollArea>
-          )}
-        </CardContent>
+            )}
+            {!isLoading && !result && (
+              <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground">
+                <Icons.barChart className="mx-auto mb-4 h-10 w-10" />
+                <p>Your report is pending analysis.</p>
+              </div>
+            )}
+            {result && result.analysis && (
+              <ScrollArea className="h-full">
+                <div className="space-y-4 p-1">
+                  {result.analysis.confidenceScore > 0 && (
+                    <>
+                      <div>
+                        <div className="mb-2 flex items-center justify-between">
+                            <h3 className="font-semibold text-lg">Analysis Confidence</h3>
+                            <span className="font-bold text-2xl text-primary">{result.analysis.confidenceScore.toFixed(0)}%</span>
+                        </div>
+                        <Progress value={result.analysis.confidenceScore} indicatorClassName="bg-primary" />
+                      </div>
+                      
+                      <div className="divide-y rounded-md border">
+                        <AnalysisItem label="Deepfake" value={result.analysis.deepfake} />
+                        <AnalysisItem label="Video Manipulation" value={result.analysis.videoManipulation} />
+                        <AnalysisItem label="Synthetic Voice" value={result.analysis.syntheticVoice} />
+                        <AnalysisItem label="Fully AI-Generated" value={result.analysis.fullyAiGenerated} />
+                        <AnalysisItem label="Satire or Parody" value={result.analysis.satireParody} />
+                        <AnalysisItem label="Mislabeling" value={result.analysis.mislabeling} />
+                      </div>
+                    </>
+                  )}
+
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2">Analysis Summary</h3>
+                    <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/80">{result.analysis.summary}</p>
+                  </div>
+                </div>
+              </ScrollArea>
+            )}
+          </CardContent>
+        </div>
       </Card>
     </div>
   );
