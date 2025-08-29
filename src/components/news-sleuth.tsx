@@ -144,7 +144,7 @@ export function NewsSleuth() {
 
 
   return (
-    <div className="grid w-full flex-1 grid-cols-1 gap-8 lg:grid-cols-2">
+    <div className="w-full max-w-5xl flex flex-col gap-8">
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
@@ -279,7 +279,7 @@ export function NewsSleuth() {
           )}
           {result && result.credibilityReport && (
             <div className="flex flex-1 flex-col min-h-0">
-              <div className="space-y-4 px-1 pt-1">
+              <div className="space-y-4 px-6 pt-0">
                   <div className="flex items-center justify-between">
                       <h3 className="font-semibold text-lg">Verdict</h3>
                       <Badge variant={getVerdictBadgeVariant(result.credibilityReport.verdict)} className="px-3 py-1 text-sm">
@@ -294,7 +294,7 @@ export function NewsSleuth() {
                   <Progress value={result.credibilityReport.overallScore} indicatorClassName={getProgressIndicatorClassName(result.credibilityReport.overallScore)} />
               </div>
               <Separator className="my-4" />
-              <div className="flex-1 min-h-0">
+              <div className="flex-1 min-h-0 px-6 pb-6 pt-0">
                 <ScrollArea className="h-full">
                   <div className="space-y-6">
                     <div>
@@ -364,3 +364,5 @@ export function NewsSleuth() {
     </div>
   );
 }
+
+    
