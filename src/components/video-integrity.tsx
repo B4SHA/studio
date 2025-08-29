@@ -86,7 +86,7 @@ export function VideoIntegrity() {
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+    <div className="w-full mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
@@ -157,35 +157,39 @@ export function VideoIntegrity() {
             )}
             {result && result.analysis && (
               <div className="flex-1 flex flex-col min-h-0">
-                  <ScrollArea className="h-full overflow-x-auto">
-                    <div className="space-y-4">
-                      {result.analysis.confidenceScore > 0 && (
-                        <>
-                          <div>
-                            <div className="mb-2 flex items-center justify-between">
-                                <h3 className="font-semibold text-lg">Analysis Confidence</h3>
-                                <span className="font-bold text-2xl text-primary">{result.analysis.confidenceScore.toFixed(0)}%</span>
+                  <div className="flex-1 min-h-0">
+                    <ScrollArea className="h-full">
+                      <div className="space-y-4">
+                        {result.analysis.confidenceScore > 0 && (
+                          <>
+                            <div>
+                              <div className="mb-2 flex items-center justify-between">
+                                  <h3 className="font-semibold text-lg">Analysis Confidence</h3>
+                                  <span className="font-bold text-2xl text-primary">{result.analysis.confidenceScore.toFixed(0)}%</span>
+                              </div>
+                              <Progress value={result.analysis.confidenceScore} indicatorClassName="bg-primary" />
                             </div>
-                            <Progress value={result.analysis.confidenceScore} indicatorClassName="bg-primary" />
-                          </div>
-                          
-                          <div className="divide-y rounded-md border">
-                            <AnalysisItem label="Deepfake" value={result.analysis.deepfake} />
-                            <AnalysisItem label="Video Manipulation" value={result.analysis.videoManipulation} />
-                            <AnalysisItem label="Synthetic Voice" value={result.analysis.syntheticVoice} />
-                            <AnalysisItem label="Fully AI-Generated" value={result.analysis.fullyAiGenerated} />
-                            <AnalysisItem label="Satire or Parody" value={result.analysis.satireParody} />
-                            <AnalysisItem label="Mislabeling" value={result.analysis.mislabeling} />
-                          </div>
-                        </>
-                      )}
+                            
+                            <div className="divide-y rounded-md border">
+                              <AnalysisItem label="Deepfake" value={result.analysis.deepfake} />
+                              <AnalysisItem label="Video Manipulation" value={result.analysis.videoManipulation} />
+                              <AnalysisItem label="Synthetic Voice" value={result.analysis.syntheticVoice} />
+                              <AnalysisItem label="Fully AI-Generated" value={result.analysis.fullyAiGenerated} />
+                              <AnalysisItem label="Satire or Parody" value={result.analysis.satireParody} />
+                              <AnalysisItem label="Mislabeling" value={result.analysis.mislabeling} />
+                            </div>
+                          </>
+                        )}
 
-                      <div>
-                        <h3 className="font-semibold text-lg mb-2">Analysis Summary</h3>
-                        <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/80">{result.analysis.summary}</p>
+                        <div>
+                          <h3 className="font-semibold text-lg mb-2">Analysis Summary</h3>
+                          <p className="text-sm leading-relaxed text-foreground/80 overflow-hidden" style={{ overflowWrap: 'break-word', whiteSpace: 'pre-wrap' }}>
+                            {result.analysis.summary}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </ScrollArea>
+                    </ScrollArea>
+                  </div>
               </div>
             )}
         </CardContent>

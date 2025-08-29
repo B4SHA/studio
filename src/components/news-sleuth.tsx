@@ -143,7 +143,7 @@ export function NewsSleuth() {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+    <div className="w-full mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
@@ -294,11 +294,13 @@ export function NewsSleuth() {
                 </div>
                 <Separator className="my-4" />
                 <div className="flex-1 min-h-0">
-                  <ScrollArea className="h-full overflow-x-auto">
+                  <ScrollArea className="h-full">
                     <div className="space-y-6">
                       <div>
                         <h3 className="font-semibold text-lg mb-2">Summary</h3>
-                        <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/80">{result.credibilityReport.summary}</p>
+                        <p className="text-sm leading-relaxed text-foreground/80 overflow-hidden" style={{ overflowWrap: 'break-word', whiteSpace: 'pre-wrap' }}>
+                          {result.credibilityReport.summary}
+                        </p>
                       </div>
                       <Separator />
                       <div>
@@ -330,7 +332,9 @@ export function NewsSleuth() {
                       <Separator />
                       <div>
                         <h3 className="font-semibold text-lg mb-2">Analyst Reasoning</h3>
-                        <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/80">{result.credibilityReport.reasoning}</p>
+                         <p className="text-sm leading-relaxed text-foreground/80 overflow-hidden" style={{ overflowWrap: 'break-word', whiteSpace: 'pre-wrap' }}>
+                          {result.credibilityReport.reasoning}
+                        </p>
                       </div>
                       <Separator />
                       <div>

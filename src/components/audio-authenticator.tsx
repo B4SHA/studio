@@ -96,7 +96,7 @@ export function AudioAuthenticator() {
 
 
   return (
-    <div className="w-full max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+    <div className="w-full mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl">
@@ -168,29 +168,33 @@ export function AudioAuthenticator() {
           )}
           {result && (
             <div className="flex-1 flex flex-col min-h-0">
-              <ScrollArea className="h-full overflow-x-auto">
-                <div className="space-y-6">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-semibold text-lg">Verdict</h3>
-                      <Badge variant={getVerdictBadgeVariant(result.verdict)} className="px-3 py-1 text-sm">
-                        {getVerdictIcon(result.verdict)}
-                        {result.verdict}
-                      </Badge>
+              <div className="flex-1 min-h-0">
+                <ScrollArea className="h-full">
+                  <div className="space-y-6">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-semibold text-lg">Verdict</h3>
+                        <Badge variant={getVerdictBadgeVariant(result.verdict)} className="px-3 py-1 text-sm">
+                          {getVerdictIcon(result.verdict)}
+                          {result.verdict}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                          <h3 className="font-semibold text-lg">Confidence Score</h3>
+                          <span className="font-bold text-2xl text-primary">{result.confidenceScore}/100</span>
+                      </div>
+                      <Progress value={result.confidenceScore} indicatorClassName={getProgressIndicatorClassName(result.confidenceScore)} />
                     </div>
-                    <div className="flex items-center justify-between">
-                        <h3 className="font-semibold text-lg">Confidence Score</h3>
-                        <span className="font-bold text-2xl text-primary">{result.confidenceScore}/100</span>
+                    <Separator />
+                    <div>
+                      <h3 className="font-semibold text-lg mb-2">Detailed Report</h3>
+                      <p className="text-sm leading-relaxed text-foreground/80 overflow-hidden" style={{ overflowWrap: 'break-word', whiteSpace: 'pre-wrap' }}>
+                        {result.report}
+                      </p>
                     </div>
-                    <Progress value={result.confidenceScore} indicatorClassName={getProgressIndicatorClassName(result.confidenceScore)} />
                   </div>
-                  <Separator />
-                  <div>
-                    <h3 className="font-semibold text-lg mb-2">Detailed Report</h3>
-                    <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/80">{result.report}</p>
-                  </div>
-                </div>
-              </ScrollArea>
+                </ScrollArea>
+              </div>
             </div>
           )}
         </CardContent>
