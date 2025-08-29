@@ -76,16 +76,14 @@ export function NewsSleuth() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<NewsSleuthOutput | null>(null);
   const { toast } = useToast();
-  
-  // State for each input field
-  const [articleText, setArticleText] = useState("");
-  const [articleUrl, setArticleUrl] = useState("");
-  const [articleHeadline, setArticleHeadline] = useState("");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       inputType: "text",
+      articleText: "",
+      articleUrl: "",
+      articleHeadline: "",
     },
   });
 
@@ -94,38 +92,16 @@ export function NewsSleuth() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     setResult(null);
-    
-    // Clear previous validation errors
-    form.clearErrors();
 
-    // Manually trigger validation for the current active input
-    let isValid = true;
-    let analysisInput = {};
-
-    if (values.inputType === 'text') {
-      analysisInput = { articleText: articleText };
-      const textResult = formSchema.safeParse({ ...values, articleText: articleText, articleUrl: '', articleHeadline: '' });
-      if (!textResult.success) {
-        textResult.error.issues.forEach(issue => form.setError(issue.path[0] as any, { message: issue.message }));
-        isValid = false;
-      }
-    } else if (values.inputType === 'url') {
-      analysisInput = { articleUrl: articleUrl };
-      const urlResult = formSchema.safeParse({ ...values, articleUrl: articleUrl, articleText: '', articleHeadline: '' });
-      if (!urlResult.success) {
-        urlResult.error.issues.forEach(issue => form.setError(issue.path[0] as any, { message: issue.message }));
-        isValid = false;
-      }
-    } else if (values.inputType === 'headline') {
-      analysisInput = { articleHeadline: articleHeadline };
-      const headlineResult = formSchema.safeParse({ ...values, articleHeadline: articleHeadline, articleText: '', articleUrl: '' });
-       if (!headlineResult.success) {
-        headlineResult.error.issues.forEach(issue => form.setError(issue.path[0] as any, { message: issue.message }));
-        isValid = false;
-      }
-    }
-
-    if (!isValid) {
+    let analysisInput: { [key: string]: string } = {};
+    if (values.inputType === 'text' && values.articleText) {
+      analysisInput = { articleText: values.articleText };
+    } else if (values.inputType === 'url' && values.articleUrl) {
+      analysisInput = { articleUrl: values.articleUrl };
+    } else if (values.inputType === 'headline' && values.articleHeadline) {
+      analysisInput = { articleHeadline: values.articleHeadline };
+    } else {
+      // This should ideally not be reached due to zod validation
       setIsLoading(false);
       return;
     }
@@ -176,8 +152,8 @@ export function NewsSleuth() {
   };
 
   return (
-    <div className="w-full flex justify-center py-8 px-4 bg-background">
-      <div className="w-full max-w-5xl flex flex-col items-center gap-8">
+    <div className="w-full flex-1 bg-gradient-to-br from-background to-muted/40 py-8 px-4">
+      <div className="container mx-auto flex flex-col items-center gap-8 max-w-5xl">
         <div className="text-center w-full">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tighter text-foreground mb-2">
             News Sleuth
@@ -187,7 +163,7 @@ export function NewsSleuth() {
           </p>
         </div>
 
-        <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="w-full flex flex-col gap-8">
           <Card className="w-full shadow-lg border-2 border-border/80 bg-background/80 backdrop-blur-sm">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
@@ -210,7 +186,7 @@ export function NewsSleuth() {
                           <RadioGroup
                             onValueChange={(value) => {
                                 field.onChange(value);
-                                form.clearErrors();
+                                form.clearErrors(['articleText', 'articleUrl', 'articleHeadline']);
                             }}
                             defaultValue={field.value}
                             className="grid grid-cols-1 sm:grid-cols-3 gap-4"
@@ -243,15 +219,14 @@ export function NewsSleuth() {
                     <FormField
                       control={form.control}
                       name="articleText"
-                      render={() => (
+                      render={({ field }) => (
                         <FormItem>
                           <FormLabel>Article Text</FormLabel>
                           <FormControl>
                             <Textarea
                               placeholder="Paste the full text of the news article here..."
                               className="min-h-[250px] resize-y"
-                              value={articleText}
-                              onChange={(e) => setArticleText(e.target.value)}
+                              {...field}
                             />
                           </FormControl>
                           <FormMessage />
@@ -264,14 +239,13 @@ export function NewsSleuth() {
                     <FormField
                       control={form.control}
                       name="articleUrl"
-                      render={() => (
+                      render={({ field }) => (
                         <FormItem>
                           <FormLabel>Article URL</FormLabel>
                           <FormControl>
                             <Input 
                               placeholder="https://example.com/news-article"
-                              value={articleUrl}
-                              onChange={(e) => setArticleUrl(e.target.value)}
+                              {...field}
                             />
                           </FormControl>
                           <FormMessage />
@@ -284,14 +258,13 @@ export function NewsSleuth() {
                     <FormField
                       control={form.control}
                       name="articleHeadline"
-                      render={() => (
+                      render={({ field }) => (
                         <FormItem>
                           <FormLabel>Article Headline</FormLabel>
                           <FormControl>
                             <Input 
                               placeholder="Enter the news article headline"
-                              value={articleHeadline}
-                              onChange={(e) => setArticleHeadline(e.target.value)}
+                              {...field}
                             />
                           </FormControl>
                           <FormMessage />
@@ -310,7 +283,7 @@ export function NewsSleuth() {
             </Form>
           </Card>
           
-          <Card className="w-full shadow-lg border-2 border-border/80 bg-background/80 backdrop-blur-sm flex flex-col min-h-[500px] lg:min-h-[600px]">
+          <Card className="w-full shadow-lg border-2 border-border/80 bg-background/80 backdrop-blur-sm flex flex-col min-h-[500px]">
             <CardHeader>
               <CardTitle className="text-xl">Credibility Report</CardTitle>
               <CardDescription>
@@ -331,8 +304,8 @@ export function NewsSleuth() {
                 </div>
               )}
               {result && result.credibilityReport && (
-                 <div className="flex-1 flex flex-col min-h-0">
-                    <div className="px-1 space-y-4">
+                 <div className="flex-1 flex flex-col min-h-0 p-1">
+                    <div className="space-y-4">
                         <div className="flex items-center justify-between">
                             <h3 className="font-semibold text-lg">Verdict</h3>
                             <Badge variant={getVerdictBadgeVariant(result.credibilityReport.verdict)} className="px-3 py-1 text-sm">
@@ -348,11 +321,11 @@ export function NewsSleuth() {
                     </div>
                     <Separator className="my-4" />
                     <div className="flex-1 min-h-0">
-                        <ScrollArea className="h-full pr-4 -mr-4">
+                        <ScrollArea className="h-full pr-4">
                             <div className="space-y-6">
                                 <div>
                                     <h3 className="font-semibold text-lg mb-2">Summary</h3>
-                                    <p className="text-sm leading-relaxed text-foreground/80" style={{ overflowWrap: 'break-word', whiteSpace: 'pre-wrap' }}>
+                                    <p className="text-sm leading-relaxed text-foreground/80" style={{ whiteSpace: 'pre-wrap', overflowWrap: 'break-word', wordBreak: 'break-all' }}>
                                         {result.credibilityReport.summary}
                                     </p>
                                 </div>
@@ -386,7 +359,7 @@ export function NewsSleuth() {
                                 <Separator />
                                 <div>
                                     <h3 className="font-semibold text-lg mb-2">Analyst Reasoning</h3>
-                                    <p className="text-sm leading-relaxed text-foreground/80" style={{ overflowWrap: 'break-word', whiteSpace: 'pre-wrap' }}>
+                                    <p className="text-sm leading-relaxed text-foreground/80" style={{ whiteSpace: 'pre-wrap', overflowWrap: 'break-word', wordBreak: 'break-all' }}>
                                         {result.credibilityReport.reasoning}
                                     </p>
                                 </div>
