@@ -360,7 +360,3 @@ export function NewsSleuth() {
     </div>
   );
 }
-
-    
-
-    

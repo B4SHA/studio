@@ -153,7 +153,7 @@ export function AudioAuthenticator() {
             The results of the audio analysis will be displayed here.
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex-1 flex flex-col min-h-0">
+        <CardContent className="flex flex-1 flex-col min-h-0">
           {isLoading && (
             <div className="flex h-full flex-col items-center justify-center gap-4 p-8">
               <Icons.spinner className="h-10 w-10 text-primary" />
@@ -196,7 +196,3 @@ export function AudioAuthenticator() {
     </div>
   );
 }
-
-    
-
-    
