@@ -54,7 +54,7 @@ Analyze the following video:
 Provide a confidence score for your analysis. The confidence score should reflect how certain you are about your overall analysis. A high score (e.g., 95) means you are very sure of your findings, whether the video is real or fake.
 Write a short summary of your analysis.
 `,
-  model: 'googleai/gemini-1.5-pro-latest'
+  model: 'googleai/gemini-1.5-flash',
 });
 
 const videoIntegrityFlow = ai.defineFlow(
