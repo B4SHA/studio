@@ -76,14 +76,16 @@ export function NewsSleuth() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<NewsSleuthOutput | null>(null);
   const { toast } = useToast();
+  
+  // State for each input field
+  const [articleText, setArticleText] = useState("");
+  const [articleUrl, setArticleUrl] = useState("");
+  const [articleHeadline, setArticleHeadline] = useState("");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       inputType: "text",
-      articleText: "",
-      articleUrl: "",
-      articleHeadline: "",
     },
   });
 
@@ -92,12 +94,43 @@ export function NewsSleuth() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     setResult(null);
+    
+    // Clear previous validation errors
+    form.clearErrors();
+
+    // Manually trigger validation for the current active input
+    let isValid = true;
+    let analysisInput = {};
+
+    if (values.inputType === 'text') {
+      analysisInput = { articleText: articleText };
+      const textResult = formSchema.safeParse({ ...values, articleText: articleText, articleUrl: '', articleHeadline: '' });
+      if (!textResult.success) {
+        textResult.error.issues.forEach(issue => form.setError(issue.path[0] as any, { message: issue.message }));
+        isValid = false;
+      }
+    } else if (values.inputType === 'url') {
+      analysisInput = { articleUrl: articleUrl };
+      const urlResult = formSchema.safeParse({ ...values, articleUrl: articleUrl, articleText: '', articleHeadline: '' });
+      if (!urlResult.success) {
+        urlResult.error.issues.forEach(issue => form.setError(issue.path[0] as any, { message: issue.message }));
+        isValid = false;
+      }
+    } else if (values.inputType === 'headline') {
+      analysisInput = { articleHeadline: articleHeadline };
+      const headlineResult = formSchema.safeParse({ ...values, articleHeadline: articleHeadline, articleText: '', articleUrl: '' });
+       if (!headlineResult.success) {
+        headlineResult.error.issues.forEach(issue => form.setError(issue.path[0] as any, { message: issue.message }));
+        isValid = false;
+      }
+    }
+
+    if (!isValid) {
+      setIsLoading(false);
+      return;
+    }
+    
     try {
-      const analysisInput =
-        values.inputType === "text" ? { articleText: values.articleText } :
-        values.inputType === "url" ? { articleUrl: values.articleUrl } :
-        { articleHeadline: values.articleHeadline };
-      
       const analysisResult = await newsSleuthAnalysis(analysisInput);
       setResult(analysisResult);
     } catch (error) {
@@ -143,228 +176,251 @@ export function NewsSleuth() {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto flex flex-col items-center gap-8">
-      <Card className="w-full shadow-lg">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-xl">
-            <Icons.news className="h-6 w-6" />
+    <div className="w-full flex justify-center py-8 px-4 bg-background">
+      <div className="w-full max-w-5xl flex flex-col items-center gap-8">
+        <div className="text-center w-full">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tighter text-foreground mb-2">
             News Sleuth
-          </CardTitle>
-          <CardDescription>
+          </h1>
+          <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
             Analyze an article's credibility from its text, URL, or headline to identify biases and flag potential misinformation.
-          </CardDescription>
-        </CardHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <CardContent className="space-y-4">
-              <FormField
-                control={form.control}
-                name="inputType"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel>Analysis Input</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        className="grid grid-cols-3 gap-4"
-                      >
-                        <FormItem className="flex items-center space-x-2 space-y-0">
-                          <FormControl>
-                            <RadioGroupItem value="text" id="text" />
-                          </FormControl>
-                          <FormLabel htmlFor="text" className="font-normal">Article Text</FormLabel>
-                        </FormItem>
-                        <FormItem className="flex items-center space-x-2 space-y-0">
-                          <FormControl>
-                            <RadioGroupItem value="url" id="url" />
-                          </FormControl>
-                          <FormLabel htmlFor="url" className="font-normal">URL</FormLabel>
-                        </FormItem>
-                        <FormItem className="flex items-center space-x-2 space-y-0">
-                          <FormControl>
-                            <RadioGroupItem value="headline" id="headline" />
-                          </FormControl>
-                          <FormLabel htmlFor="headline" className="font-normal">Headline</FormLabel>
-                        </FormItem>
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          </p>
+        </div>
 
-              {inputType === "text" && (
-                <FormField
-                  control={form.control}
-                  name="articleText"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Article Text</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Paste the full text of the news article here..."
-                          className="min-h-[200px] resize-y"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+        <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <Card className="w-full shadow-lg border-2 border-border/80 bg-background/80 backdrop-blur-sm">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-xl">
+                    <Icons.news className="h-6 w-6" />
+                    Analysis Input
+                  </CardTitle>
+                  <CardDescription>
+                    Choose one method to analyze your news source.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6 flex-1">
+                  <FormField
+                    control={form.control}
+                    name="inputType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <RadioGroup
+                            onValueChange={(value) => {
+                                field.onChange(value);
+                                form.clearErrors();
+                            }}
+                            defaultValue={field.value}
+                            className="grid grid-cols-1 sm:grid-cols-3 gap-4"
+                          >
+                            <FormItem className="flex items-center space-x-2 space-y-0">
+                              <FormControl>
+                                <RadioGroupItem value="text" id="text" />
+                              </FormControl>
+                              <FormLabel htmlFor="text" className="font-normal cursor-pointer">Article Text</FormLabel>
+                            </FormItem>
+                            <FormItem className="flex items-center space-x-2 space-y-0">
+                              <FormControl>
+                                <RadioGroupItem value="url" id="url" />
+                              </FormControl>
+                              <FormLabel htmlFor="url" className="font-normal cursor-pointer">URL</FormLabel>
+                            </FormItem>
+                            <FormItem className="flex items-center space-x-2 space-y-0">
+                              <FormControl>
+                                <RadioGroupItem value="headline" id="headline" />
+                              </FormControl>
+                              <FormLabel htmlFor="headline" className="font-normal cursor-pointer">Headline</FormLabel>
+                            </FormItem>
+                          </RadioGroup>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+
+                  {inputType === "text" && (
+                    <FormField
+                      control={form.control}
+                      name="articleText"
+                      render={() => (
+                        <FormItem>
+                          <FormLabel>Article Text</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              placeholder="Paste the full text of the news article here..."
+                              className="min-h-[250px] resize-y"
+                              value={articleText}
+                              onChange={(e) => setArticleText(e.target.value)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   )}
-                />
+
+                  {inputType === "url" && (
+                    <FormField
+                      control={form.control}
+                      name="articleUrl"
+                      render={() => (
+                        <FormItem>
+                          <FormLabel>Article URL</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="https://example.com/news-article"
+                              value={articleUrl}
+                              onChange={(e) => setArticleUrl(e.target.value)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
+                  {inputType === "headline" && (
+                    <FormField
+                      control={form.control}
+                      name="articleHeadline"
+                      render={() => (
+                        <FormItem>
+                          <FormLabel>Article Headline</FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="Enter the news article headline"
+                              value={articleHeadline}
+                              onChange={(e) => setArticleHeadline(e.target.value)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                </CardContent>
+                <CardFooter>
+                  <Button type="submit" disabled={isLoading} className="w-full h-12 text-lg font-semibold">
+                    {isLoading && <Icons.spinner className="mr-2" />}
+                    Analyze Source
+                  </Button>
+                </CardFooter>
+              </form>
+            </Form>
+          </Card>
+          
+          <Card className="w-full shadow-lg border-2 border-border/80 bg-background/80 backdrop-blur-sm flex flex-col min-h-[500px] lg:min-h-[600px]">
+            <CardHeader>
+              <CardTitle className="text-xl">Credibility Report</CardTitle>
+              <CardDescription>
+                The results of the news analysis will be displayed here.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex-1 flex flex-col min-h-0">
+              {isLoading && (
+                <div className="flex-1 flex flex-col items-center justify-center gap-4 p-8">
+                  <Icons.spinner className="h-10 w-10 text-primary" />
+                  <p className="text-center text-muted-foreground">Analyzing article... <br/>This may take a moment.</p>
+                </div>
               )}
-
-              {inputType === "url" && (
-                <FormField
-                  control={form.control}
-                  name="articleUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Article URL</FormLabel>
-                      <FormControl>
-                        <Input placeholder="https://example.com/news-article" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              {!isLoading && !result && (
+                <div className="flex-1 flex flex-col items-center justify-center text-center text-muted-foreground p-8">
+                  <Icons.barChart className="mx-auto mb-4 h-10 w-10" />
+                  <p>Your report is pending analysis.</p>
+                </div>
               )}
-
-              {inputType === "headline" && (
-                <FormField
-                  control={form.control}
-                  name="articleHeadline"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Article Headline</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter the news article headline" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              {result && result.credibilityReport && (
+                 <div className="flex-1 flex flex-col min-h-0">
+                    <div className="px-1 space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h3 className="font-semibold text-lg">Verdict</h3>
+                            <Badge variant={getVerdictBadgeVariant(result.credibilityReport.verdict)} className="px-3 py-1 text-sm">
+                            {getVerdictIcon(result.credibilityReport.verdict)}
+                            {result.credibilityReport.verdict}
+                            </Badge>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <h3 className="font-semibold text-lg">Credibility Score</h3>
+                            <span className="font-bold text-2xl text-primary">{result.credibilityReport.overallScore}/100</span>
+                        </div>
+                        <Progress value={result.credibilityReport.overallScore} indicatorClassName={getProgressIndicatorClassName(result.credibilityReport.overallScore)} />
+                    </div>
+                    <Separator className="my-4" />
+                    <div className="flex-1 min-h-0">
+                        <ScrollArea className="h-full pr-4 -mr-4">
+                            <div className="space-y-6">
+                                <div>
+                                    <h3 className="font-semibold text-lg mb-2">Summary</h3>
+                                    <p className="text-sm leading-relaxed text-foreground/80" style={{ overflowWrap: 'break-word', whiteSpace: 'pre-wrap' }}>
+                                        {result.credibilityReport.summary}
+                                    </p>
+                                </div>
+                                <Separator />
+                                <div>
+                                    <h3 className="font-semibold text-lg mb-2">Identified Biases</h3>
+                                    <div className="flex flex-wrap gap-2">
+                                    {result.credibilityReport.biases.length > 0 ? (
+                                        result.credibilityReport.biases.map((bias, i) => <Badge key={i} variant="secondary">{bias}</Badge>)
+                                    ) : (
+                                        <p className="text-sm text-muted-foreground">No significant biases were detected.</p>
+                                    )}
+                                    </div>
+                                </div>
+                                <Separator />
+                                <div>
+                                    <h3 className="font-semibold text-lg mb-2">Flagged Content</h3>
+                                    <div className="space-y-2">
+                                    {result.credibilityReport.flaggedContent.length > 0 ? (
+                                        result.credibilityReport.flaggedContent.map((flag, i) => (
+                                        <div key={i} className="flex items-start gap-2 text-sm text-destructive">
+                                            <Icons.alert className="h-4 w-4 mt-0.5 shrink-0" />
+                                            <p>{flag}</p>
+                                        </div>
+                                        ))
+                                    ) : (
+                                        <p className="text-sm text-muted-foreground">No specific content was flagged for low credibility.</p>
+                                    )}
+                                    </div>
+                                </div>
+                                <Separator />
+                                <div>
+                                    <h3 className="font-semibold text-lg mb-2">Analyst Reasoning</h3>
+                                    <p className="text-sm leading-relaxed text-foreground/80" style={{ overflowWrap: 'break-word', whiteSpace: 'pre-wrap' }}>
+                                        {result.credibilityReport.reasoning}
+                                    </p>
+                                </div>
+                                <Separator />
+                                <div>
+                                    <h3 className="font-semibold text-lg mb-2">Sources Consulted</h3>
+                                    <div className="flex flex-col gap-2">
+                                    {result.credibilityReport.sources.length > 0 ? (
+                                        result.credibilityReport.sources.map((source, i) => (
+                                        <Link
+                                            key={i}
+                                            href={source}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="truncate text-sm text-primary hover:underline"
+                                            style={{ overflowWrap: 'break-word', wordBreak: 'break-all' }}
+                                        >
+                                            {source}
+                                        </Link>
+                                        ))
+                                    ) : (
+                                        <p className="text-sm text-muted-foreground">No external sources were cited for this analysis.</p>
+                                    )}
+                                    </div>
+                                </div>
+                            </div>
+                        </ScrollArea>
+                    </div>
+                 </div>
               )}
             </CardContent>
-            <CardFooter>
-              <Button type="submit" disabled={isLoading} className="w-full">
-                {isLoading && <Icons.spinner className="mr-2" />}
-                Analyze
-              </Button>
-            </CardFooter>
-          </form>
-        </Form>
-      </Card>
-      
-      <Card className="w-full shadow-lg flex flex-col">
-        <CardHeader>
-          <CardTitle className="text-xl">Credibility Report</CardTitle>
-          <CardDescription>
-            The results of the news analysis will be displayed here.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex-1 flex flex-col min-h-0">
-          {isLoading && (
-            <div className="flex flex-col items-center justify-center gap-4 p-8 min-h-[300px]">
-              <Icons.spinner className="h-10 w-10 text-primary" />
-              <p className="text-center text-muted-foreground">Analyzing article... <br/>This may take a moment.</p>
-            </div>
-          )}
-          {!isLoading && !result && (
-            <div className="flex flex-col items-center justify-center text-center text-muted-foreground p-8 min-h-[300px]">
-              <Icons.barChart className="mx-auto mb-4 h-10 w-10" />
-              <p>Your report is pending analysis.</p>
-            </div>
-          )}
-          {result && result.credibilityReport && (
-             <div className="flex-1 flex flex-col min-h-0">
-                 <div className="px-6 space-y-4">
-                   <div className="flex items-center justify-between">
-                     <h3 className="font-semibold text-lg">Verdict</h3>
-                     <Badge variant={getVerdictBadgeVariant(result.credibilityReport.verdict)} className="px-3 py-1 text-sm">
-                       {getVerdictIcon(result.credibilityReport.verdict)}
-                       {result.credibilityReport.verdict}
-                     </Badge>
-                   </div>
-                   <div className="flex items-center justify-between">
-                     <h3 className="font-semibold text-lg">Credibility Score</h3>
-                     <span className="font-bold text-2xl text-primary">{result.credibilityReport.overallScore}/100</span>
-                   </div>
-                   <Progress value={result.credibilityReport.overallScore} indicatorClassName={getProgressIndicatorClassName(result.credibilityReport.overallScore)} />
-                 </div>
-                 <Separator className="my-4" />
-                 <div className="flex-1 min-h-0">
-                   <ScrollArea className="h-full px-6">
-                     <div className="space-y-6">
-                       <div>
-                         <h3 className="font-semibold text-lg mb-2">Summary</h3>
-                         <p className="text-sm leading-relaxed text-foreground/80" style={{ whiteSpace: 'pre-wrap', overflowWrap: 'break-word' }}>
-                           {result.credibilityReport.summary}
-                         </p>
-                       </div>
-                       <Separator />
-                       <div>
-                         <h3 className="font-semibold text-lg mb-2">Identified Biases</h3>
-                         <div className="flex flex-wrap gap-2">
-                           {result.credibilityReport.biases.length > 0 ? (
-                             result.credibilityReport.biases.map((bias, i) => <Badge key={i} variant="secondary">{bias}</Badge>)
-                           ) : (
-                             <p className="text-sm text-muted-foreground">No significant biases were detected.</p>
-                           )}
-                         </div>
-                       </div>
-                       <Separator />
-                       <div>
-                         <h3 className="font-semibold text-lg mb-2">Flagged Content</h3>
-                         <div className="space-y-2">
-                           {result.credibilityReport.flaggedContent.length > 0 ? (
-                             result.credibilityReport.flaggedContent.map((flag, i) => (
-                               <div key={i} className="flex items-start gap-2 text-sm text-destructive">
-                                 <Icons.alert className="h-4 w-4 mt-0.5 shrink-0" />
-                                 <p>{flag}</p>
-                               </div>
-                             ))
-                           ) : (
-                             <p className="text-sm text-muted-foreground">No specific content was flagged for low credibility.</p>
-                           )}
-                         </div>
-                       </div>
-                       <Separator />
-                       <div>
-                         <h3 className="font-semibold text-lg mb-2">Analyst Reasoning</h3>
-                          <p className="text-sm leading-relaxed text-foreground/80" style={{ whiteSpace: 'pre-wrap', overflowWrap: 'break-word' }}>
-                           {result.credibilityReport.reasoning}
-                         </p>
-                       </div>
-                       <Separator />
-                       <div>
-                         <h3 className="font-semibold text-lg mb-2">Sources Consulted</h3>
-                         <div className="flex flex-col gap-2">
-                           {result.credibilityReport.sources.length > 0 ? (
-                             result.credibilityReport.sources.map((source, i) => (
-                               <Link
-                                 key={i}
-                                 href={source}
-                                 target="_blank"
-                                 rel="noopener noreferrer"
-                                 className="truncate text-sm text-primary hover:underline"
-                                 style={{ overflowWrap: 'break-word', wordBreak: 'break-all' }}
-                               >
-                                 {source}
-                               </Link>
-                             ))
-                           ) : (
-                             <p className="text-sm text-muted-foreground">No external sources were cited for this analysis.</p>
-                           )}
-                         </div>
-                       </div>
-                     </div>
-                   </ScrollArea>
-                 </div>
-             </div>
-          )}
-        </CardContent>
-      </Card>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }
