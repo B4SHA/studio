@@ -76,7 +76,7 @@ const videoIntegrityFlow = ai.defineFlow(
                     syntheticVoice: false,
                     fullyAiGenerated: false,
                     confidenceScore: 0,
-                    summary: "No video data was provided for analysis.",
+                    summary: "No video data was provided for analysis. Please select a file and try again.",
                 }
             };
         }
@@ -88,8 +88,8 @@ const videoIntegrityFlow = ai.defineFlow(
         const errorMessage = e.message || 'Unknown error';
         let userFriendlyMessage = `An error occurred during analysis: ${errorMessage}. This may be due to a temporary issue with the AI service. Please try again later.`;
 
-        if (typeof errorMessage === 'string' && errorMessage.includes('503 Service Unavailable')) {
-            userFriendlyMessage = "The analysis service is currently overloaded. We are working to resolve this. Please try again in a few moments."
+        if (typeof errorMessage === 'string' && (errorMessage.includes('503') || errorMessage.includes('Service Unavailable') || errorMessage.includes('overloaded'))) {
+            userFriendlyMessage = "The analysis service is currently overloaded or unavailable. We are working to resolve this. Please try again in a few moments."
         }
         
         return {

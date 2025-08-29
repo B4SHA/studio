@@ -19,11 +19,10 @@ import { Separator } from "./ui/separator";
 
 const formSchema = z.object({
   videoFile: z
-    .any()
-    .transform((val) => (val instanceof FileList ? val : null))
-    .refine((files) => files && files.length > 0, 'Video file is required.')
-    .refine((files) => files?.[0]?.type.startsWith('video/'), 'Please upload a valid video file.')
-    .refine((files) => files?.[0]?.size <= 50 * 1024 * 1024, 'File size should be less than 50MB.'),
+    .custom<FileList>((val) => val instanceof FileList, 'Please upload a file.')
+    .refine((files) => files.length > 0, 'Video file is required.')
+    .refine((files) => files[0]?.type.startsWith('video/'), 'Please upload a valid video file.')
+    .refine((files) => files[0]?.size <= 50 * 1024 * 1024, 'File size should be less than 50MB.'),
 });
 
 function AnalysisItem({ label, value }: { label: string; value: boolean }) {
@@ -46,9 +45,6 @@ export function VideoIntegrity() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      videoFile: undefined,
-    },
   });
 
   const videoFile = form.watch("videoFile");
@@ -115,7 +111,7 @@ export function VideoIntegrity() {
                           className="file:text-foreground h-12 text-base"
                           {...form.register("videoFile")}
                       />
-                      <FormMessage>{form.formState.errors.videoFile?.message}</FormMessage>
+                      <FormMessage>{form.formState.errors.videoFile?.message as React.ReactNode}</FormMessage>
 
                     {videoPreview && (
                         <div className="mt-4 overflow-hidden rounded-lg border-2 shadow-inner">
