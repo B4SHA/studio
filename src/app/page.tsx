@@ -11,16 +11,7 @@ import Image from 'next/image';
 
 const features = [
   {
-    icon: (
-      <Image
-        src="https://storage.googleapis.com/project-spark-b2489c64703a45c3b28b7e6f85191fce/users/75f31c89-b04d-4726-8c0a-71404c014a42/images/clvqun7h900043b6r8n5j8m93.png"
-        alt="News Sleuth"
-        width={500}
-        height={500}
-        className="rounded-lg shadow-2xl"
-        data-ai-hint="news analysis"
-      />
-    ),
+    icon: <Icons.news className="h-48 w-48 text-primary/80" />,
     title: 'News Sleuth',
     description: 'Analyze news articles from text, URLs, or headlines to uncover biases, assess credibility, and identify potential misinformation.',
     details: [
@@ -33,16 +24,7 @@ const features = [
     href: '/news-sleuth',
   },
   {
-    icon: (
-        <Image
-            src="https://storage.googleapis.com/project-spark-b2489c64703a45c3b28b7e6f85191fce/users/75f31c89-b04d-4726-8c0a-71404c014a42/images/clvqun7ha00063b6rvt732jl4.png"
-            alt="Video Integrity"
-            width={500}
-            height={500}
-            className="rounded-lg shadow-2xl"
-            data-ai-hint="video analysis"
-        />
-    ),
+    icon: <Icons.video className="h-48 w-48 text-primary/80" />,
     title: 'Video Integrity',
     description: 'Scrutinize videos from file uploads to detect deepfakes, manipulations, and other signs of AI-generated content.',
     details: [
@@ -55,16 +37,7 @@ const features = [
     href: '/video-integrity',
   },
   {
-    icon: (
-        <Image
-            src="https://storage.googleapis.com/project-spark-b2489c64703a45c3b28b7e6f85191fce/users/75f31c89-b04d-4726-8c0a-71404c014a42/images/clvqun7ha00083b6rf075fwnf.png"
-            alt="Audio Authenticator"
-            width={500}
-            height={500}
-            className="rounded-lg shadow-2xl"
-            data-ai-hint="audio analysis"
-        />
-    ),
+    icon: <Icons.audio className="h-48 w-48 text-primary/80" />,
     title: 'Audio Authenticator',
     description: 'Examine audio clips to determine their authenticity, flagging potential AI voice generation or signs of tampering.',
     details: [
