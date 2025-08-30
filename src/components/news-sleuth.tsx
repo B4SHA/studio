@@ -160,7 +160,7 @@ export function NewsSleuth() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
-          <Card className="w-full shadow-lg border-2 border-border/80 bg-background/80 backdrop-blur-sm">
+          <Card className="w-full shadow-lg border-2 border-border/80 bg-background/80 backdrop-blur-sm flex flex-col">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full">
                 <CardHeader>
@@ -211,7 +211,7 @@ export function NewsSleuth() {
                     )}
                   />
 
-                  <div className="min-h-[300px]">
+                  <div className="min-h-[260px]">
                     {inputType === "text" && (
                       <FormField
                         control={form.control}
@@ -394,3 +394,5 @@ export function NewsSleuth() {
     </div>
   );
 }
+
+    
