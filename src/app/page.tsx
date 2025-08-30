@@ -57,19 +57,19 @@ export default function Home() {
   return (
     <div className="w-full flex-1 flex flex-col items-center">
       {/* Hero Section */}
-      <section className="w-full min-h-screen flex flex-col items-center justify-center text-center relative p-4">
+      <section className="w-full min-h-[calc(100vh-80px)] flex flex-col items-center justify-center text-center relative p-4">
         <div className="container">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="max-w-4xl mx-auto"
+            className="max-w-5xl mx-auto"
           >
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter mb-6 bg-gradient-to-br from-primary via-orange-500 to-primary dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent">
+            <h1 className="text-6xl md:text-8xl font-bold tracking-tighter mb-6 bg-gradient-to-br from-primary via-orange-500 to-primary dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent">
               Uncover the Truth
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
-              Your essential AI-powered toolkit for critically analyzing news, video, and audio content. In an age of digital noise, Veritas Vision helps you navigate the online world with confidence by detecting manipulation, verifying authenticity, and uncovering hidden biases.
+            <p className="text-2xl md:text-3xl text-muted-foreground max-w-4xl mx-auto">
+              In an ocean of digital noise, Veritas Vision is your anchor for truth. Our essential AI-powered toolkit empowers you to critically analyze news, video, and audio content, navigating the online world with clarity and confidence.
             </p>
           </motion.div>
         </div>
@@ -87,7 +87,7 @@ export default function Home() {
       {features.map((feature, index) => (
         <motion.section
           key={feature.title}
-          className="w-full min-h-screen flex items-center justify-center py-16 md:py-20"
+          className="w-full flex items-center justify-center py-20 md:py-28"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
