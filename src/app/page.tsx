@@ -12,19 +12,19 @@ const features = [
   {
     Icon: Icons.news,
     title: 'News Sleuth',
-    description: 'Analyze news articles for credibility.',
+    description: 'Combat misinformation by analyzing news articles. Provide a URL, text, or just a headline, and our AI will generate a comprehensive credibility report, identifying biases, flagged content, and the sources it consulted to help you distinguish fact from fiction.',
     href: '/news-sleuth',
   },
   {
     Icon: Icons.video,
     title: 'Video Integrity',
-    description: 'Scrutinize videos for manipulation.',
+    description: 'In the age of deepfakes, seeing isn\'t always believing. Upload a video, and our tool will perform a deep analysis to detect signs of manipulation, from synthetic voices to AI-generated visuals, giving you a confidence score on the video\'s authenticity.',
     href: '/video-integrity',
   },
   {
     Icon: Icons.audio,
     title: 'Audio Authenticator',
-    description: 'Examine audio clips for authenticity.',
+    description: 'Is that recording real or AI-generated? Upload an audio clip, and our authenticator will scrutinize it for tell-tale signs of artificial generation or manipulation, delivering a verdict on its authenticity along with a detailed analysis report.',
     href: '/audio-authenticator',
   },
 ];
