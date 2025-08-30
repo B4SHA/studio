@@ -1,3 +1,4 @@
+
 import {
   CheckCircle2,
   XCircle,
@@ -10,6 +11,7 @@ import {
   BarChart,
   Check,
   HelpCircle,
+  Image,
 } from 'lucide-react';
 
 export const Icons = {
@@ -24,6 +26,7 @@ export const Icons = {
   barChart: BarChart,
   check: Check,
   help: HelpCircle,
+  image: Image,
 };
 
 function cn(...inputs: any[]) {

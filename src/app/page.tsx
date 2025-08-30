@@ -43,6 +43,17 @@ const features = [
     ],
     href: '/audio-authenticator',
   },
+  {
+    Icon: Icons.image,
+    title: 'Image Verifier',
+    description: 'Analyze images to detect AI-generation or manipulation. Upload an image, and our AI will assess its authenticity and search for its origins.',
+     featureList: [
+      'AI-Generated Image Detection: Identifies images created by models like DALL-E or Midjourney.',
+      'Manipulation Analysis: Looks for signs of photoshop or other digital alterations.',
+      'Source Context: Attempts to find the original context or source of the image online.',
+    ],
+    href: '/image-verifier',
+  },
 ];
 
 const tryNowFeatures = [
@@ -63,6 +74,12 @@ const tryNowFeatures = [
         title: 'Audio Authenticator',
         description: 'Verify the authenticity of audio recordings.',
         href: '/audio-authenticator',
+    },
+    {
+        Icon: Icons.image,
+        title: 'Image Verifier',
+        description: 'Check images for AI-generation and manipulation.',
+        href: '/image-verifier',
     },
 ]
 
@@ -115,7 +132,7 @@ export default function Home() {
       >
         <div className="container">
             <h2 className="text-4xl md:text-5xl font-bold text-center mb-12">Try Veritas Vision Now</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {tryNowFeatures.map((feature) => (
                     <Link key={feature.href} href={feature.href} className="group">
                         <Card className="p-8 h-full flex flex-col items-center text-center transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-2 border-2 border-transparent hover:border-primary">

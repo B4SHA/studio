@@ -14,6 +14,7 @@ const navigationLinks = [
   { name: 'News Sleuth', href: '/news-sleuth' },
   { name: 'Video Integrity', href: '/video-integrity' },
   { name: 'Audio Authenticator', href: '/audio-authenticator' },
+  { name: 'Image Verifier', href: '/image-verifier' },
 ];
 
 export function Header() {
