@@ -4,8 +4,8 @@ export default function Loading() {
   return (
     <div className="flex-1 flex items-center justify-center">
       <div className="flex flex-col items-center gap-4">
-        <Icons.spinner className="h-12 w-12 text-primary" />
-        <p className="text-muted-foreground">Loading page...</p>
+        <Icons.shield className="h-24 w-24 text-primary animate-shield-pulse" />
+        <p className="text-muted-foreground mt-4 text-lg">Loading Veritas Vision...</p>
       </div>
     </div>
   );
