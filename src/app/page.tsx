@@ -7,6 +7,7 @@ import { ArrowRight, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Icons } from '@/components/icons';
+import { Card } from '@/components/ui/card';
 
 const features = [
   {
@@ -43,6 +44,27 @@ const features = [
     href: '/audio-authenticator',
   },
 ];
+
+const tryNowFeatures = [
+    {
+        Icon: Icons.news,
+        title: 'News Sleuth',
+        description: 'Analyze news articles for credibility and bias.',
+        href: '/news-sleuth',
+    },
+    {
+        Icon: Icons.video,
+        title: 'Video Integrity',
+        description: 'Detect deepfakes and manipulation in videos.',
+        href: '/video-integrity',
+    },
+    {
+        Icon: Icons.audio,
+        title: 'Audio Authenticator',
+        description: 'Verify the authenticity of audio recordings.',
+        href: '/audio-authenticator',
+    },
+]
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -82,6 +104,30 @@ export default function Home() {
             <ChevronDown className="h-8 w-8 text-muted-foreground animate-bounce" />
         </motion.div>
       </section>
+
+      {/* Try It Now Section */}
+      <motion.section
+        className="w-full py-20"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.3 }}
+        variants={sectionVariants}
+      >
+        <div className="container">
+            <h2 className="text-4xl md:text-5xl font-bold text-center mb-12">Try Veritas Vision Now</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {tryNowFeatures.map((feature) => (
+                    <Link key={feature.href} href={feature.href} className="group">
+                        <Card className="p-8 h-full flex flex-col items-center text-center transition-all duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-2 border-2 border-transparent hover:border-primary">
+                            <feature.Icon className="h-20 w-20 mb-6 text-primary transition-transform duration-300 group-hover:scale-110" />
+                            <h3 className="text-2xl font-bold mb-2">{feature.title}</h3>
+                            <p className="text-muted-foreground">{feature.description}</p>
+                        </Card>
+                    </Link>
+                ))}
+            </div>
+        </div>
+      </motion.section>
 
       {/* Feature Sections */}
       {features.map((feature, index) => (
