@@ -155,7 +155,7 @@ export function AudioAuthenticator() {
             </Form>
             </Card>
             
-            <Card className="w-full shadow-lg border-2 border-border/80 bg-background/80 backdrop-blur-sm flex flex-col min-h-[500px] lg:min-h-[700px]">
+            <Card className="w-full shadow-lg border-2 border-border/80 bg-background/80 backdrop-blur-sm flex flex-col min-h-[500px] lg:min-h-auto">
             <CardHeader>
                 <CardTitle className="text-xl">Analysis Report</CardTitle>
                 <CardDescription>
@@ -193,7 +193,7 @@ export function AudioAuthenticator() {
                     </div>
                     <Separator className="my-4" />
                     <div className="flex-1 min-h-0">
-                        <ScrollArea className="h-full pr-4">
+                        <ScrollArea className="h-full pr-4 max-h-96">
                             <div className="space-y-4">
                                 <div>
                                     <h3 className="font-semibold text-lg mb-2">Detailed Report</h3>
