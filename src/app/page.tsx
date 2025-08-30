@@ -6,26 +6,22 @@ import { motion } from 'framer-motion';
 import { ArrowRight, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
 import { Icons } from '@/components/icons';
 
 const features = [
   {
-    imageSrc: 'https://storage.googleapis.com/project-spark-b2489c64703a45c3b28b7e6f85191fce/users/75f31c89-b04d-4726-8c0a-71404c014a42/images/clvqun7h900043b6r8n5j8m93.png',
     Icon: Icons.news,
     title: 'News Sleuth',
     description: 'Analyze news articles from text, URLs, or headlines to uncover biases, assess credibility, and identify potential misinformation.',
     href: '/news-sleuth',
   },
   {
-    imageSrc: 'https://storage.googleapis.com/project-spark-b2489c64703a45c3b28b7e6f85191fce/users/75f31c89-b04d-4726-8c0a-71404c014a42/images/clvqup11000063b6rvcsh01m7.png',
     Icon: Icons.video,
     title: 'Video Integrity',
     description: 'Scrutinize videos from file uploads to detect deepfakes, manipulations, and other signs of AI-generated content.',
     href: '/video-integrity',
   },
   {
-    imageSrc: 'https://storage.googleapis.com/project-spark-b2489c64703a45c3b28b7e6f85191fce/users/75f31c89-b04d-4726-8c0a-71404c014a42/images/clvqupqig00083b6r2nbt5wih.png',
     Icon: Icons.audio,
     title: 'Audio Authenticator',
     description: 'Examine audio clips to determine their authenticity, flagging potential AI voice generation or signs of tampering.',
@@ -53,7 +49,7 @@ export default function Home() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="max-w-4xl"
         >
-          <h1 className="text-5xl md:text-8xl font-bold tracking-tighter mb-6 bg-gradient-to-br from-primary via-orange-500 to-primary dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent">
+          <h1 className="text-6xl md:text-8xl font-bold tracking-tighter mb-6 bg-gradient-to-br from-primary via-orange-500 to-primary dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent">
             Uncover the Truth
           </h1>
           <p className="text-lg md:text-2xl text-muted-foreground max-w-3xl mx-auto">
@@ -74,7 +70,7 @@ export default function Home() {
       {features.map((feature, index) => (
         <motion.section
           key={feature.title}
-          className="w-full min-h-screen flex items-center justify-center py-8 md:py-12"
+          className="w-full min-h-screen flex items-center justify-center py-20"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
@@ -83,13 +79,7 @@ export default function Home() {
           <div className="container">
             <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-12">
               <div className={cn("flex justify-center", index % 2 === 1 && "md:order-last")}>
-                <Image 
-                  src={feature.imageSrc} 
-                  alt={`${feature.title} tool screenshot`}
-                  width={600}
-                  height={400}
-                  className="rounded-lg shadow-2xl"
-                />
+                <feature.Icon className="w-48 h-48 md:w-64 md:h-64 text-primary" />
               </div>
               <div className="text-center md:text-left">
                 <h2 className="text-4xl md:text-5xl font-bold mb-4">{feature.title}</h2>
