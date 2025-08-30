@@ -99,7 +99,7 @@ export function VideoIntegrity() {
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
+            <div className="grid grid-cols-1 lg:grid-cols-2 lg:items-start gap-8 w-full">
                 <Card className="w-full shadow-lg border-2 border-border/80 bg-background/80 backdrop-blur-sm">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-xl">
