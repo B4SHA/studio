@@ -57,7 +57,7 @@ const features = [
   {
     icon: (
         <Image
-            src="https.storage.googleapis.com/project-spark-b2489c64703a45c3b28b7e6f85191fce/users/75f31c89-b04d-4726-8c0a-71404c014a42/images/clvqun7ha00083b6rf075fwnf.png"
+            src="https://storage.googleapis.com/project-spark-b2489c64703a45c3b28b7e6f85191fce/users/75f31c89-b04d-4726-8c0a-71404c014a42/images/clvqun7ha00083b6rf075fwnf.png"
             alt="Audio Authenticator"
             width={500}
             height={500}
