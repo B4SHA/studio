@@ -39,25 +39,25 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
   .dark {
-    --background: 222 47% 11%;
-    --foreground: 210 29% 95%;
-    --card: 222 47% 11%;
+    --background: 222 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222 84% 4.9%;
     --card-foreground: 210 40% 98%;
     --popover: 222 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 225 100% 58%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 198 93% 60%;
+    --primary-foreground: 222.2 47.4% 11.2%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 29 100% 50%;
+    --accent: 258 70% 60%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 222 47% 21%;
+    --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 221 83% 53%;
+    --ring: 198 93% 60%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -80,5 +80,38 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  .dark body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(
+        ellipse 80% 50% at 50% -20%,
+        hsla(217, 100%, 50%, 0.3),
+        transparent
+      ),
+      radial-gradient(
+        ellipse 80% 50% at 50% 120%,
+        hsla(258, 70%, 60%, 0.3),
+        transparent
+      );
+    z-index: -1;
+    pointer-events: none;
+    animation: aurora-glow 15s ease-in-out infinite;
+  }
+
+  @keyframes aurora-glow {
+    0% {
+      opacity: 0.5;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0.5;
+    }
   }
 }

@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/icons';
 import { ArrowRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const features = [
   {
@@ -29,7 +30,7 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center container py-12 md:py-20">
       <div className="max-w-3xl text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tighter text-foreground mb-4">
+        <h1 className="text-5xl md:text-7xl font-bold tracking-tighter mb-4 bg-gradient-to-br from-primary via-accent to-primary bg-clip-text text-transparent">
           Uncover the Truth with Veritas Vision
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground">
@@ -39,14 +40,23 @@ export default function Home() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl">
         {features.map((feature) => (
-          <Card key={feature.title} className="flex flex-col bg-transparent shadow-[8px_8px_16px_hsl(var(--border)),-8px_-8px_16px_hsl(var(--card))] dark:shadow-[8px_8px_16px_#1e293b,-8px_-8px_16px_#475569] transition-shadow duration-300 rounded-2xl border-none">
+          <Card 
+            key={feature.title} 
+            className={cn(
+              "flex flex-col border border-primary/20",
+              "bg-white/5 dark:bg-black/10",
+              "backdrop-blur-lg",
+              "shadow-2xl shadow-primary/10",
+              "hover:border-primary/40 transition-colors duration-300"
+            )}
+          >
             <CardHeader className="flex flex-row items-center gap-4">
               {feature.icon}
               <CardTitle className="text-2xl">{feature.title}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col flex-1">
               <CardDescription className="flex-1 mb-6">{feature.description}</CardDescription>
-              <Button asChild className="w-full mt-auto rounded-lg shadow-[4px_4px_8px_hsl(var(--border)),-4px_-4px_8px_hsl(var(--card))] hover:shadow-inner active:shadow-inner">
+              <Button asChild className={cn("w-full mt-auto", "bg-primary/90 hover:bg-primary text-primary-foreground", "dark:bg-primary/80 dark:hover:bg-primary")}>
                 <Link href={feature.href}>
                   Get Started <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
