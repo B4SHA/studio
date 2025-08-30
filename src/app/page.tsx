@@ -49,10 +49,10 @@ export default function Home() {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="max-w-4xl"
         >
-          <h1 className="text-6xl md:text-8xl font-bold tracking-tighter mb-6 bg-gradient-to-br from-primary via-orange-500 to-primary dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent">
+          <h1 className="text-5xl md:text-7xl font-bold tracking-tighter mb-6 bg-gradient-to-br from-primary via-orange-500 to-primary dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent">
             Uncover the Truth
           </h1>
-          <p className="text-lg md:text-2xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
             Your essential AI-powered toolkit for critically analyzing news, video, and audio content. In an age of digital noise, Veritas Vision helps you navigate the online world with confidence by detecting manipulation, verifying authenticity, and uncovering hidden biases.
           </p>
         </motion.div>
@@ -70,7 +70,7 @@ export default function Home() {
       {features.map((feature, index) => (
         <motion.section
           key={feature.title}
-          className="w-full min-h-screen flex items-center justify-center py-20"
+          className="w-full min-h-screen flex items-center justify-center py-16"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
