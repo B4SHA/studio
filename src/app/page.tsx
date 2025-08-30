@@ -81,7 +81,7 @@ const featureVariants = {
 
 export default function Home() {
   return (
-    <div className="w-full">
+    <div className="w-full flex flex-col">
         <motion.section 
             initial="hidden"
             animate="visible"
@@ -106,13 +106,13 @@ export default function Home() {
             </motion.div>
         </motion.section>
       
-        <div className="relative z-10">
+        <div className="flex flex-col">
             {features.map((feature, index) => (
             <motion.section
                 key={feature.title}
                 initial="hidden"
                 whileInView="visible"
-                viewport={{ once: true, amount: 0.4 }}
+                viewport={{ once: true, amount: 0.3 }}
                 variants={featureVariants}
                 className={cn(
                     "min-h-screen container flex flex-col items-center justify-center py-20 md:py-32",
