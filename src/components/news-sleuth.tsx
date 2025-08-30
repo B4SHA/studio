@@ -211,63 +211,65 @@ export function NewsSleuth() {
                     )}
                   />
 
-                  {inputType === "text" && (
-                    <FormField
-                      control={form.control}
-                      name="articleText"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Article Text</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="Paste the full text of the news article here..."
-                              className="min-h-[250px] resize-y"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  )}
+                  <div className="min-h-[300px]">
+                    {inputType === "text" && (
+                      <FormField
+                        control={form.control}
+                        name="articleText"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Article Text</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Paste the full text of the news article here..."
+                                className="h-[250px] resize-y"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
 
-                  {inputType === "url" && (
-                    <FormField
-                      control={form.control}
-                      name="articleUrl"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Article URL</FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="https://example.com/news-article"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  )}
+                    {inputType === "url" && (
+                      <FormField
+                        control={form.control}
+                        name="articleUrl"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Article URL</FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="https://example.com/news-article"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
 
-                  {inputType === "headline" && (
-                    <FormField
-                      control={form.control}
-                      name="articleHeadline"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Article Headline</FormLabel>
-                          <FormControl>
-                            <Input 
-                              placeholder="Enter the news article headline"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  )}
+                    {inputType === "headline" && (
+                      <FormField
+                        control={form.control}
+                        name="articleHeadline"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Article Headline</FormLabel>
+                            <FormControl>
+                              <Input 
+                                placeholder="Enter the news article headline"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
+                  </div>
                 </CardContent>
                 <CardFooter>
                   <Button type="submit" disabled={isLoading} className="w-full h-12 text-lg font-semibold">
