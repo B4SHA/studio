@@ -12,19 +12,34 @@ const features = [
   {
     Icon: Icons.news,
     title: 'News Sleuth',
-    description: 'Combat misinformation by analyzing news articles. Provide a URL, text, or just a headline, and our AI will generate a comprehensive credibility report, identifying biases, flagged content, and the sources it consulted to help you distinguish fact from fiction.',
+    description: 'Combat misinformation by analyzing news articles. Provide a URL, text, or just a headline, and our AI will generate a comprehensive credibility report to help you distinguish fact from fiction.',
+    featureList: [
+      'Multi-Format Analysis: Accepts article text, URLs, or just headlines for flexible analysis.',
+      'Credibility Score: Receive a clear, data-driven credibility score from 0-100.',
+      'Source Verification: Uncovers biases and lists the sources consulted for its analysis.',
+    ],
     href: '/news-sleuth',
   },
   {
     Icon: Icons.video,
     title: 'Video Integrity',
-    description: 'In the age of deepfakes, seeing isn\'t always believing. Upload a video, and our tool will perform a deep analysis to detect signs of manipulation, from synthetic voices to AI-generated visuals, giving you a confidence score on the video\'s authenticity.',
+    description: "In the age of deepfakes, seeing isn't always believing. Upload a video, and our tool will perform a deep analysis to detect signs of manipulation, giving you a confidence score on its authenticity.",
+    featureList: [
+      'Deepfake Detection: Identifies common artifacts of AI-generated or manipulated video.',
+      'Frame-by-Frame Scrutiny: Analyzes video for visual inconsistencies and manipulation.',
+      'Audio-Visual Sync: Detects synthetic voices and audio that doesn\'t match the visuals.',
+    ],
     href: '/video-integrity',
   },
   {
     Icon: Icons.audio,
     title: 'Audio Authenticator',
-    description: 'Is that recording real or AI-generated? Upload an audio clip, and our authenticator will scrutinize it for tell-tale signs of artificial generation or manipulation, delivering a verdict on its authenticity along with a detailed analysis report.',
+    description: 'Is that recording real or AI-generated? Upload an audio clip, and our authenticator will scrutinize it for tell-tale signs of artificial generation or manipulation.',
+    featureList: [
+      'AI Voice Detection: Listens for robotic artifacts and unnatural speech patterns.',
+      'Authenticity Verdict: Delivers a clear verdict on whether the audio is authentic or likely manipulated.',
+      'Detailed Reporting: Provides a comprehensive report explaining the findings.',
+    ],
     href: '/audio-authenticator',
   },
 ];
@@ -50,10 +65,10 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="max-w-4xl mx-auto"
           >
-            <h1 className="text-4xl md:text-7xl font-bold tracking-tighter mb-6 bg-gradient-to-br from-primary via-orange-500 to-primary dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent">
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter mb-6 bg-gradient-to-br from-primary via-orange-500 to-primary dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent">
               Uncover the Truth
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
               Your essential AI-powered toolkit for critically analyzing news, video, and audio content. In an age of digital noise, Veritas Vision helps you navigate the online world with confidence by detecting manipulation, verifying authenticity, and uncovering hidden biases.
             </p>
           </motion.div>
@@ -85,7 +100,15 @@ export default function Home() {
               </div>
               <div className="text-center md:text-left">
                 <h2 className="text-4xl md:text-5xl font-bold mb-4">{feature.title}</h2>
-                <p className="text-lg text-muted-foreground mb-8">{feature.description}</p>
+                <p className="text-lg text-muted-foreground mb-6">{feature.description}</p>
+                <ul className="space-y-3 text-left mb-8">
+                  {feature.featureList.map((item, i) => (
+                     <li key={i} className="flex items-start">
+                        <Icons.checkCircle className="h-5 w-5 text-primary mr-3 mt-1 shrink-0" />
+                        <span className="text-muted-foreground">{item}</span>
+                     </li>
+                  ))}
+                </ul>
                 <Link href={feature.href}>
                   <Button size="lg" className="group text-lg">
                     Launch {feature.title}
