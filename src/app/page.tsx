@@ -78,7 +78,7 @@ export default function Home() {
         >
             <motion.h1
                 variants={itemVariants}
-                className="text-5xl md:text-7xl font-bold tracking-tighter mb-4 bg-gradient-to-br from-primary via-orange-500 to-primary bg-clip-text text-transparent"
+                className="text-5xl md:text-7xl font-bold tracking-tighter mb-4 bg-gradient-to-br from-primary via-orange-500 to-primary dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent"
             >
                 Uncover the Truth
             </motion.h1>
