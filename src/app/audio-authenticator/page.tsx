@@ -1,19 +1,14 @@
 
 'use client';
 
-import { Icons } from '@/components/icons';
 import dynamic from 'next/dynamic';
+import Loading from '../loading';
 
 const AudioAuthenticator = dynamic(
   () => import('@/components/audio-authenticator').then((mod) => mod.AudioAuthenticator),
   {
     ssr: false,
-    loading: () => (
-      <div className="flex flex-col items-center gap-4">
-        <Icons.spinner className="h-12 w-12 text-primary" />
-        <p className="text-muted-foreground">Loading Tool...</p>
-      </div>
-    ),
+    loading: () => <Loading />,
   }
 );
 
