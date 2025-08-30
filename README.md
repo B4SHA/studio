@@ -24,7 +24,7 @@ News Sleuth assesses the credibility of news articles to help users identify pot
 
 - **How it Works**:
   - **Input**: Users can provide an article's full text, a URL, or just the headline.
-  - **AI Model**: It uses the `gemini-2.5-flash` model.
+  - **AI Model**: It uses the `gemini-1.5-flash` model.
   - **Process**:
     1.  If a URL is provided, the system first uses a server-side tool (`url-fetcher`) to scrape the article's text content.
     2.  The text is passed to the Gemini model with a specialized prompt that instructs it to act as an expert fake news analyst.
@@ -32,7 +32,6 @@ News Sleuth assesses the credibility of news articles to help users identify pot
   - **Output**: The tool generates a comprehensive **Credibility Report** containing:
     - An overall credibility score (0-100).
     - A final verdict (`Likely Real`, `Likely Fake`, `Uncertain`).
-    - A list of identified biases and flagged content.
     - A summary and detailed reasoning for its assessment.
 
 ### 2. Video Integrity
@@ -83,23 +82,35 @@ GEMINI_API_KEY=YOUR_API_KEY_HERE
 
 **THIS STEP IS CRUCIAL.** To avoid `403 Forbidden` errors, you must enable the necessary AI services in the Google Cloud project associated with your API key.
 
-1.  **Find your Project ID:** When you create an API key, it is associated with a Google Cloud project. You can find your project ID in the [Google Cloud Console](https://console.cloud.google.com/).
+1.  **Find your Project:** When you create an API key, it is associated with a Google Cloud project. You can find this project in the [Google Cloud Console](https://console.cloud.google.com/).
 2.  **Enable the API:**
     - Go to the **APIs & Services Dashboard** for your project.
     - Click **"+ ENABLE APIS AND SERVICES"**.
-    - Search for **"Vertex AI API"** and **enable it**. This is the recommended API for most use cases.
-    - In some cases, you may also need to enable the **"Generative Language API"**.
+    - Search for and enable **both** of the following APIs:
+        1. **Vertex AI API**
+        2. **Generative Language API**
+    - It is important to enable both to ensure all features work correctly.
 
 It may take a few minutes for the services to become active after you enable them.
 
-### 3. Install Dependencies
+### 3. Understand and Manage API Rate Limits
+
+**IMPORTANT**: If you see a `429 Too Many Requests` error, you have exceeded the free tier usage limits for the Gemini API. The free tier is very limited, especially for video analysis.
+
+To fix this and ensure the application runs reliably, you **must enable billing** on your Google Cloud project.
+
+1.  In the Google Cloud Console, navigate to the **Billing** section for your project.
+2.  **Link a billing account.** Google often provides free credits for new accounts, which can cover initial usage.
+3.  Enabling billing will move you to a "pay-as-you-go" plan with much higher usage limits, preventing rate limit errors.
+
+### 4. Install Dependencies
 
 Install the required npm packages:
 ```bash
 npm install
 ```
 
-### 4. Run the Development Server
+### 5. Run the Development Server
 
 Start the Next.js development server and the Genkit development server in parallel.
 
