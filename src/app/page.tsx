@@ -3,49 +3,27 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowRight, CheckCircle, ChevronDown } from 'lucide-react';
+import { ArrowRight, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
 
 const features = [
   {
     imageSrc: 'https://storage.googleapis.com/project-spark-b2489c64703a45c3b28b7e6f85191fce/users/75f31c89-b04d-4726-8c0a-71404c014a42/images/clvqun7h900043b6r8n5j8m93.png',
     title: 'News Sleuth',
     description: 'Analyze news articles from text, URLs, or headlines to uncover biases, assess credibility, and identify potential misinformation.',
-    details: [
-        'Input by article text, URL, or headline',
-        'Generates a credibility score (0-100)',
-        'Provides a final verdict (Likely Real/Fake)',
-        'Identifies biases and flagged content',
-        'Cites sources used for analysis'
-    ],
     href: '/news-sleuth',
   },
   {
     imageSrc: 'https://storage.googleapis.com/project-spark-b2489c64703a45c3b28b7e6f85191fce/users/75f31c89-b04d-4726-8c0a-71404c014a42/images/clvqvj6q900063b6rvw0u5g9d.png',
     title: 'Video Integrity',
     description: 'Scrutinize videos from file uploads to detect deepfakes, manipulations, and other signs of AI-generated content.',
-    details: [
-        'Accepts video file uploads (up to 50MB)',
-        'Detects deepfakes and manipulations',
-        'Identifies fully AI-generated video',
-        'Checks for synthetic voices',
-        'Provides a confidence score for the analysis'
-    ],
     href: '/video-integrity',
   },
   {
     imageSrc: 'https://storage.googleapis.com/project-spark-b2489c64703a45c3b28b7e6f85191fce/users/75f31c89-b04d-4726-8c0a-71404c014a42/images/clvqw6y2y00083b6rzzqj7iwn.png',
     title: 'Audio Authenticator',
     description: 'Examine audio clips to determine their authenticity, flagging potential AI voice generation or signs of tampering.',
-    details: [
-        'Accepts audio file uploads (up to 10MB)',
-        'Determines authenticity (Likely Authentic/AI)',
-        'Detects unnatural cadence and audio artifacts',
-        'Provides a detailed report and confidence score',
-        'Flags signs of audio tampering or cuts'
-    ],
     href: '/audio-authenticator',
   },
 ];
@@ -98,7 +76,7 @@ export default function Home() {
         >
           <div className="container grid grid-cols-1 md:grid-cols-2 items-center gap-12">
             <div className={cn("flex justify-center", index % 2 === 1 && "md:order-last")}>
-              <Image 
+              <img 
                 src={feature.imageSrc} 
                 alt={`${feature.title} illustration`}
                 width={500}
@@ -109,14 +87,6 @@ export default function Home() {
             <div className="text-center md:text-left">
               <h2 className="text-4xl md:text-5xl font-bold mb-4">{feature.title}</h2>
               <p className="text-lg text-muted-foreground mb-8">{feature.description}</p>
-              <ul className="space-y-4 mb-10">
-                {feature.details.map((detail) => (
-                  <li key={detail} className="flex items-center gap-3 text-muted-foreground text-left">
-                    <CheckCircle className="h-6 w-6 text-primary/80 shrink-0" />
-                    <span>{detail}</span>
-                  </li>
-                ))}
-              </ul>
               <Link href={feature.href}>
                 <Button size="lg" className="group text-lg">
                   Launch {feature.title}
