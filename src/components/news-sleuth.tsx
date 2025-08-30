@@ -211,7 +211,7 @@ export function NewsSleuth() {
                     )}
                   />
 
-                  <div className="min-h-[250px]">
+                  <div>
                     {inputType === "text" && (
                       <FormField
                         control={form.control}
