@@ -185,7 +185,7 @@ export function VideoIntegrity() {
                                     <AnalysisItem label="Synthetic Voice" value={result.analysis.syntheticVoice} />
                                     <AnalysisItem label="Fully AI-Generated" value={result.analysis.fullyAiGenerated} />
                                     <AnalysisItem label="Satire or Parody" value={result.analysis.satireParody} />
-                                    <AnalysisItem label="Mislabeling" value={result.analysis.mislabeling} />
+                                    <AnalysisItem label="Misleading Context" value={result.analysis.misleadingContext} />
                                 </div>
                                 <Separator className="my-4" />
                                 </>

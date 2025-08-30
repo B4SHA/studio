@@ -25,7 +25,7 @@ export type VideoIntegrityInput = z.infer<typeof VideoIntegrityInputSchema>;
 const VideoIntegrityOutputSchema = z.object({
   analysis: z.object({
     deepfake: z.boolean().describe('Whether the video is a deepfake.'),
-    mislabeling: z.boolean().describe('Whether the video is mislabeled.'),
+    misleadingContext: z.boolean().describe('Whether the video is presented in a misleading context (e.g. wrong time or place).'),
     videoManipulation: z.boolean().describe('Whether the video has been manipulated.'),
     satireParody: z.boolean().describe('Whether the video is satire or parody.'),
     syntheticVoice: z.boolean().describe('Whether the video contains a synthetic voice.'),
@@ -46,7 +46,7 @@ const prompt = ai.definePrompt({
   output: {schema: VideoIntegrityOutputSchema},
   prompt: `You are an expert in detecting AI-generated and manipulated videos.
 
-You will analyze the video and determine if it is a deepfake, mislabeled, manipulated, satire/parody, contains a synthetic voice, or is fully AI-generated.
+You will analyze the video and determine if it is a deepfake, used in a misleading context, manipulated, satire/parody, contains a synthetic voice, or is fully AI-generated.
 
 Analyze the following video:
 {{media url=videoDataUri}}
@@ -69,7 +69,7 @@ const videoIntegrityFlow = ai.defineFlow(
              return {
                 analysis: {
                     deepfake: false,
-                    mislabeling: false,
+                    misleadingContext: false,
                     videoManipulation: false,
                     satireParody: false,
                     syntheticVoice: false,
@@ -87,7 +87,7 @@ const videoIntegrityFlow = ai.defineFlow(
         return {
             analysis: {
                 deepfake: false,
-                mislabeling: false,
+                misleadingContext: false,
                 videoManipulation: false,
                 satireParody: false,
                 syntheticVoice: false,
