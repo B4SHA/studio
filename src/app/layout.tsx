@@ -4,6 +4,8 @@ import { Toaster } from "@/components/ui/toaster"
 import { Header } from '@/components/header';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
+import React from 'react';
+import Loading from './loading';
 
 export const metadata: Metadata = {
   title: 'Veritas Vision',
@@ -25,13 +27,15 @@ export default function RootLayout({
       <body className={cn("font-body antialiased h-full flex flex-col")}>
         <ThemeProvider
             attribute="class"
-            defaultTheme="system"
+            defaultTheme="dark"
             enableSystem
             disableTransitionOnChange
         >
           <Header />
           <main className="flex-1 flex flex-col items-center justify-center">
-            {children}
+            <React.Suspense fallback={<Loading />}>
+              {children}
+            </React.Suspense>
           </main>
           <footer className="py-6 md:px-8 md:py-0 border-t">
             <div className="container flex flex-col items-center justify-center gap-4 md:h-20 md:flex-row">
