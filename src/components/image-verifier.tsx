@@ -212,6 +212,7 @@ export function ImageVerifier() {
                      <div className="divide-y rounded-md border bg-muted/20 mb-4">
                         <AnalysisItem label="AI-Generated" value={result.isAiGenerated} />
                         <AnalysisItem label="Digital Manipulation" value={result.isManipulated} />
+                        <AnalysisItem label="Misleading Context" value={result.isMisleadingContext} />
                     </div>
                     
                     <div className="flex-1 min-h-0">

@@ -26,6 +26,7 @@ const ImageVerifierOutputSchema = z.object({
   confidenceScore: z.number().min(0).max(100).describe('The confidence score for the verdict (0-100).'),
   isAiGenerated: z.boolean().describe('Whether the image is likely AI-generated.'),
   isManipulated: z.boolean().describe('Whether the image shows signs of manipulation (e.g., photoshop).'),
+  isMisleadingContext: z.boolean().describe('Whether the image, authentic or not, might be used in a misleading context (e.g. wrong time/place).'),
   report: z.string().describe('A detailed report of the analysis results, explaining the verdict.'),
   context: z.string().describe('Any available context about the image, such as its origin or subject matter. If no context can be found, this should state that none was available.')
 });
@@ -41,9 +42,9 @@ const prompt = ai.definePrompt({
   name: 'imageVerifierPrompt',
   input: {schema: ImageVerifierInputSchema},
   output: {schema: ImageVerifierOutputSchema},
-  prompt: `You are an expert in digital image forensics, specializing in detecting AI-generated images and digital manipulation.
+  prompt: `You are an expert in digital image forensics, specializing in detecting AI-generated images, digital manipulation, and misinformation.
 
-  Your task is to analyze the provided image to determine its authenticity.
+  Your task is to analyze the provided image to determine its authenticity and potential for misuse.
   
   Characteristics of AI-generated or manipulated images may include:
   - Unnatural textures or details (e.g., skin, hair, backgrounds).
@@ -56,8 +57,9 @@ const prompt = ai.definePrompt({
   1. Determine if the image is 'Likely AI-Generated/Manipulated', 'Likely Authentic', or 'Uncertain'.
   2. Provide a confidence score (0-100) for your verdict.
   3. Explicitly set 'isAiGenerated' and 'isManipulated' booleans.
-  4. Provide a detailed 'report' justifying your verdict, citing specific visual evidence.
-  5. Use your internal knowledge and reverse-image-search capabilities to find context for the image. In the 'context' field, describe what the image depicts (e.g., "A photo of the Eiffel Tower at night") or state that no context could be found.
+  4. Use your internal knowledge and reverse-image-search capabilities to find context for the image. In the 'context' field, describe what the image depicts (e.g., "A photo of the Eiffel Tower at night") or state that no context could be found.
+  5. Based on the context, determine if the image could be used in a misleading way (e.g., an old photo presented as new, a photo from a different location, etc.). Set the 'isMisleadingContext' boolean accordingly.
+  6. Provide a detailed 'report' justifying your verdict and all your findings, citing specific visual evidence and contextual information.
 
   Image for analysis: {{media url=imageDataUri}}`,
 });
@@ -79,6 +81,7 @@ const imageVerifierFlow = ai.defineFlow(
         confidenceScore: 0,
         isAiGenerated: false,
         isManipulated: false,
+        isMisleadingContext: false,
         report: `An error occurred during analysis: ${e.message || 'Unknown error'}`,
         context: 'Context could not be determined due to an analysis error.'
       };

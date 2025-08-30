@@ -24,7 +24,7 @@ export type AudioAuthenticatorInput = z.infer<typeof AudioAuthenticatorInputSche
 const AudioAuthenticatorOutputSchema = z.object({
   verdict: z.enum(['Likely Authentic', 'Potential AI/Manipulation', 'Uncertain']).describe("The final verdict on the audio's authenticity."),
   confidenceScore: z.number().min(0).max(100).describe('The confidence score for the verdict (0-100).'),
-  report: z.string().describe('A detailed report of the analysis results, explaining the verdict.'),
+  report: z.string().describe('A detailed report of the analysis results, explaining the verdict and considering if the content could be misleading.'),
 });
 export type AudioAuthenticatorOutput = z.infer<typeof AudioAuthenticatorOutputSchema>;
 
@@ -55,7 +55,9 @@ const prompt = ai.definePrompt({
 
   Based on your analysis, you will provide a final verdict ('Likely Authentic', 'Potential AI/Manipulation', or 'Uncertain') and a confidence score for that verdict.
 
-  You must also provide a detailed report explaining your reasoning. The report MUST justify the verdict you have chosen, citing specific timestamps or audio characteristics that support your conclusion. Ensure there is no contradiction between the verdict and the report.
+  You must also provide a detailed report explaining your reasoning. The report MUST justify the verdict you have chosen, citing specific audio characteristics that support your conclusion.
+  
+  CRITICAL: In your report, also consider the content of what is being said. Even if the audio is authentic, briefly mention if the content is of a nature that could be easily taken out of context or used to spread misinformation. Ensure there is no contradiction between the verdict and the report.
 
   Audio: {{media url=audioDataUri}}`,
 });
