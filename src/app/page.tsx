@@ -39,14 +39,14 @@ export default function Home() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl">
         {features.map((feature) => (
-          <Card key={feature.title} className="flex flex-col shadow-lg hover:shadow-xl transition-shadow duration-300">
+          <Card key={feature.title} className="flex flex-col bg-transparent shadow-[8px_8px_16px_hsl(var(--border)),-8px_-8px_16px_hsl(var(--card))] dark:shadow-[8px_8px_16px_#1e293b,-8px_-8px_16px_#475569] transition-shadow duration-300 rounded-2xl border-none">
             <CardHeader className="flex flex-row items-center gap-4">
               {feature.icon}
               <CardTitle className="text-2xl">{feature.title}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col flex-1">
               <CardDescription className="flex-1 mb-6">{feature.description}</CardDescription>
-              <Button asChild className="w-full mt-auto">
+              <Button asChild className="w-full mt-auto rounded-lg shadow-[4px_4px_8px_hsl(var(--border)),-4px_-4px_8px_hsl(var(--card))] hover:shadow-inner active:shadow-inner">
                 <Link href={feature.href}>
                   Get Started <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
