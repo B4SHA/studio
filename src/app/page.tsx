@@ -7,25 +7,26 @@ import { ArrowRight, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
+import { Icons } from '@/components/icons';
 
 const features = [
   {
-    imageSrc: 'https://picsum.photos/500/500',
-    hint: 'news analysis',
+    imageSrc: 'https://storage.googleapis.com/project-spark-b2489c64703a45c3b28b7e6f85191fce/users/75f31c89-b04d-4726-8c0a-71404c014a42/images/clvqun7h900043b6r8n5j8m93.png',
+    Icon: Icons.news,
     title: 'News Sleuth',
     description: 'Analyze news articles from text, URLs, or headlines to uncover biases, assess credibility, and identify potential misinformation.',
     href: '/news-sleuth',
   },
   {
-    imageSrc: 'https://picsum.photos/500/500',
-    hint: 'video integrity',
+    imageSrc: 'https://storage.googleapis.com/project-spark-b2489c64703a45c3b28b7e6f85191fce/users/75f31c89-b04d-4726-8c0a-71404c014a42/images/clvqup11000063b6rvcsh01m7.png',
+    Icon: Icons.video,
     title: 'Video Integrity',
     description: 'Scrutinize videos from file uploads to detect deepfakes, manipulations, and other signs of AI-generated content.',
     href: '/video-integrity',
   },
   {
-    imageSrc: 'https://picsum.photos/500/500',
-    hint: 'audio authenticator',
+    imageSrc: 'https://storage.googleapis.com/project-spark-b2489c64703a45c3b28b7e6f85191fce/users/75f31c89-b04d-4726-8c0a-71404c014a42/images/clvqupqig00083b6r2nbt5wih.png',
+    Icon: Icons.audio,
     title: 'Audio Authenticator',
     description: 'Examine audio clips to determine their authenticity, flagging potential AI voice generation or signs of tampering.',
     href: '/audio-authenticator',
@@ -50,12 +51,13 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
+          className="max-w-4xl"
         >
-          <h1 className="text-6xl md:text-8xl font-bold tracking-tighter mb-6 bg-gradient-to-br from-primary via-orange-500 to-primary dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent">
+          <h1 className="text-5xl md:text-8xl font-bold tracking-tighter mb-6 bg-gradient-to-br from-primary via-orange-500 to-primary dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent">
             Uncover the Truth
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-             Your essential AI-powered toolkit for critically analyzing news, video, and audio content. In an age of digital noise, Veritas Vision helps you navigate the online world with confidence by detecting manipulation, verifying authenticity, and uncovering hidden biases.
+          <p className="text-lg md:text-2xl text-muted-foreground max-w-3xl mx-auto">
+            Your essential AI-powered toolkit for critically analyzing news, video, and audio content. In an age of digital noise, Veritas Vision helps you navigate the online world with confidence by detecting manipulation, verifying authenticity, and uncovering hidden biases.
           </p>
         </motion.div>
         <motion.div
@@ -72,7 +74,7 @@ export default function Home() {
       {features.map((feature, index) => (
         <motion.section
           key={feature.title}
-          className="w-full min-h-screen flex items-center justify-center py-12 md:py-16"
+          className="w-full min-h-screen flex items-center justify-center py-8 md:py-12"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
@@ -83,11 +85,10 @@ export default function Home() {
               <div className={cn("flex justify-center", index % 2 === 1 && "md:order-last")}>
                 <Image 
                   src={feature.imageSrc} 
-                  alt={`${feature.title} illustration`}
-                  width={500}
-                  height={500}
+                  alt={`${feature.title} tool screenshot`}
+                  width={600}
+                  height={400}
                   className="rounded-lg shadow-2xl"
-                  data-ai-hint={feature.hint}
                 />
               </div>
               <div className="text-center md:text-left">
