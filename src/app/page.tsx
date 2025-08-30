@@ -7,25 +7,24 @@ import { ArrowRight, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Icons } from '@/components/icons';
-import Image from 'next/image';
 
 const features = [
   {
     Icon: Icons.news,
     title: 'News Sleuth',
-    description: 'Analyze news articles to assess credibility and identify potential misinformation.',
+    description: 'Analyze news articles for credibility.',
     href: '/news-sleuth',
   },
   {
     Icon: Icons.video,
     title: 'Video Integrity',
-    description: 'Scrutinize videos to detect deepfakes, manipulations, and AI-generated content.',
+    description: 'Scrutinize videos for manipulation.',
     href: '/video-integrity',
   },
   {
     Icon: Icons.audio,
     title: 'Audio Authenticator',
-    description: 'Examine audio clips to determine authenticity and flag potential AI generation.',
+    description: 'Examine audio clips for authenticity.',
     href: '/audio-authenticator',
   },
 ];
@@ -51,10 +50,10 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="max-w-4xl mx-auto"
           >
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tighter mb-6 bg-gradient-to-br from-primary via-orange-500 to-primary dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent">
+            <h1 className="text-4xl md:text-7xl font-bold tracking-tighter mb-6 bg-gradient-to-br from-primary via-orange-500 to-primary dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent">
               Uncover the Truth
             </h1>
-            <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
               Your essential AI-powered toolkit for critically analyzing news, video, and audio content. In an age of digital noise, Veritas Vision helps you navigate the online world with confidence by detecting manipulation, verifying authenticity, and uncovering hidden biases.
             </p>
           </motion.div>
@@ -73,7 +72,7 @@ export default function Home() {
       {features.map((feature, index) => (
         <motion.section
           key={feature.title}
-          className="w-full min-h-screen flex items-center justify-center py-8 md:py-12"
+          className="w-full min-h-screen flex items-center justify-center py-16 md:py-20"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
