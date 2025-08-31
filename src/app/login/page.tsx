@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Icons } from '@/components/icons';
 import { useToast } from '@/hooks/use-toast';
 import Loading from '../loading';
+import { FirebaseError } from 'firebase/app';
 
 const signUpSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
@@ -55,7 +56,11 @@ export default function LoginPage() {
       toast({ title: 'Login Successful', description: 'Welcome back!' });
       router.push('/dashboard');
     } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Login Failed', description: error.message });
+      let description = error.message;
+      if (error instanceof FirebaseError && error.code === 'auth/invalid-credential') {
+        description = 'Invalid email or password. Please try again.';
+      }
+      toast({ variant: 'destructive', title: 'Login Failed', description });
     } finally {
       setIsSubmitting(false);
     }
