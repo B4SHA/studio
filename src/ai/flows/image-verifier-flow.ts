@@ -2,7 +2,7 @@
 'use server';
 
 /**
- * @fileOverview Flow for analyzing images to detect manipulation or AI generation.
+ * @fileOverview Flow for analyzing images to detect manipulation or AI generation, and to analyze any text within the image.
  *
  * - imageVerifierAnalysis - Analyzes an image for authenticity.
  * - ImageVerifierInput - Input type for image analysis.
@@ -28,7 +28,11 @@ const ImageVerifierOutputSchema = z.object({
   isManipulated: z.boolean().describe('Whether the image shows signs of manipulation (e.g., photoshop).'),
   isMisleadingContext: z.boolean().describe('Whether the image, authentic or not, might be used in a misleading context (e.g. wrong time/place).'),
   report: z.string().describe('A detailed report of the analysis results, explaining the verdict.'),
-  context: z.string().describe('Any available context about the image, such as its origin or subject matter. If no context can be found, this should state that none was available.')
+  context: z.string().describe('Any available context about the image, such as its origin or subject matter. If no context can be found, this should state that none was available.'),
+  textAnalysis: z.object({
+    detectedText: z.string().optional().describe('The text detected within the image. If no text is found, this should be omitted.'),
+    analysis: z.string().optional().describe('An analysis of the detected text for authenticity, misinformation, or fake news. Omitted if no text is found.'),
+  }).optional().describe('An analysis of any text found within the image.'),
 });
 export type ImageVerifierOutput = z.infer<typeof ImageVerifierOutputSchema>;
 
@@ -42,24 +46,33 @@ const prompt = ai.definePrompt({
   name: 'imageVerifierPrompt',
   input: {schema: ImageVerifierInputSchema},
   output: {schema: ImageVerifierOutputSchema},
-  prompt: `You are an expert in digital image forensics, specializing in detecting AI-generated images, digital manipulation, and misinformation.
+  prompt: `You are a multi-disciplinary expert in digital forensics, combining the skills of an image analyst and a fake news investigator.
 
-  Your task is to analyze the provided image to determine its authenticity and potential for misuse.
+  Your task is to perform a two-part analysis on the provided image:
   
+  **Part 1: Image Forensics**
+  Analyze the image for authenticity. Look for signs of AI generation or digital manipulation.
   Characteristics of AI-generated or manipulated images may include:
   - Unnatural textures or details (e.g., skin, hair, backgrounds).
   - Inconsistent lighting, shadows, or reflections.
   - Anatomical impossibilities (e.g., extra fingers, strange proportions).
   - Warping or artifacts around edited areas.
-  - Lack of fine detail expected in a real photograph.
-
-  Based on your analysis, you will:
+  
+  Based on the image forensics, you will:
   1. Determine if the image is 'Likely AI-Generated/Manipulated', 'Likely Authentic', or 'Uncertain'.
   2. Provide a confidence score (0-100) for your verdict.
   3. Explicitly set 'isAiGenerated' and 'isManipulated' booleans.
   4. Use your internal knowledge and reverse-image-search capabilities to find context for the image. In the 'context' field, describe what the image depicts (e.g., "A photo of the Eiffel Tower at night") or state that no context could be found.
   5. Based on the context, determine if the image could be used in a misleading way (e.g., an old photo presented as new, a photo from a different location, etc.). Set the 'isMisleadingContext' boolean accordingly.
-  6. Provide a detailed 'report' justifying your verdict and all your findings, citing specific visual evidence and contextual information.
+  6. Provide a detailed 'report' justifying your forensics verdict and all your findings.
+
+  **Part 2: Text Analysis (If Applicable)**
+  CRITICAL: First, examine the image to see if it contains any significant text (e.g., a headline, a sign, a social media post screenshot).
+  - If NO text is detected, omit the 'textAnalysis' field from your output.
+  - If text IS detected, you MUST:
+    a. Populate 'textAnalysis.detectedText' with the exact text you extracted from the image.
+    b. Switch roles to a fake news analyst. Scrutinize the 'detectedText'. Is it a known fake news headline? Does it contain sensational language, logical fallacies, or misinformation?
+    c. Populate 'textAnalysis.analysis' with a detailed report of your findings about the text, explaining why it might be authentic, fake, or misleading.
 
   Image for analysis: {{media url=imageDataUri}}`,
 });
