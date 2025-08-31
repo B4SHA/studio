@@ -8,6 +8,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   signInWithPopup,
+  signInWithRedirect,
   GoogleAuthProvider,
   User,
 } from 'firebase/auth';
@@ -51,7 +52,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = () => {
     const provider = new GoogleAuthProvider();
-    return signInWithPopup(auth, provider);
+    // Using redirect is more robust in constrained environments like iframes
+    return signInWithRedirect(auth, provider);
   }
 
   const value = {
