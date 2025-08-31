@@ -6,7 +6,6 @@ import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
 import React from 'react';
 import Loading from './loading';
-import { AuthProvider } from '@/context/auth-context';
 
 export const metadata: Metadata = {
   title: 'Veritas Vision',
@@ -32,7 +31,6 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
         >
-          <AuthProvider>
             <Header />
             <main className="flex-1 flex flex-col items-center justify-center">
               <React.Suspense fallback={<Loading />}>
@@ -47,7 +45,6 @@ export default function RootLayout({
               </div>
             </footer>
             <Toaster />
-          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
