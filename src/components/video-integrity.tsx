@@ -16,6 +16,7 @@ import { Icons } from "@/components/icons";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "./ui/separator";
 import { ScrollArea } from "./ui/scroll-area";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 
 const formSchema = z.object({
   videoFile: z
@@ -169,38 +170,56 @@ export function VideoIntegrity() {
                         )}
                         {result && result.analysis && (
                         <div className="flex-1 flex flex-col min-h-0">
-                            {result.analysis.confidenceScore > 0 ? (
-                                <>
-                                <div className="px-1 space-y-4">
-                                    <div className="flex justify-between items-center">
-                                        <h3 className="font-semibold text-lg">Analysis Confidence</h3>
-                                        <span className="font-bold text-2xl text-primary">{result.analysis.confidenceScore.toFixed(0)}%</span>
-                                    </div>
-                                    <Progress value={result.analysis.confidenceScore} indicatorClassName="bg-primary" />
-                                </div>
-                                <Separator className="my-4" />
-                                <div className="divide-y rounded-md border bg-muted/20">
-                                    <AnalysisItem label="Deepfake" value={result.analysis.deepfake} />
-                                    <AnalysisItem label="Video Manipulation" value={result.analysis.videoManipulation} />
-                                    <AnalysisItem label="Synthetic Voice" value={result.analysis.syntheticVoice} />
-                                    <AnalysisItem label="Fully AI-Generated" value={result.analysis.fullyAiGenerated} />
-                                    <AnalysisItem label="Satire or Parody" value={result.analysis.satireParody} />
-                                    <AnalysisItem label="Misleading Context" value={result.analysis.misleadingContext} />
-                                </div>
-                                <Separator className="my-4" />
-                                </>
-                            ) : null}
-
-                            <div className="flex-1 min-h-0">
-                                <ScrollArea className="h-full pr-4 max-h-80">
-                                    <div className="space-y-4">
-                                        <div>
-                                            <h3 className="font-semibold text-lg mb-2">Analysis Summary</h3>
-                                            <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{result.analysis.summary}</p>
+                            <ScrollArea className="h-full pr-4">
+                                <div className="space-y-4">
+                                    {result.analysis.confidenceScore > 0 ? (
+                                        <>
+                                        <div className="px-1 space-y-4">
+                                            <div className="flex justify-between items-center">
+                                                <h3 className="font-semibold text-lg">Analysis Confidence</h3>
+                                                <span className="font-bold text-2xl text-primary">{result.analysis.confidenceScore.toFixed(0)}%</span>
+                                            </div>
+                                            <Progress value={result.analysis.confidenceScore} indicatorClassName="bg-primary" />
                                         </div>
+                                        <Separator className="my-4" />
+                                        <div className="divide-y rounded-md border bg-muted/20">
+                                            <AnalysisItem label="Deepfake" value={result.analysis.deepfake} />
+                                            <AnalysisItem label="Video Manipulation" value={result.analysis.videoManipulation} />
+                                            <AnalysisItem label="Synthetic Voice" value={result.analysis.syntheticVoice} />
+                                            <AnalysisItem label="Fully AI-Generated" value={result.analysis.fullyAiGenerated} />
+                                            <AnalysisItem label="Satire or Parody" value={result.analysis.satireParody} />
+                                            <AnalysisItem label="Misleading Context" value={result.analysis.misleadingContext} />
+                                        </div>
+                                        <Separator className="my-4" />
+                                        </>
+                                    ) : null}
+
+                                    {result.analysis.audioTextAnalysis?.detectedText && (
+                                        <>
+                                        <Alert>
+                                          <Icons.audio className="h-4 w-4" />
+                                          <AlertTitle>Speech Detected in Video</AlertTitle>
+                                          <AlertDescription className="mt-2">
+                                              <p className="font-semibold mb-2">Transcript:</p>
+                                              <blockquote className="border-l-2 pl-4 italic my-2 text-sm max-h-32 overflow-y-auto">
+                                                  {result.analysis.audioTextAnalysis.detectedText}
+                                              </blockquote>
+                                              <p className="font-semibold mt-3 mb-1">Transcript Analysis:</p>
+                                              <p className="text-foreground/80 leading-relaxed whitespace-pre-wrap break-words">
+                                                {result.analysis.audioTextAnalysis.analysis}
+                                              </p>
+                                          </AlertDescription>
+                                        </Alert>
+                                        <Separator />
+                                      </>
+                                    )}
+
+                                    <div>
+                                        <h3 className="font-semibold text-lg mb-2">Forensics Summary</h3>
+                                        <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{result.analysis.summary}</p>
                                     </div>
-                                </ScrollArea>
-                            </div>
+                                </div>
+                            </ScrollArea>
                         </div>
                         )}
                     </CardContent>

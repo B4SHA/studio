@@ -32,6 +32,10 @@ const VideoIntegrityOutputSchema = z.object({
     fullyAiGenerated: z.boolean().describe('Whether the video is fully AI-generated.'),
     confidenceScore: z.number().min(0).max(100).describe('The confidence in the accuracy of the overall analysis, from 0 to 100.'),
     summary: z.string().describe('A summary of the analysis.'),
+    audioTextAnalysis: z.object({
+      detectedText: z.string().optional().describe('The text transcribed from the video\'s audio track. Omitted if no speech is found.'),
+      analysis: z.string().optional().describe('An analysis of the transcribed text for misinformation or fake news. Omitted if no speech is found.'),
+    }).optional().describe('An analysis of any speech found within the video\'s audio.'),
   }),
 });
 export type VideoIntegrityOutput = z.infer<typeof VideoIntegrityOutputSchema>;
@@ -44,16 +48,29 @@ const prompt = ai.definePrompt({
   name: 'videoIntegrityPrompt',
   input: {schema: VideoIntegrityInputSchema},
   output: {schema: VideoIntegrityOutputSchema},
-  prompt: `You are an expert in detecting AI-generated and manipulated videos.
+  prompt: `You are a multi-disciplinary expert in digital forensics, combining video analysis with audio and text investigation.
 
-You will analyze the video and determine if it is a deepfake, used in a misleading context, manipulated, satire/parody, contains a synthetic voice, or is fully AI-generated.
+  Your task is to perform a two-part analysis on the provided video:
 
-Analyze the following video:
-{{media url=videoDataUri}}
+  **Part 1: Visual and Audio Forensics**
+  Analyze the video for authenticity. You will determine if it is a deepfake, used in a misleading context, manipulated, satire/parody, contains a synthetic voice, or is fully AI-generated.
+  - Look for visual artifacts, unnatural movements, inconsistent lighting, and other signs of manipulation.
+  - Listen for audio artifacts that suggest a synthetic voice.
+  - Use your internal knowledge to determine if the video is being presented in a misleading context (e.g., wrong time or place).
+  - Provide a confidence score for your overall analysis. The confidence score should reflect how certain you are about your findings, whether the video is real or fake.
+  - Write a short summary of your forensic analysis.
 
-Provide a confidence score for your analysis. The confidence score should reflect how certain you are about your overall analysis. A high score (e.g., 95) means you are very sure of your findings, whether the video is real or fake.
-Write a short summary of your analysis.
-`,
+  **Part 2: Spoken Text Analysis (If Applicable)**
+  CRITICAL: Listen to the audio track of the video to determine if it contains any discernible speech.
+  - If NO speech is detected, omit the 'audioTextAnalysis' field from your output.
+  - If speech IS detected, you MUST:
+    a. Populate 'audioTextAnalysis.detectedText' with the full transcription of the speech.
+    b. Switch roles to a fake news analyst. Scrutinize the transcribed text. Does it contain misinformation, conspiracy theories, or manipulative language?
+    c. Populate 'audioTextAnalysis.analysis' with a detailed report of your findings about the spoken content, explaining why it might be credible, fake, or misleading.
+
+  Analyze the following video:
+  {{media url=videoDataUri}}
+  `,
   model: 'googleai/gemini-1.5-flash',
 });
 
