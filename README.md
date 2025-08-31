@@ -1,6 +1,6 @@
 # Veritas Vision
 
-Veritas Vision is an AI-powered web application designed to help users critically analyze digital content. In an era of rampant misinformation, this toolkit provides a suite of analysis tools to detect manipulation, assess credibility, and uncover biases in news articles, videos, and audio clips.
+Veritas Vision is an AI-powered web application designed to help users critically analyze digital content. In an era of rampant misinformation, this toolkit provides a suite of analysis tools to detect manipulation, assess credibility, and uncover biases in news articles, videos, images, and audio clips.
 
 Built with a modern tech stack, it leverages the power of Google's Gemini models through Genkit to deliver sophisticated, real-time content analysis.
 
@@ -16,7 +16,7 @@ This project is built on a foundation of powerful and modern technologies:
 
 ## Core Features
 
-The application is divided into three primary analysis tools:
+The application is divided into four primary analysis tools:
 
 ### 1. News Sleuth
 
@@ -43,11 +43,14 @@ Video Integrity scrutinizes video files to detect deepfakes, AI-generated conten
   - **AI Model**: This feature leverages a multimodal version of the `Gemini` model capable of processing video input.
   - **Process**:
     1.  The uploaded video is converted into a data URI and sent to the Genkit flow.
-    2.  The AI model analyzes the video frame by frame, looking for visual and audio artifacts common in manipulated or synthetic media. This includes unnatural facial movements, visual inconsistencies, and audio that doesn't match the video.
+    2.  The AI model analyzes the video frame by frame for visual artifacts and the audio for signs of synthetic generation.
+    3.  Crucially, it also **transcribes any speech** in the video and analyzes it for misinformation, providing a separate text-based credibility analysis.
+    4.  It also checks if the video is being used in a **misleading context** (e.g., an old video presented as new).
   - **Output**: The **Analysis Report** includes:
     - A confidence score for the overall analysis.
-    - A checklist of detected issues (e.g., `Deepfake`, `Video Manipulation`, `Synthetic Voice`).
-    - A summary explaining the findings.
+    - A checklist of detected issues (e.g., `Deepfake`, `Misleading Context`, `Synthetic Voice`).
+    - An analysis of the spoken text if speech is detected.
+    - A summary explaining all the findings.
 
 ### 3. Audio Authenticator
 
@@ -58,11 +61,29 @@ Audio Authenticator examines audio clips to determine if they are authentic reco
   - **AI Model**: Uses a multimodal version of the `Gemini` model capable of processing audio.
   - **Process**:
     1.  The uploaded audio is converted to a data URI.
-    2.  The AI model analyzes the audio's waveform and characteristics. It is prompted to listen for signs of AI generation, such as unnatural cadence, lack of background noise, robotic artifacts, or abrupt cuts. It also looks for positive signs of authenticity, like natural speech patterns and consistent room tone.
+    2.  The AI model analyzes the audio's waveform and characteristics for signs of AI generation (e.g., unnatural cadence, robotic artifacts).
+    3.  It also considers whether the **content of the speech** could be easily taken out of context to spread misinformation.
   - **Output**: The **Analysis Report** provides:
     - A verdict (`Likely Authentic`, `Potential AI/Manipulation`, `Uncertain`).
     - A confidence score for the verdict.
-    - A detailed report explaining the reasoning, which must be consistent with the final verdict.
+    - A detailed report explaining the reasoning, which must be consistent with a final verdict.
+
+### 4. Image Verifier
+
+Image Verifier analyzes images to detect AI-generation or manipulation and to analyze any text found within the image.
+
+- **How it Works**:
+  - **Input**: Users upload an image file (up to 10MB).
+  - **AI Model**: Leverages a multimodal version of the `Gemini` model.
+  - **Process**:
+    1. The AI performs a forensic analysis of the image to detect signs of AI generation or digital manipulation.
+    2. It uses its knowledge to determine if the image is being used in a **misleading context**.
+    3. If any **text is detected within the image** (e.g., a headline on a screenshot), it analyzes that text separately for misinformation or bias.
+  - **Output**: A comprehensive report including:
+    - A verdict on the image's authenticity.
+    - A confidence score.
+    - A detailed forensic report.
+    - A separate analysis of any text found in the image.
 
 ## Getting Started
 
