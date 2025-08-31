@@ -7,7 +7,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  signInWithRedirect,
+  signInWithPopup,
   GoogleAuthProvider,
   User,
 } from 'firebase/auth';
@@ -51,7 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = () => {
     const provider = new GoogleAuthProvider();
-    return signInWithRedirect(auth, provider);
+    return signInWithPopup(auth, provider);
   }
 
   const value = {
