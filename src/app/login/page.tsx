@@ -28,7 +28,7 @@ const loginSchema = z.object({
 });
 
 export default function LoginPage() {
-  const { user, loading, signUp, logIn } = useAuth();
+  const { user, loading, signUp, logIn, signInWithGoogle } = useAuth();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
@@ -79,9 +79,15 @@ export default function LoginPage() {
     }
   };
   
-  const handleGoogleSignIn = () => {
-    // Redirect to our server-side route to initiate Google Sign-In
-    router.push('/api/auth/google');
+  const handleGoogleSignIn = async () => {
+    setIsSubmitting(true);
+    try {
+        await signInWithGoogle();
+        // The page will redirect, so no need to do anything else here.
+    } catch (error: any) {
+        toast({ variant: 'destructive', title: 'Google Sign-In Failed', description: error.message });
+        setIsSubmitting(false);
+    }
   }
 
   if (loading) {

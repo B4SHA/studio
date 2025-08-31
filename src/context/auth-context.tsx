@@ -7,7 +7,6 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  signInWithPopup,
   signInWithRedirect,
   GoogleAuthProvider,
   User,
@@ -52,7 +51,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = () => {
     const provider = new GoogleAuthProvider();
-    // Using redirect is more robust in constrained environments like iframes
     return signInWithRedirect(auth, provider);
   }
 
