@@ -1,3 +1,4 @@
+
 /**
  * @fileoverview This file is responsible for the initial setup of the Genkit environment.
  * It ensures that environment variables are loaded from the .env file before any other
