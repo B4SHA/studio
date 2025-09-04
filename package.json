@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbo",
-    "genkit:dev": "tsx --env-file=.env -r dotenv/config src/ai/dev.ts",
-    "genkit:watch": "tsx --watch --env-file=.env -r dotenv/config src/ai/dev.ts",
+    "genkit:dev": "tsx -r dotenv/config src/ai/dev.ts",
+    "genkit:watch": "tsx --watch -r dotenv/config src/ai/dev.ts",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
