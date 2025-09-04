@@ -97,12 +97,6 @@
   }
 
   .dark body::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
     background: radial-gradient(
         ellipse 80% 50% at 50% -20%,
         hsla(217, 100%, 50%, 0.3),
@@ -113,9 +107,6 @@
         hsla(258, 70%, 60%, 0.3),
         transparent
       );
-    z-index: -1;
-    pointer-events: none;
-    animation: aurora-glow 15s ease-in-out infinite;
   }
 
   @keyframes aurora-glow {
