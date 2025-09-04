@@ -194,66 +194,63 @@ export function ImageVerifier() {
                 </div>
                 )}
                 {result && (
-                <div className="flex-1 flex flex-col min-h-0">
-                    <div className="px-1 space-y-4">
-                      <div className="flex items-center justify-between">
-                          <h3 className="font-semibold text-lg">Image Verdict</h3>
-                          <Badge variant={getVerdictBadgeVariant(result.verdict)} className="px-3 py-1 text-sm">
-                          {getVerdictIcon(result.verdict)}
-                          {result.verdict}
-                          </Badge>
-                      </div>
-                      <div className="flex items-center justify-between">
-                          <h3 className="font-semibold text-lg">Confidence Score</h3>
-                          <span className="font-bold text-2xl text-primary">{result.confidenceScore}/100</span>
-                      </div>
-                      <Progress value={result.confidenceScore} indicatorClassName={getProgressIndicatorClassName(result.confidenceScore)} />
-                    </div>
-                    <Separator className="my-4" />
-                     <div className="divide-y rounded-md border bg-muted/20 mb-4">
-                        <AnalysisItem label="AI-Generated" value={result.isAiGenerated} />
-                        <AnalysisItem label="Digital Manipulation" value={result.isManipulated} />
-                        <AnalysisItem label="Misleading Context" value={result.isMisleadingContext} />
-                    </div>
-                    
-                    <div className="flex-1 min-h-0">
-                        <ScrollArea className="h-full pr-4 max-h-[30rem]">
-                            <div className="space-y-4">
-                                {result.textAnalysis?.detectedText && (
-                                  <>
-                                    <Alert>
-                                      <Icons.news className="h-4 w-4" />
-                                      <AlertTitle>Text Detected in Image</AlertTitle>
-                                      <AlertDescription className="mt-2">
-                                          <blockquote className="border-l-2 pl-4 italic my-2">
-                                              {result.textAnalysis.detectedText}
-                                          </blockquote>
-                                          <p className="font-semibold mt-3 mb-1">Text Analysis:</p>
-                                          <p className="text-foreground/80 leading-relaxed whitespace-pre-wrap break-words">
-                                            {result.textAnalysis.analysis}
-                                          </p>
-                                      </AlertDescription>
-                                    </Alert>
-                                    <Separator />
-                                  </>
-                                )}
-                                <div>
-                                    <h3 className="font-semibold text-lg mb-2">Image Context</h3>
-                                    <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-wrap break-words">
-                                        {result.context}
+                  <ScrollArea className="flex-1 pr-4 -mr-4">
+                    <div className="flex flex-col space-y-4">
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                              <h3 className="font-semibold text-lg">Image Verdict</h3>
+                              <Badge variant={getVerdictBadgeVariant(result.verdict)} className="px-3 py-1 text-sm">
+                              {getVerdictIcon(result.verdict)}
+                              {result.verdict}
+                              </Badge>
+                          </div>
+                          <div className="flex items-center justify-between">
+                              <h3 className="font-semibold text-lg">Confidence Score</h3>
+                              <span className="font-bold text-2xl text-primary">{result.confidenceScore}/100</span>
+                          </div>
+                          <Progress value={result.confidenceScore} indicatorClassName={getProgressIndicatorClassName(result.confidenceScore)} />
+                        </div>
+                        <Separator />
+                        <div className="divide-y rounded-md border bg-muted/20">
+                            <AnalysisItem label="AI-Generated" value={result.isAiGenerated} />
+                            <AnalysisItem label="Digital Manipulation" value={result.isManipulated} />
+                            <AnalysisItem label="Misleading Context" value={result.isMisleadingContext} />
+                        </div>
+                        
+                        {result.textAnalysis?.detectedText && (
+                            <>
+                              <Separator />
+                              <Alert>
+                                <Icons.news className="h-4 w-4" />
+                                <AlertTitle>Text Detected in Image</AlertTitle>
+                                <AlertDescription className="mt-2">
+                                    <blockquote className="border-l-2 pl-4 italic my-2 text-sm max-h-32 overflow-y-auto">
+                                        {result.textAnalysis.detectedText}
+                                    </blockquote>
+                                    <p className="font-semibold mt-3 mb-1">Text Analysis:</p>
+                                    <p className="text-foreground/80 leading-relaxed whitespace-pre-wrap break-words">
+                                      {result.textAnalysis.analysis}
                                     </p>
-                                </div>
-                                <Separator />
-                                <div>
-                                    <h3 className="font-semibold text-lg mb-2">Image Forensics Report</h3>
-                                    <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-wrap break-words">
-                                        {result.report}
-                                    </p>
-                                </div>
-                            </div>
-                        </ScrollArea>
+                                </AlertDescription>
+                              </Alert>
+                            </>
+                        )}
+                        <Separator />
+                        <div>
+                            <h3 className="font-semibold text-lg mb-2">Image Context</h3>
+                            <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-wrap break-words">
+                                {result.context}
+                            </p>
+                        </div>
+                        <Separator />
+                        <div>
+                            <h3 className="font-semibold text-lg mb-2">Image Forensics Report</h3>
+                            <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-wrap break-words">
+                                {result.report}
+                            </p>
+                        </div>
                     </div>
-                </div>
+                  </ScrollArea>
                 )}
             </CardContent>
             </Card>
