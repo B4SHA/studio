@@ -50,15 +50,25 @@ const prompt = ai.definePrompt({
   output: {schema: VideoIntegrityOutputSchema},
   prompt: `You are a multi-disciplinary expert in digital forensics, combining video analysis with audio and text investigation.
 
-  Your task is to perform a two-part analysis on the provided video:
+  Your task is to perform a two-part analysis on the provided video.
 
   **Part 1: Visual and Audio Forensics**
   Analyze the video for authenticity. You will determine if it is a deepfake, used in a misleading context, manipulated, satire/parody, contains a synthetic voice, or is fully AI-generated.
+  
+  **Visual Analysis:**
   - Look for visual artifacts, unnatural movements, inconsistent lighting, and other signs of manipulation.
-  - Listen for audio artifacts that suggest a synthetic voice.
+  
+  **Audio Analysis (CRITICAL for Synthetic Voice Detection):**
+  - Listen for audio artifacts that suggest a synthetic voice. Pay extremely close attention to:
+    - **Cadence and Intonation:** Is the speech pattern unnatural, too perfect, or lacking normal human emotion?
+    - **Background Noise:** Is the audio unnaturally sterile or clean, lacking the subtle ambient sounds of a real recording?
+    - **Digital Artifacts:** Are there any slight robotic tones, distortions, or unusual frequencies?
+    - **Breathing and Pauses:** Are breaths non-existent or do they sound unnatural?
+  
+  **Contextual Analysis:**
   - Use your internal knowledge to determine if the video is being presented in a misleading context (e.g., wrong time or place).
   - Provide a confidence score for your overall analysis. The confidence score should reflect how certain you are about your findings, whether the video is real or fake.
-  - Write a short summary of your forensic analysis.
+  - Write a short summary of your forensic analysis. Your summary MUST be consistent with your findings (e.g., if 'syntheticVoice' is true, do not describe the audio as "natural-sounding").
 
   **Part 2: Spoken Text Analysis (If Applicable)**
   CRITICAL: Listen to the audio track of the video to determine if it contains any discernible speech.
