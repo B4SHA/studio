@@ -1,5 +1,4 @@
-
-import 'dotenv/config';
+import './init'; // Use the new init file to guarantee load order
 
 import '@/ai/flows/audio-authenticator-flow.ts';
 import '@/ai/flows/video-integrity-flow.ts';
