@@ -1,4 +1,6 @@
-import './init'; // Use the new init file to guarantee load order
+
+import 'dotenv/config';
+import './genkit';
 
 import '@/ai/flows/audio-authenticator-flow.ts';
 import '@/ai/flows/video-integrity-flow.ts';
