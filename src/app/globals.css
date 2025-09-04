@@ -74,6 +74,28 @@
   body {
     @apply bg-background text-foreground;
   }
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(
+        ellipse 80% 50% at 50% -20%,
+        hsla(var(--primary), 0.1),
+        transparent
+      ),
+      radial-gradient(
+        ellipse 80% 50% at 50% 120%,
+        hsla(var(--accent), 0.1),
+        transparent
+      );
+    z-index: -1;
+    pointer-events: none;
+    animation: aurora-glow 15s ease-in-out infinite;
+  }
+
   .dark body::before {
     content: "";
     position: fixed;
