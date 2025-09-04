@@ -83,17 +83,17 @@
     height: 100vh;
     background: radial-gradient(
         ellipse 80% 50% at 50% -20%,
-        hsla(var(--primary), 0.4),
+        hsla(var(--primary), 0.6),
         transparent
       ),
       radial-gradient(
         ellipse 80% 50% at 50% 120%,
-        hsla(var(--accent), 0.4),
+        hsla(var(--accent), 0.6),
         transparent
       );
     z-index: -1;
     pointer-events: none;
-    animation: aurora-glow 15s ease-in-out infinite;
+    animation: aurora-glow 12s ease-in-out infinite;
   }
 
   .dark body::before {
