@@ -83,23 +83,17 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: radial-gradient(
-        ellipse 80% 50% at 50% -20%,
-        hsla(var(--primary) / 0.3),
-        transparent
-      ),
-      radial-gradient(
-        ellipse 80% 50% at 50% 120%,
-        hsla(var(--accent) / 0.3),
-        transparent
-      );
+    background-image:
+      linear-gradient(to right, hsl(var(--border)) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--border)) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.2;
     z-index: -1;
     pointer-events: none;
-    animation: aurora-glow 12s ease-in-out infinite;
   }
 
   .dark body::before {
-    background: radial-gradient(
+    background-image: radial-gradient(
         ellipse 80% 50% at 50% -20%,
         hsla(217, 100%, 50%, 0.3),
         transparent
@@ -109,6 +103,9 @@
         hsla(258, 70%, 60%, 0.3),
         transparent
       );
+    background-size: auto;
+    opacity: 1;
+    animation: aurora-glow 12s ease-in-out infinite;
   }
 
   @keyframes aurora-glow {
