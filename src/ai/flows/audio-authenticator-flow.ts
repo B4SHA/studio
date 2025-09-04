@@ -25,6 +25,10 @@ const AudioAuthenticatorOutputSchema = z.object({
   verdict: z.enum(['Likely Authentic', 'Potential AI/Manipulation', 'Uncertain']).describe("The final verdict on the audio's authenticity."),
   confidenceScore: z.number().min(0).max(100).describe('The confidence score for the verdict (0-100).'),
   report: z.string().describe('A detailed report of the analysis results, explaining the verdict and considering if the content could be misleading.'),
+  textAnalysis: z.object({
+    detectedText: z.string().optional().describe('The text transcribed from the audio clip. If no speech is found, this should be omitted.'),
+    analysis: z.string().optional().describe('An analysis of the transcribed text for misinformation or misleading context. Omitted if no speech is found.'),
+  }).optional().describe('An analysis of any speech found within the audio clip.'),
 });
 export type AudioAuthenticatorOutput = z.infer<typeof AudioAuthenticatorOutputSchema>;
 
@@ -38,26 +42,25 @@ const prompt = ai.definePrompt({
   name: 'audioAuthenticatorPrompt',
   input: {schema: AudioAuthenticatorInputSchema},
   output: {schema: AudioAuthenticatorOutputSchema},
-  prompt: `You are an expert in audio forensics and AI-generated content detection.
+  prompt: `You are an expert in digital forensics with two specialties: audio analysis and misinformation detection.
 
-  Your task is to analyze the provided audio clip to determine if it has been manipulated or is AI-generated.
+  Your task is to perform a two-part analysis on the provided audio clip.
   
-  Characteristics of authentic audio may include:
-  - Natural speech patterns, including "ums", "ahs", and pauses.
-  - Consistent background noise or room ambiance.
-  - Natural emotional intonation and pitch variation.
+  **Part 1: Audio Forensics**
+  Analyze the audio clip's technical properties to determine if it is authentic or has been manipulated or AI-generated.
+  - Characteristics of authentic audio: Natural speech patterns, consistent background noise, natural emotional intonation.
+  - Characteristics of manipulated/AI audio: Unnatural cadence, sterile silence, robotic artifacts, abrupt cuts.
+  - Based on this, provide a 'verdict' ('Likely Authentic', 'Potential AI/Manipulation', or 'Uncertain'), a 'confidenceScore' for the verdict, and a detailed 'report' explaining your reasoning.
 
-  Characteristics of AI-generated or manipulated audio may include:
-  - Unnatural cadence or rhythm.
-  - Lack of typical background noise or sterile silence between words.
-  - Metallic or robotic artifacts in the voice.
-  - Abrupt cuts or changes in audio quality.
+  **Part 2: Content and Speech Analysis**
+  CRITICAL: Listen to the content of the audio to determine if there is any discernible speech.
+  - If NO speech is detected (e.g., it is just music, noise, or silence), omit the 'textAnalysis' field entirely from your output.
+  - If speech IS detected, you MUST:
+    a. Populate 'textAnalysis.detectedText' with the full transcription of the speech.
+    b. Switch roles to a misinformation analyst. Scrutinize the transcribed text. Is it being used in a misleading context? Could the content, even if authentically spoken, be used to spread misinformation (e.g., quoting song lyrics as a real statement, satire presented as fact)?
+    c. Populate 'textAnalysis.analysis' with your detailed analysis of the spoken content.
 
-  Based on your analysis, you will provide a final verdict ('Likely Authentic', 'Potential AI/Manipulation', or 'Uncertain') and a confidence score for that verdict.
-
-  You must also provide a detailed report explaining your reasoning. The report MUST justify the verdict you have chosen, citing specific audio characteristics that support your conclusion.
-  
-  CRITICAL: In your report, also consider the content of what is being said. Even if the audio is authentic, briefly mention if the content is of a nature that could be easily taken out of context or used to spread misinformation. Ensure there is no contradiction between the verdict and the report.
+  Ensure your final 'report' from Part 1 is consistent with your findings from both parts.
 
   Audio: {{media url=audioDataUri}}`,
 });

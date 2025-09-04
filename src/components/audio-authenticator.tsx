@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "./ui/scroll-area";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 
 const formSchema = z.object({
   audioFile: z
@@ -176,33 +177,56 @@ export function AudioAuthenticator() {
                   </div>
                   )}
                   {result && (
-                  <div className="flex-1 flex flex-col min-h-0 space-y-4">
-                      <div>
-                        <div className="px-1 space-y-4">
-                            <div className="flex items-center justify-between">
-                                <h3 className="font-semibold text-lg">Verdict</h3>
-                                <Badge variant={getVerdictBadgeVariant(result.verdict)} className="px-3 py-1 text-sm">
-                                {getVerdictIcon(result.verdict)}
-                                {result.verdict}
-                                </Badge>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <h3 className="font-semibold text-lg">Confidence Score</h3>
-                                <span className="font-bold text-2xl text-primary">{result.confidenceScore}/100</span>
-                            </div>
-                            <Progress value={result.confidenceScore} indicatorClassName={getProgressIndicatorClassName(result.confidenceScore)} />
+                  <ScrollArea className="flex-1 pr-4 -mr-4">
+                    <div className="flex-1 flex flex-col min-h-0 space-y-4">
+                        <div>
+                          <div className="px-1 space-y-4">
+                              <div className="flex items-center justify-between">
+                                  <h3 className="font-semibold text-lg">Verdict</h3>
+                                  <Badge variant={getVerdictBadgeVariant(result.verdict)} className="px-3 py-1 text-sm">
+                                  {getVerdictIcon(result.verdict)}
+                                  {result.verdict}
+                                  </Badge>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                  <h3 className="font-semibold text-lg">Confidence Score</h3>
+                                  <span className="font-bold text-2xl text-primary">{result.confidenceScore}/100</span>
+                              </div>
+                              <Progress value={result.confidenceScore} indicatorClassName={getProgressIndicatorClassName(result.confidenceScore)} />
+                          </div>
                         </div>
-                      </div>
-                      <Separator/>
-                      <div className="flex-1 flex flex-col min-h-0">
-                        <h3 className="font-semibold text-lg mb-2 px-1">Detailed Report</h3>
-                        <ScrollArea className="flex-1 pr-4">
-                              <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-wrap break-words">
-                                  {result.report}
-                              </p>
-                        </ScrollArea>
-                      </div>
-                  </div>
+                        <Separator/>
+
+                        {result.textAnalysis?.detectedText && (
+                            <>
+                                <Alert>
+                                    <Icons.news className="h-4 w-4" />
+                                    <AlertTitle>Speech Analysis</AlertTitle>
+                                    <AlertDescription className="mt-2">
+                                        <p className="font-semibold mb-2">Transcript:</p>
+                                        <blockquote className="border-l-2 pl-4 italic my-2 text-sm max-h-24 overflow-y-auto">
+                                            {result.textAnalysis.detectedText}
+                                        </blockquote>
+                                        <p className="font-semibold mt-3 mb-1">Content Analysis:</p>
+                                        <p className="text-foreground/80 leading-relaxed whitespace-pre-wrap break-words">
+                                            {result.textAnalysis.analysis}
+                                        </p>
+                                    </AlertDescription>
+                                </Alert>
+                                <Separator />
+                            </>
+                        )}
+                        
+                        <div className="flex-1 flex flex-col min-h-0">
+                          <h3 className="font-semibold text-lg mb-2 px-1">Detailed Forensic Report</h3>
+                          <div className="flex-1">
+                                <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-wrap break-words">
+                                    {result.report}
+                                </p>
+                          </div>
+                        </div>
+                    </div>
+                  </ScrollArea>
                   )}
               </CardContent>
             </Card>
