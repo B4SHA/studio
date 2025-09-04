@@ -7,7 +7,6 @@ import Loading from '../loading';
 const ImageVerifier = dynamic(
   () => import('@/components/image-verifier').then((mod) => mod.ImageVerifier),
   {
-    ssr: false,
     loading: () => <Loading />,
   }
 );

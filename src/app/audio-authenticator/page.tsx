@@ -7,7 +7,6 @@ import Loading from '../loading';
 const AudioAuthenticator = dynamic(
   () => import('@/components/audio-authenticator').then((mod) => mod.AudioAuthenticator),
   {
-    ssr: false,
     loading: () => <Loading />,
   }
 );

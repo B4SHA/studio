@@ -7,7 +7,6 @@ import Loading from '../loading';
 const VideoIntegrity = dynamic(
   () => import('@/components/video-integrity').then((mod) => mod.VideoIntegrity),
   {
-    ssr: false,
     loading: () => <Loading />,
   }
 );

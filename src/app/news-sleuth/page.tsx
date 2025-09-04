@@ -7,7 +7,6 @@ import Loading from '../loading';
 const NewsSleuth = dynamic(
   () => import('@/components/news-sleuth').then((mod) => mod.NewsSleuth),
   {
-    ssr: false,
     loading: () => <Loading />,
   }
 );
@@ -20,5 +19,3 @@ export default function NewsSleuthPage() {
     </div>
   );
 }
-
-    
