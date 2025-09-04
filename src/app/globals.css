@@ -83,12 +83,12 @@
     height: 100vh;
     background: radial-gradient(
         ellipse 80% 50% at 50% -20%,
-        hsla(var(--primary), 0.3),
+        hsla(var(--primary), 0.4),
         transparent
       ),
       radial-gradient(
         ellipse 80% 50% at 50% 120%,
-        hsla(var(--accent), 0.3),
+        hsla(var(--accent), 0.4),
         transparent
       );
     z-index: -1;
