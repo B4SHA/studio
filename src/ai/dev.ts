@@ -1,4 +1,5 @@
 
+import 'dotenv/config';
 import '@/ai/genkit';
 
 import '@/ai/flows/audio-authenticator-flow.ts';
