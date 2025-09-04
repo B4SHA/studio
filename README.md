@@ -43,7 +43,7 @@ Video Integrity scrutinizes video files to detect deepfakes, AI-generated conten
   - **AI Model**: This feature leverages a multimodal version of the `Gemini` model capable of processing video input.
   - **Process**:
     1.  The uploaded video is converted into a data URI and sent to the Genkit flow.
-    2.  The AI model analyzes the video frame by frame for visual artifacts and the audio for signs of synthetic generation.
+    2.  The AI model analyzes the video frame by frame for visual artifacts and the audio for signs of synthetic generation, with an enhanced focus on unnatural cadence and digital artifacts.
     3.  Crucially, it also **transcribes any speech** in the video and analyzes it for misinformation, providing a separate text-based credibility analysis.
     4.  It also checks if the video is being used in a **misleading context** (e.g., an old video presented as new).
   - **Output**: The **Analysis Report** includes:
@@ -61,12 +61,14 @@ Audio Authenticator examines audio clips to determine if they are authentic reco
   - **AI Model**: Uses a multimodal version of the `Gemini` model capable of processing audio.
   - **Process**:
     1.  The uploaded audio is converted to a data URI.
-    2.  The AI model analyzes the audio's waveform and characteristics for signs of AI generation (e.g., unnatural cadence, robotic artifacts).
-    3.  It also considers whether the **content of the speech** could be easily taken out of context to spread misinformation.
+    2.  The AI model performs a two-part analysis:
+        - **Audio Forensics**: It analyzes the audio's waveform for signs of AI generation (e.g., unnatural cadence, robotic artifacts).
+        - **Content & Speech Analysis**: If speech is detected, it is transcribed and analyzed for misinformation or misleading context (e.g., passing off song lyrics as a real statement).
   - **Output**: The **Analysis Report** provides:
     - A verdict (`Likely Authentic`, `Potential AI/Manipulation`, `Uncertain`).
     - A confidence score for the verdict.
-    - A detailed report explaining the reasoning, which must be consistent with a final verdict.
+    - A detailed forensic report.
+    - A separate analysis of any transcribed text.
 
 ### 4. Image Verifier
 
