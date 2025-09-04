@@ -74,6 +74,29 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  body {
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.1), hsl(var(--accent) / 0.1), hsl(var(--background)) 50%);
+    background-size: 200% 200%;
+    animation: gradient-animation 15s ease infinite;
+  }
+
+  .dark body {
+    background: var(--background); /* Reset for dark mode */
+  }
+
+  @keyframes gradient-animation {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
   body::before {
     content: "";
     position: fixed;
@@ -81,19 +104,9 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: radial-gradient(
-        ellipse 80% 50% at 50% -20%,
-        hsla(var(--primary), 0.6),
-        transparent
-      ),
-      radial-gradient(
-        ellipse 80% 50% at 50% 120%,
-        hsla(var(--accent), 0.6),
-        transparent
-      );
+    background: transparent;
     z-index: -1;
     pointer-events: none;
-    animation: aurora-glow 12s ease-in-out infinite;
   }
 
   .dark body::before {
@@ -107,6 +120,7 @@
         hsla(258, 70%, 60%, 0.3),
         transparent
       );
+    animation: aurora-glow 12s ease-in-out infinite;
   }
 
   @keyframes aurora-glow {
