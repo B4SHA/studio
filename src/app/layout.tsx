@@ -5,8 +5,8 @@ import { Header } from '@/components/header';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
 import React from 'react';
-import Loading from './loading';
 import { Inter } from 'next/font/google';
+import { PageWrapper } from '@/components/page-wrapper';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -32,9 +32,7 @@ export default function RootLayout({
         >
             <Header />
             <main className="flex-1 flex flex-col items-center justify-center">
-              <React.Suspense fallback={<Loading />}>
-                {children}
-              </React.Suspense>
+              <PageWrapper>{children}</PageWrapper>
             </main>
             <footer className="py-6 md:px-8 md:py-0 border-t">
               <div className="container flex flex-col items-center justify-center gap-4 md:h-20 md:flex-row">
