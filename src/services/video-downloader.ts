@@ -37,10 +37,18 @@ export async function downloadVideoFromUrl(
     }
 
     const jsonResponse = await apiResponse.json();
-    const videoDownloadUrl = jsonResponse.medias?.[0]?.url;
+    
+    if (!jsonResponse.success || !jsonResponse.data) {
+        console.error('API responded with an error:', jsonResponse.message || 'No message provided');
+        return {
+            error: `The download API reported an error: ${jsonResponse.message || 'Unknown error'}`,
+        };
+    }
+
+    const videoDownloadUrl = jsonResponse.data.medias?.[0]?.url;
 
     if (!videoDownloadUrl) {
-        console.error('API Response missing downloadUrl:', jsonResponse);
+        console.error('API Response missing downloadUrl in data.medias:', jsonResponse);
         return {
             error: 'The API did not return a valid download URL. The URL might be unsupported or the API response format may have changed.',
         };
