@@ -12,6 +12,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import ytdl from 'ytdl-core';
+import { Stream } from 'stream';
 
 const VideoIntegrityInputSchema = z.object({
   videoDataUri: z
@@ -88,6 +89,15 @@ const prompt = ai.definePrompt({
   model: 'googleai/gemini-1.5-flash',
 });
 
+async function streamToBuffer(stream: Stream): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    stream.on('data', (chunk) => chunks.push(chunk));
+    stream.on('error', reject);
+    stream.on('end', () => resolve(Buffer.concat(chunks)));
+  });
+}
+
 const videoIntegrityFlow = ai.defineFlow(
   {
     name: 'videoIntegrityFlow',
@@ -101,11 +111,7 @@ const videoIntegrityFlow = ai.defineFlow(
         if (input.videoUrl) {
             if (ytdl.validateURL(input.videoUrl)) {
               const stream = ytdl(input.videoUrl, { filter: 'audioandvideo', quality: 'lowest' });
-              const chunks: Buffer[] = [];
-              for await (const chunk of stream) {
-                chunks.push(chunk);
-              }
-              const buffer = Buffer.concat(chunks);
+              const buffer = await streamToBuffer(stream);
               videoDataUri = `data:video/mp4;base64,${buffer.toString('base64')}`;
             } else {
               const response = await fetch(input.videoUrl);
