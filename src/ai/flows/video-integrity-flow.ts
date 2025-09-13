@@ -10,6 +10,7 @@
  */
 
 import {ai} from '@/ai/genkit';
+import { downloadVideoFromUrl } from '@/services/video-downloader';
 import {z} from 'genkit';
 
 const VideoIntegrityInputSchema = z.object({
@@ -98,19 +99,14 @@ const videoIntegrityFlow = ai.defineFlow(
         let videoDataUri = input.videoDataUri;
         
         if (input.videoUrl) {
-          const response = await fetch(input.videoUrl);
-          if (!response.ok) {
-              throw new Error(`Failed to fetch video from URL: ${response.statusText}`);
+          const downloadResult = await downloadVideoFromUrl(input.videoUrl);
+          if (downloadResult.error) {
+            throw new Error(downloadResult.error);
           }
-          const contentType = response.headers.get('content-type');
-
-          if (!contentType || !contentType.startsWith('video/')) {
-            throw new Error('The provided URL does not point to a direct video file. Please use a direct video link or upload a file.');
+          if (!downloadResult.videoDataUri) {
+            throw new Error('Failed to download video from the provided URL.');
           }
-
-          const buffer = await response.arrayBuffer();
-          const base64 = Buffer.from(buffer).toString('base64');
-          videoDataUri = `data:${contentType};base64,${base64}`;
+          videoDataUri = downloadResult.videoDataUri;
         }
 
         if (!videoDataUri) {
@@ -147,3 +143,4 @@ const videoIntegrityFlow = ai.defineFlow(
     }
   }
 );
+
