@@ -11,8 +11,6 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import ytdl from 'ytdl-core';
-import type { Stream } from 'stream';
 
 const VideoIntegrityInputSchema = z.object({
   videoDataUri: z
@@ -89,15 +87,6 @@ const prompt = ai.definePrompt({
   model: 'googleai/gemini-1.5-pro',
 });
 
-async function streamToBuffer(stream: Stream): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
-    const chunks: Buffer[] = [];
-    stream.on('data', (chunk) => chunks.push(chunk as Buffer));
-    stream.on('error', reject);
-    stream.on('end', () => resolve(Buffer.concat(chunks)));
-  });
-}
-
 const videoIntegrityFlow = ai.defineFlow(
   {
     name: 'videoIntegrityFlow',
@@ -109,20 +98,19 @@ const videoIntegrityFlow = ai.defineFlow(
         let videoDataUri = input.videoDataUri;
         
         if (input.videoUrl) {
-            if (ytdl.validateURL(input.videoUrl)) {
-              const stream = ytdl(input.videoUrl, { filter: 'audioandvideo', quality: 'lowest' });
-              const buffer = await streamToBuffer(stream);
-              videoDataUri = `data:video/mp4;base64,${buffer.toString('base64')}`;
-            } else {
-              const response = await fetch(input.videoUrl);
-              if (!response.ok) {
-                  throw new Error(`Failed to fetch video from URL: ${response.statusText}`);
-              }
-              const contentType = response.headers.get('content-type') || 'video/mp4';
-              const buffer = await response.arrayBuffer();
-              const base64 = Buffer.from(buffer).toString('base64');
-              videoDataUri = `data:${contentType};base64,${base64}`;
-            }
+          const response = await fetch(input.videoUrl);
+          if (!response.ok) {
+              throw new Error(`Failed to fetch video from URL: ${response.statusText}`);
+          }
+          const contentType = response.headers.get('content-type');
+
+          if (!contentType || !contentType.startsWith('video/')) {
+            throw new Error('The provided URL does not point to a direct video file. Please use a direct video link or upload a file.');
+          }
+
+          const buffer = await response.arrayBuffer();
+          const base64 = Buffer.from(buffer).toString('base64');
+          videoDataUri = `data:${contentType};base64,${base64}`;
         }
 
         if (!videoDataUri) {
