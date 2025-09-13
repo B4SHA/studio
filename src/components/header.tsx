@@ -7,18 +7,22 @@ import { Icons } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from './ui/button';
-import { Menu } from 'lucide-react';
+import { Menu, Languages } from 'lucide-react';
 import { ThemeToggle } from './theme-toggle';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useLanguage } from '@/context/language-context';
+import { useTranslation } from '@/hooks/use-translation';
 
-const navigationLinks = [
-  { name: 'News Sleuth', href: '/news-sleuth' },
-  { name: 'Video Integrity', href: '/video-integrity' },
-  { name: 'Audio Authenticator', href: '/audio-authenticator' },
-  { name: 'Image Verifier', href: '/image-verifier' },
-];
 
 export function Header() {
   const pathname = usePathname();
+  const { setLanguage } = useLanguage();
+  const { t, navigationLinks } = useTranslation();
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -30,7 +34,7 @@ export function Header() {
           </span>
         </Link>
         
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           {/* Desktop Navigation */}
           <nav className="hidden md:flex gap-6">
             {navigationLinks.map((link) => (
@@ -47,6 +51,23 @@ export function Header() {
             ))}
           </nav>
 
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Languages className="h-[1.2rem] w-[1.2rem]" />
+                <span className="sr-only">Change language</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setLanguage('en')}>
+                English
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setLanguage('hi')}>
+                Hindi (हिन्दी)
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
           <ThemeToggle />
 
           {/* Mobile Navigation */}

@@ -1,0 +1,106 @@
+
+{
+  "navigation": {
+    "newsSleuth": "News Sleuth",
+    "videoIntegrity": "Video Integrity",
+    "audioAuthenticator": "Audio Authenticator",
+    "imageVerifier": "Image Verifier"
+  },
+  "home": {
+    "heroTitle": "Uncover the Truth",
+    "heroSubtitle": "In an ocean of digital noise, Veritas Vision is your anchor for truth. Our essential AI-powered toolkit empowers you to critically analyze news, video, and audio content, navigating the online world with clarity and confidence.",
+    "tryNowTitle": "Try Veritas Vision Now",
+    "features": [
+      {
+        "title": "News Sleuth",
+        "description": "Combat misinformation by analyzing news articles. Provide a URL, text, or just a headline, and our AI will generate a comprehensive credibility report to help you distinguish fact from fiction.",
+        "featureList": [
+          "Multi-Format Analysis: Accepts article text, URLs, or just headlines for flexible analysis.",
+          "Credibility Score: Receive a clear, data-driven credibility score from 0-100.",
+          "Source Verification: Uncovers biases and lists the sources consulted for its analysis."
+        ]
+      },
+      {
+        "title": "Video Integrity",
+        "description": "In the age of deepfakes, seeing isn't always believing. Upload a video, and our tool will perform a deep analysis to detect signs of manipulation, giving you a confidence score on its authenticity.",
+        "featureList": [
+          "Deepfake Detection: Identifies common artifacts of AI-generated or manipulated video.",
+          "Frame-by-Frame Scrutiny: Analyzes video for visual inconsistencies and manipulation.",
+          "Audio-Visual Sync: Detects synthetic voices and audio that doesn't match the visuals."
+        ]
+      },
+      {
+        "title": "Audio Authenticator",
+        "description": "Is that recording real or AI-generated? Upload an audio clip, and our authenticator will scrutinize it for tell-tale signs of artificial generation or manipulation.",
+        "featureList": [
+          "AI Voice Detection: Listens for robotic artifacts and unnatural speech patterns.",
+          "Authenticity Verdict: Delivers a clear verdict on whether the audio is authentic or likely manipulated.",
+          "Detailed Reporting: Provides a comprehensive report explaining the findings."
+        ]
+      },
+      {
+        "title": "Image Verifier",
+        "description": "Analyze images to detect AI-generation or manipulation. Upload an image, and our AI will assess its authenticity and search for its origins.",
+        "featureList": [
+          "AI-Generated Image Detection: Identifies images created by models like DALL-E or Midjourney.",
+          "Manipulation Analysis: Looks for signs of photoshop or other digital alterations.",
+          "Source Context: Attempts to find the original context or source of the image online."
+        ]
+      }
+    ],
+    "launchButton": "Launch"
+  },
+  "newsSleuth": {
+    "title": "News Sleuth",
+    "description": "Analyze an article's credibility from its text, URL, or headline to identify biases and flag potential misinformation.",
+    "inputTitle": "Analysis Input",
+    "inputDescription": "Choose one method to analyze your news source.",
+    "inputTextLabel": "Article Text",
+    "inputUrlLabel": "URL",
+    "inputHeadlineLabel": "Headline",
+    "inputTextPlaceholder": "Paste the full text of the news article here...",
+    "inputUrlPlaceholder": "https://example.com/news-article",
+    "inputHeadlinePlaceholder": "Enter the news article headline",
+    "analyzeButton": "Analyze Source",
+    "reportTitle": "Credibility Report",
+    "reportDescription": "The results of the news analysis will be displayed here.",
+    "analyzingText": "Analyzing article... This may take a moment.",
+    "pendingText": "Your report is pending analysis."
+  },
+  "videoIntegrity": {
+    "title": "Video Integrity",
+    "description": "Upload a video to detect deepfakes, manipulations, and other signs of AI-generated content.",
+    "inputTitle": "Video Input",
+    "inputDescription": "Select a video file to upload (Max 50MB).",
+    "inputFileLabel": "Video File",
+    "analyzeButton": "Analyze Video",
+    "reportTitle": "Analysis Report",
+    "reportDescription": "The results of the video analysis will appear here.",
+    "analyzingText": "Analyzing video... This can take some time, especially for longer videos.",
+    "pendingText": "Your report is pending analysis."
+  },
+  "audioAuthenticator": {
+    "title": "Audio Authenticator",
+    "description": "Upload an audio clip to analyze its authenticity and detect potential AI generation or manipulation.",
+    "inputTitle": "Audio Input",
+    "inputDescription": "Select an audio file to upload (Max 10MB).",
+    "inputFileLabel": "Audio File",
+    "analyzeButton": "Analyze Audio",
+    "reportTitle": "Analysis Report",
+    "reportDescription": "The results of the audio analysis will be displayed here.",
+    "analyzingText": "Analyzing audio... This may take a moment.",
+    "pendingText": "Your report is pending analysis."
+  },
+  "imageVerifier": {
+    "title": "Image Verifier",
+    "description": "Upload an image to detect AI-generation, manipulation, and analyze any text within it.",
+    "inputTitle": "Image Input",
+    "inputDescription": "Select an image file to upload (Max 10MB).",
+    "inputFileLabel": "Image File",
+    "analyzeButton": "Analyze Image",
+    "reportTitle": "Analysis Report",
+    "reportDescription": "The results of the image analysis will be displayed here.",
+    "analyzingText": "Analyzing image... This may take a moment.",
+    "pendingText": "Your report is pending analysis."
+  }
+}

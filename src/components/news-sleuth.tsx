@@ -20,6 +20,7 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { ScrollArea } from "./ui/scroll-area";
+import { useTranslation } from "@/hooks/use-translation";
 
 const formSchema = z.object({
   inputType: z.enum(["text", "url", "headline"]).default("text"),
@@ -76,6 +77,7 @@ export function NewsSleuth() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<NewsSleuthOutput | null>(null);
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -152,10 +154,10 @@ export function NewsSleuth() {
       <div className="container mx-auto flex flex-col items-center gap-8 max-w-5xl">
         <div className="text-center w-full">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tighter text-foreground mb-2">
-            News Sleuth
+            {t('newsSleuth.title')}
           </h1>
           <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-            Analyze an article's credibility from its text, URL, or headline to identify biases and flag potential misinformation.
+            {t('newsSleuth.description')}
           </p>
         </div>
 
@@ -166,10 +168,10 @@ export function NewsSleuth() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-xl">
                     <Icons.news className="h-6 w-6" />
-                    Analysis Input
+                    {t('newsSleuth.inputTitle')}
                   </CardTitle>
                   <CardDescription>
-                    Choose one method to analyze your news source.
+                    {t('newsSleuth.inputDescription')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6 flex-1">
@@ -191,19 +193,19 @@ export function NewsSleuth() {
                               <FormControl>
                                 <RadioGroupItem value="text" id="text" />
                               </FormControl>
-                              <FormLabel htmlFor="text" className="font-normal cursor-pointer">Article Text</FormLabel>
+                              <FormLabel htmlFor="text" className="font-normal cursor-pointer">{t('newsSleuth.inputTextLabel')}</FormLabel>
                             </FormItem>
                             <FormItem className="flex items-center space-x-2 space-y-0">
                               <FormControl>
                                 <RadioGroupItem value="url" id="url" />
                               </FormControl>
-                              <FormLabel htmlFor="url" className="font-normal cursor-pointer">URL</FormLabel>
+                              <FormLabel htmlFor="url" className="font-normal cursor-pointer">{t('newsSleuth.inputUrlLabel')}</FormLabel>
                             </FormItem>
                             <FormItem className="flex items-center space-x-2 space-y-0">
                               <FormControl>
                                 <RadioGroupItem value="headline" id="headline" />
                               </FormControl>
-                              <FormLabel htmlFor="headline" className="font-normal cursor-pointer">Headline</FormLabel>
+                              <FormLabel htmlFor="headline" className="font-normal cursor-pointer">{t('newsSleuth.inputHeadlineLabel')}</FormLabel>
                             </FormItem>
                           </RadioGroup>
                         </FormControl>
@@ -218,10 +220,10 @@ export function NewsSleuth() {
                         name="articleText"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Article Text</FormLabel>
+                            <FormLabel>{t('newsSleuth.inputTextLabel')}</FormLabel>
                             <FormControl>
                               <Textarea
-                                placeholder="Paste the full text of the news article here..."
+                                placeholder={t('newsSleuth.inputTextPlaceholder')}
                                 className="h-[250px] resize-y"
                                 {...field}
                               />
@@ -238,10 +240,10 @@ export function NewsSleuth() {
                         name="articleUrl"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Article URL</FormLabel>
+                            <FormLabel>{t('newsSleuth.inputUrlLabel')}</FormLabel>
                             <FormControl>
                               <Input 
-                                placeholder="https://example.com/news-article"
+                                placeholder={t('newsSleuth.inputUrlPlaceholder')}
                                 {...field}
                               />
                             </FormControl>
@@ -257,10 +259,10 @@ export function NewsSleuth() {
                         name="articleHeadline"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Article Headline</FormLabel>
+                            <FormLabel>{t('newsSleuth.inputHeadlineLabel')}</FormLabel>
                             <FormControl>
                               <Input 
-                                placeholder="Enter the news article headline"
+                                placeholder={t('newsSleuth.inputHeadlinePlaceholder')}
                                 {...field}
                               />
                             </FormControl>
@@ -274,7 +276,7 @@ export function NewsSleuth() {
                 <CardFooter>
                   <Button type="submit" disabled={isLoading} className="w-full h-12 text-lg font-semibold">
                     {isLoading && <Icons.spinner className="mr-2" />}
-                    Analyze Source
+                    {t('newsSleuth.analyzeButton')}
                   </Button>
                 </CardFooter>
               </form>
@@ -283,22 +285,22 @@ export function NewsSleuth() {
           
           <Card className="w-full shadow-lg border-2 border-border/80 bg-background/80 backdrop-blur-sm flex flex-col min-h-[500px] lg:min-h-[700px]">
             <CardHeader>
-              <CardTitle className="text-xl">Credibility Report</CardTitle>
+              <CardTitle className="text-xl">{t('newsSleuth.reportTitle')}</CardTitle>
               <CardDescription>
-                The results of the news analysis will be displayed here.
+                {t('newsSleuth.reportDescription')}
               </CardDescription>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col min-h-0">
               {isLoading && (
                 <div className="flex-1 flex flex-col items-center justify-center gap-4 p-8">
                   <Icons.spinner className="h-10 w-10 text-primary" />
-                  <p className="text-center text-muted-foreground">Analyzing article... <br/>This may take a moment.</p>
+                  <p className="text-center text-muted-foreground">{t('newsSleuth.analyzingText')}</p>
                 </div>
               )}
               {!isLoading && !result && (
                 <div className="flex-1 flex flex-col items-center justify-center text-center text-muted-foreground p-8">
                   <Icons.barChart className="mx-auto mb-4 h-10 w-10" />
-                  <p>Your report is pending analysis.</p>
+                  <p>{t('newsSleuth.pendingText')}</p>
                 </div>
               )}
               {result && result.credibilityReport && (

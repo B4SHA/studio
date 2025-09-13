@@ -8,80 +8,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Icons } from '@/components/icons';
 import { Card } from '@/components/ui/card';
-
-const features = [
-  {
-    Icon: Icons.news,
-    title: 'News Sleuth',
-    description: 'Combat misinformation by analyzing news articles. Provide a URL, text, or just a headline, and our AI will generate a comprehensive credibility report to help you distinguish fact from fiction.',
-    featureList: [
-      'Multi-Format Analysis: Accepts article text, URLs, or just headlines for flexible analysis.',
-      'Credibility Score: Receive a clear, data-driven credibility score from 0-100.',
-      'Source Verification: Uncovers biases and lists the sources consulted for its analysis.',
-    ],
-    href: '/news-sleuth',
-  },
-  {
-    Icon: Icons.video,
-    title: 'Video Integrity',
-    description: "In the age of deepfakes, seeing isn't always believing. Upload a video, and our tool will perform a deep analysis to detect signs of manipulation, giving you a confidence score on its authenticity.",
-    featureList: [
-      'Deepfake Detection: Identifies common artifacts of AI-generated or manipulated video.',
-      'Frame-by-Frame Scrutiny: Analyzes video for visual inconsistencies and manipulation.',
-      'Audio-Visual Sync: Detects synthetic voices and audio that doesn\'t match the visuals.',
-    ],
-    href: '/video-integrity',
-  },
-  {
-    Icon: Icons.audio,
-    title: 'Audio Authenticator',
-    description: 'Is that recording real or AI-generated? Upload an audio clip, and our authenticator will scrutinize it for tell-tale signs of artificial generation or manipulation.',
-    featureList: [
-      'AI Voice Detection: Listens for robotic artifacts and unnatural speech patterns.',
-      'Authenticity Verdict: Delivers a clear verdict on whether the audio is authentic or likely manipulated.',
-      'Detailed Reporting: Provides a comprehensive report explaining the findings.',
-    ],
-    href: '/audio-authenticator',
-  },
-  {
-    Icon: Icons.image,
-    title: 'Image Verifier',
-    description: 'Analyze images to detect AI-generation or manipulation. Upload an image, and our AI will assess its authenticity and search for its origins.',
-     featureList: [
-      'AI-Generated Image Detection: Identifies images created by models like DALL-E or Midjourney.',
-      'Manipulation Analysis: Looks for signs of photoshop or other digital alterations.',
-      'Source Context: Attempts to find the original context or source of the image online.',
-    ],
-    href: '/image-verifier',
-  },
-];
-
-const tryNowFeatures = [
-    {
-        Icon: Icons.news,
-        title: 'News Sleuth',
-        description: 'Analyze news articles for credibility and bias.',
-        href: '/news-sleuth',
-    },
-    {
-        Icon: Icons.video,
-        title: 'Video Integrity',
-        description: 'Detect deepfakes and manipulation in videos.',
-        href: '/video-integrity',
-    },
-    {
-        Icon: Icons.audio,
-        title: 'Audio Authenticator',
-        description: 'Verify the authenticity of audio recordings.',
-        href: '/audio-authenticator',
-    },
-    {
-        Icon: Icons.image,
-        title: 'Image Verifier',
-        description: 'Check images for AI-generation and manipulation.',
-        href: '/image-verifier',
-    },
-]
+import { useTranslation } from '@/hooks/use-translation';
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 50 },
@@ -93,6 +20,41 @@ const sectionVariants = {
 };
 
 export default function Home() {
+  const { t } = useTranslation();
+
+  const features = t('home.features') as Array<{title: string, description: string, featureList: string[]}>;
+
+  const tryNowFeatures = [
+    {
+        Icon: Icons.news,
+        title: t('navigation.newsSleuth'),
+        description: t('home.features.0.description').substring(0,45) + '...',
+        href: '/news-sleuth',
+    },
+    {
+        Icon: Icons.video,
+        title: t('navigation.videoIntegrity'),
+        description: t('home.features.1.description').substring(0,45) + '...',
+        href: '/video-integrity',
+    },
+    {
+        Icon: Icons.audio,
+        title: t('navigation.audioAuthenticator'),
+        description: t('home.features.2.description').substring(0,45) + '...',
+        href: '/audio-authenticator',
+    },
+    {
+        Icon: Icons.image,
+        title: t('navigation.imageVerifier'),
+        description: t('home.features.3.description').substring(0,45) + '...',
+        href: '/image-verifier',
+    },
+]
+
+  const featureIcons = [Icons.news, Icons.video, Icons.audio, Icons.image];
+  const featureHrefs = ['/news-sleuth', '/video-integrity', '/audio-authenticator', '/image-verifier'];
+
+
   return (
     <div className="w-full flex-1 flex flex-col items-center">
       {/* Hero Section */}
@@ -105,10 +67,10 @@ export default function Home() {
             className="max-w-5xl mx-auto"
           >
             <h1 className="text-6xl md:text-8xl font-bold tracking-tighter mb-6 bg-gradient-to-br from-primary via-orange-500 to-primary dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent">
-              Uncover the Truth
+              {t('home.heroTitle')}
             </h1>
             <p className="text-2xl md:text-3xl text-muted-foreground max-w-4xl mx-auto">
-              In an ocean of digital noise, Veritas Vision is your anchor for truth. Our essential AI-powered toolkit empowers you to critically analyze news, video, and audio content, navigating the online world with clarity and confidence.
+              {t('home.heroSubtitle')}
             </p>
           </motion.div>
         </div>
@@ -131,7 +93,7 @@ export default function Home() {
         variants={sectionVariants}
       >
         <div className="container">
-            <h2 className="text-4xl md:text-5xl font-bold text-center mb-12">Try Veritas Vision Now</h2>
+            <h2 className="text-4xl md:text-5xl font-bold text-center mb-12">{t('home.tryNowTitle')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {tryNowFeatures.map((feature) => (
                     <Link key={feature.href} href={feature.href} className="group">
@@ -147,42 +109,46 @@ export default function Home() {
       </motion.section>
 
       {/* Feature Sections */}
-      {features.map((feature, index) => (
-        <motion.section
-          key={feature.title}
-          className="w-full flex items-center justify-center py-20 md:py-28"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
-          variants={sectionVariants}
-        >
-          <div className="container">
-            <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-12">
-              <div className={cn("flex justify-center", index % 2 === 1 && "md:order-last")}>
-                <feature.Icon className="w-48 h-48 md:w-64 md:h-64 text-primary" />
+      {features.map((feature, index) => {
+          const Icon = featureIcons[index];
+          const href = featureHrefs[index];
+          return (
+            <motion.section
+              key={feature.title}
+              className="w-full flex items-center justify-center py-20 md:py-28"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.3 }}
+              variants={sectionVariants}
+            >
+              <div className="container">
+                <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-12">
+                  <div className={cn("flex justify-center", index % 2 === 1 && "md:order-last")}>
+                    <Icon className="w-48 h-48 md:w-64 md:h-64 text-primary" />
+                  </div>
+                  <div className="text-center md:text-left">
+                    <h2 className="text-4xl md:text-5xl font-bold mb-4">{feature.title}</h2>
+                    <p className="text-lg text-muted-foreground mb-6">{feature.description}</p>
+                    <ul className="space-y-3 text-left mb-8">
+                      {feature.featureList.map((item, i) => (
+                         <li key={i} className="flex items-start">
+                            <Icons.checkCircle className="h-5 w-5 text-primary mr-3 mt-1 shrink-0" />
+                            <span className="text-muted-foreground">{item}</span>
+                         </li>
+                      ))}
+                    </ul>
+                    <Link href={href}>
+                      <Button size="lg" className="group text-lg">
+                        {t('home.launchButton')} {feature.title}
+                        <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
               </div>
-              <div className="text-center md:text-left">
-                <h2 className="text-4xl md:text-5xl font-bold mb-4">{feature.title}</h2>
-                <p className="text-lg text-muted-foreground mb-6">{feature.description}</p>
-                <ul className="space-y-3 text-left mb-8">
-                  {feature.featureList.map((item, i) => (
-                     <li key={i} className="flex items-start">
-                        <Icons.checkCircle className="h-5 w-5 text-primary mr-3 mt-1 shrink-0" />
-                        <span className="text-muted-foreground">{item}</span>
-                     </li>
-                  ))}
-                </ul>
-                <Link href={feature.href}>
-                  <Button size="lg" className="group text-lg">
-                    Launch {feature.title}
-                    <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </motion.section>
-      ))}
+            </motion.section>
+          )
+        })}
     </div>
   );
 }

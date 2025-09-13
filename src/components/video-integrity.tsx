@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -17,6 +17,7 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "./ui/separator";
 import { ScrollArea } from "./ui/scroll-area";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { useTranslation } from "@/hooks/use-translation";
 
 const formSchema = z.object({
   videoFile: z
@@ -45,26 +46,20 @@ export function VideoIntegrity() {
   const [result, setResult] = useState<VideoIntegrityOutput | null>(null);
   const [videoPreview, setVideoPreview] = useState<string | null>(null);
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
-  const videoFile = form.watch("videoFile");
-
-  useEffect(() => {
-    let objectUrl: string | null = null;
-    if (videoFile && videoFile.length > 0) {
-      objectUrl = URL.createObjectURL(videoFile[0]);
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      form.setValue("videoFile", event.target.files as FileList);
+      const objectUrl = URL.createObjectURL(file);
       setVideoPreview(objectUrl);
     }
-
-    return () => {
-      if (objectUrl) {
-        URL.revokeObjectURL(objectUrl);
-      }
-    };
-  }, [videoFile]);
+  };
 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -92,10 +87,10 @@ export function VideoIntegrity() {
         <div className="container mx-auto flex flex-col items-center gap-8 max-w-5xl">
             <div className="text-center">
                 <h1 className="text-3xl md:text-4xl font-bold tracking-tighter text-foreground mb-2">
-                    Video Integrity
+                    {t('videoIntegrity.title')}
                 </h1>
                 <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-                    Upload a video to detect deepfakes, manipulations, and other signs of AI-generated content.
+                    {t('videoIntegrity.description')}
                 </p>
             </div>
 
@@ -104,10 +99,10 @@ export function VideoIntegrity() {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-xl">
                             <Icons.video className="h-6 w-6" />
-                            Video Input
+                            {t('videoIntegrity.inputTitle')}
                         </CardTitle>
                         <CardDescription>
-                            Select a video file to upload (Max 50MB).
+                            {t('videoIntegrity.inputDescription')}
                         </CardDescription>
                     </CardHeader>
                     <Form {...form}>
@@ -116,14 +111,14 @@ export function VideoIntegrity() {
                                 <FormField
                                     control={form.control}
                                     name="videoFile"
-                                    render={({ field }) => (
+                                    render={() => (
                                     <FormItem>
-                                        <FormLabel>Video File</FormLabel>
+                                        <FormLabel>{t('videoIntegrity.inputFileLabel')}</FormLabel>
                                         <FormControl>
                                         <Input
                                             type="file"
                                             accept="video/*"
-                                            onChange={(e) => field.onChange(e.target.files)}
+                                            onChange={handleFileChange}
                                             className="file:text-foreground h-12 text-base"
                                         />
                                         </FormControl>
@@ -140,7 +135,7 @@ export function VideoIntegrity() {
                             <CardFooter>
                                 <Button type="submit" disabled={isLoading} className="w-full h-12 text-lg font-semibold">
                                     {isLoading && <Icons.spinner className="mr-2" />}
-                                    Analyze Video
+                                    {t('videoIntegrity.analyzeButton')}
                                 </Button>
                             </CardFooter>
                         </form>
@@ -149,22 +144,22 @@ export function VideoIntegrity() {
 
                 <Card className="w-full shadow-lg border-2 border-border/80 bg-background/80 backdrop-blur-sm flex flex-col min-h-[500px] lg:min-h-auto">
                     <CardHeader>
-                        <CardTitle className="text-xl">Analysis Report</CardTitle>
+                        <CardTitle className="text-xl">{t('videoIntegrity.reportTitle')}</CardTitle>
                         <CardDescription>
-                            The results of the video analysis will appear here.
+                            {t('videoIntegrity.reportDescription')}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="flex-1 flex flex-col min-h-0">
                         {isLoading && (
                         <div className="flex-1 flex flex-col items-center justify-center gap-4 p-8">
                             <Icons.spinner className="h-10 w-10 text-primary" />
-                            <p className="text-muted-foreground text-center">Analyzing video... <br/>This can take some time, especially for longer videos.</p>
+                            <p className="text-muted-foreground text-center">{t('videoIntegrity.analyzingText')}</p>
                         </div>
                         )}
                         {!isLoading && !result && (
                         <div className="flex-1 flex flex-col items-center justify-center text-center text-muted-foreground p-8">
                             <Icons.barChart className="h-10 w-10 mx-auto mb-4" />
-                            <p>Your report is pending analysis.</p>
+                            <p>{t('videoIntegrity.pendingText')}</p>
                         </div>
                         )}
                         {result && result.analysis && (
@@ -228,5 +223,3 @@ export function VideoIntegrity() {
     </div>
   );
 }
-
-    

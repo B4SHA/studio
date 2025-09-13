@@ -7,6 +7,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import React from 'react';
 import { Inter } from 'next/font/google';
 import { PageWrapper } from '@/components/page-wrapper';
+import { LanguageProvider } from '@/context/language-context';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -30,6 +31,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
         >
+          <LanguageProvider>
             <Header />
             <main className="flex-1 flex flex-col items-center justify-center">
               <PageWrapper>{children}</PageWrapper>
@@ -42,6 +44,7 @@ export default function RootLayout({
               </div>
             </footer>
             <Toaster />
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>
