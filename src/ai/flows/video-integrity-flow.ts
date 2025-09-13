@@ -86,7 +86,7 @@ const prompt = ai.definePrompt({
   Analyze the following video:
   {{media url=videoDataUri}}
   `,
-  model: 'googleai/gemini-1.5-flash',
+  model: 'googleai/gemini-1.5-pro',
 });
 
 async function streamToBuffer(stream: Stream): Promise<Buffer> {
