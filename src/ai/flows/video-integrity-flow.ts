@@ -12,7 +12,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import ytdl from 'ytdl-core';
-import { Stream } from 'stream';
+import type { Stream } from 'stream';
 
 const VideoIntegrityInputSchema = z.object({
   videoDataUri: z
@@ -92,7 +92,7 @@ const prompt = ai.definePrompt({
 async function streamToBuffer(stream: Stream): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
-    stream.on('data', (chunk) => chunks.push(chunk));
+    stream.on('data', (chunk) => chunks.push(chunk as Buffer));
     stream.on('error', reject);
     stream.on('end', () => resolve(Buffer.concat(chunks)));
   });
