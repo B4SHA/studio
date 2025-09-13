@@ -15,19 +15,14 @@ export async function downloadVideoFromUrl(
     };
   }
 
-  const apiUrl =
-    'https://youtube-video-downloader-social.p.rapidapi.com/v1/video';
+  const apiUrl = `https://all-in-one-media-downloader-api.p.rapidapi.com/download?url=${encodeURIComponent(url)}`;
   const options = {
-    method: 'POST',
+    method: 'GET',
     headers: {
       'x-rapidapi-key': apiKey,
       'x-rapidapi-host':
-        'youtube-video-downloader-social.p.rapidapi.com',
-      'Content-Type': 'application/json',
+        'all-in-one-media-downloader-api.p.rapidapi.com',
     },
-    body: JSON.stringify({
-      url: url,
-    }),
   };
 
   try {
@@ -42,8 +37,7 @@ export async function downloadVideoFromUrl(
     }
 
     const jsonResponse = await apiResponse.json();
-    // The API response nests the result under a 'result' property
-    const videoDownloadUrl = jsonResponse.result?.downloadUrl;
+    const videoDownloadUrl = jsonResponse.medias?.[0]?.url;
 
     if (!videoDownloadUrl) {
         console.error('API Response missing downloadUrl:', jsonResponse);
