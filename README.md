@@ -1,8 +1,21 @@
 # Veritas Vision
 
-Veritas Vision is an AI-powered web application designed to help users critically analyze digital content. In an era of rampant misinformation, this toolkit provides a suite of analysis tools to detect manipulation, assess credibility, and uncover biases in news articles, videos, images, and audio clips.
+Veritas Vision is an AI-powered, multilingual web application designed to help users critically analyze digital content. In an era of rampant misinformation, this toolkit provides a suite of analysis tools to detect manipulation, assess credibility, and uncover biases in news articles, videos, images, and audio clips.
 
 Built with a modern tech stack, it leverages the power of Google's Gemini models through Genkit to deliver sophisticated, real-time content analysis.
+
+## Multi-Language Support
+
+The application is fully internationalized and supports the following languages:
+
+- **English**
+- **Hindi (हिन्दी)**
+- **Bengali (বাংলা)**
+- **Marathi (मराठी)**
+- **Telugu (తెలుగు)**
+- **Tamil (தமிழ்)**
+
+Users can switch the interface language, and the AI analysis reports will also be generated in the selected language.
 
 ## Tech Stack
 
