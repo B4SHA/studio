@@ -11,6 +11,8 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import ytdl from 'ytdl-core';
+import { PassThrough } from 'stream';
 
 const VideoIntegrityInputSchema = z.object({
   videoDataUri: z
@@ -98,14 +100,28 @@ const videoIntegrityFlow = ai.defineFlow(
         let videoDataUri = input.videoDataUri;
         
         if (input.videoUrl) {
-            const response = await fetch(input.videoUrl);
-            if (!response.ok) {
-                throw new Error(`Failed to fetch video from URL: ${response.statusText}`);
+            if (ytdl.validateURL(input.videoUrl)) {
+              const videoStream = ytdl(input.videoUrl, { filter: 'audioandvideo' });
+              const chunks: Buffer[] = [];
+              const passthrough = new PassThrough();
+              videoStream.pipe(passthrough);
+      
+              for await (const chunk of passthrough) {
+                chunks.push(chunk);
+              }
+      
+              const buffer = Buffer.concat(chunks);
+              videoDataUri = `data:video/mp4;base64,${buffer.toString('base64')}`;
+            } else {
+              const response = await fetch(input.videoUrl);
+              if (!response.ok) {
+                  throw new Error(`Failed to fetch video from URL: ${response.statusText}`);
+              }
+              const contentType = response.headers.get('content-type') || 'video/mp4';
+              const buffer = await response.arrayBuffer();
+              const base64 = Buffer.from(buffer).toString('base64');
+              videoDataUri = `data:${contentType};base64,${base64}`;
             }
-            const contentType = response.headers.get('content-type') || 'video/mp4';
-            const buffer = await response.arrayBuffer();
-            const base64 = Buffer.from(buffer).toString('base64');
-            videoDataUri = `data:${contentType};base64,${base64}`;
         }
 
         if (!videoDataUri) {
