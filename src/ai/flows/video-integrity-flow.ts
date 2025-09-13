@@ -17,7 +17,10 @@ const VideoIntegrityInputSchema = z.object({
     .string()
     .describe(
       "A video, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'"
-    )
+    ).optional(),
+  videoUrl: z.string().url().optional().describe('The URL of the video file to analyze.'),
+}).refine(data => data.videoDataUri || data.videoUrl, {
+  message: 'Either a video file or a URL must be provided.',
 });
 
 export type VideoIntegrityInput = z.infer<typeof VideoIntegrityInputSchema>;
@@ -46,7 +49,7 @@ export async function videoIntegrityAnalysis(input: VideoIntegrityInput): Promis
 
 const prompt = ai.definePrompt({
   name: 'videoIntegrityPrompt',
-  input: {schema: VideoIntegrityInputSchema},
+  input: {schema: z.object({ videoDataUri: z.string() })},
   output: {schema: VideoIntegrityOutputSchema},
   prompt: `You are a multi-disciplinary expert in digital forensics, combining video analysis with audio and text investigation.
 
@@ -92,7 +95,20 @@ const videoIntegrityFlow = ai.defineFlow(
   },
   async input => {
     try {
-        if (!input.videoDataUri) {
+        let videoDataUri = input.videoDataUri;
+        
+        if (input.videoUrl) {
+            const response = await fetch(input.videoUrl);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch video from URL: ${response.statusText}`);
+            }
+            const contentType = response.headers.get('content-type') || 'video/mp4';
+            const buffer = await response.arrayBuffer();
+            const base64 = Buffer.from(buffer).toString('base64');
+            videoDataUri = `data:${contentType};base64,${base64}`;
+        }
+
+        if (!videoDataUri) {
              return {
                 analysis: {
                     deepfake: false,
@@ -107,7 +123,7 @@ const videoIntegrityFlow = ai.defineFlow(
             };
         }
 
-        const {output} = await prompt({ videoDataUri: input.videoDataUri });
+        const {output} = await prompt({ videoDataUri });
         return output!;
     } catch (e: any) {
         console.error('Error during video analysis:', e);
