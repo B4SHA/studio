@@ -16,13 +16,13 @@ export async function downloadVideoFromUrl(
   }
 
   const apiUrl =
-    'https://universal-social-media-content-downloader-api.p.rapidapi.com/api/v1/download/video';
+    'https://universal-social-media-content-downloader.p.rapidapi.com/api/v1/download/video';
   const options = {
     method: 'POST',
     headers: {
       'x-rapidapi-key': apiKey,
       'x-rapidapi-host':
-        'universal-social-media-content-downloader-api.p.rapidapi.com',
+        'universal-social-media-content-downloader.p.rapidapi.com',
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
