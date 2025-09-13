@@ -16,13 +16,13 @@ export async function downloadVideoFromUrl(
   }
 
   const apiUrl =
-    'https://universal-social-media-content-downloader.p.rapidapi.com/api/v1/download/video';
+    'https://youtube-video-downloader-social.p.rapidapi.com/v1/video';
   const options = {
     method: 'POST',
     headers: {
       'x-rapidapi-key': apiKey,
       'x-rapidapi-host':
-        'universal-social-media-content-downloader.p.rapidapi.com',
+        'youtube-video-downloader-social.p.rapidapi.com',
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -42,12 +42,14 @@ export async function downloadVideoFromUrl(
     }
 
     const jsonResponse = await apiResponse.json();
-    const videoDownloadUrl = jsonResponse.downloadUrl;
+    // The API response nests the result under a 'result' property
+    const videoDownloadUrl = jsonResponse.result?.downloadUrl;
 
     if (!videoDownloadUrl) {
-      return {
-        error: 'The API did not return a valid download URL. The URL might be unsupported.',
-      };
+        console.error('API Response missing downloadUrl:', jsonResponse);
+        return {
+            error: 'The API did not return a valid download URL. The URL might be unsupported or the API response format may have changed.',
+        };
     }
 
     // Now, fetch the actual video content from the direct link
