@@ -12,7 +12,6 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import ytdl from 'ytdl-core';
-import { PassThrough } from 'stream';
 
 const VideoIntegrityInputSchema = z.object({
   videoDataUri: z
@@ -101,15 +100,11 @@ const videoIntegrityFlow = ai.defineFlow(
         
         if (input.videoUrl) {
             if (ytdl.validateURL(input.videoUrl)) {
-              const videoStream = ytdl(input.videoUrl, { filter: 'audioandvideo' });
+              const stream = ytdl(input.videoUrl, { filter: 'audioandvideo', quality: 'lowest' });
               const chunks: Buffer[] = [];
-              const passthrough = new PassThrough();
-              videoStream.pipe(passthrough);
-      
-              for await (const chunk of passthrough) {
+              for await (const chunk of stream) {
                 chunks.push(chunk);
               }
-      
               const buffer = Buffer.concat(chunks);
               videoDataUri = `data:video/mp4;base64,${buffer.toString('base64')}`;
             } else {
