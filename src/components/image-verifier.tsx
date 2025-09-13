@@ -20,6 +20,7 @@ import { ScrollArea } from "./ui/scroll-area";
 import Image from 'next/image';
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { useTranslation } from "@/hooks/use-translation";
+import { useLanguage } from "@/context/language-context";
 
 const formSchema = z.object({
   imageFile: z
@@ -48,6 +49,7 @@ export function ImageVerifier() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { toast } = useToast();
   const { t } = useTranslation();
+  const { language } = useLanguage();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -68,7 +70,7 @@ export function ImageVerifier() {
     
     try {
         const imageDataUri = await fileToDataUri(values.imageFile[0]);
-        const analysisResult = await imageVerifierAnalysis({ imageDataUri });
+        const analysisResult = await imageVerifierAnalysis({ imageDataUri, language });
         setResult(analysisResult);
     } catch (error) {
       console.error(error);

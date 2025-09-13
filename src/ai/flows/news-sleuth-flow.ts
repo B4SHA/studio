@@ -17,6 +17,7 @@ const NewsSleuthInputObjectSchema = z.object({
   articleText: z.string().optional().describe('The text content of the news article to analyze.'),
   articleUrl: z.string().url().optional().describe('The URL of the news article to analyze.'),
   articleHeadline: z.string().optional().describe('The headline of the news article to analyze.'),
+  language: z.string().optional().describe('The language for the analysis report (e.g., "en", "hi").'),
 });
 
 const NewsSleuthInputSchema = NewsSleuthInputObjectSchema.refine(
@@ -65,6 +66,8 @@ const prompt = ai.definePrompt({
   output: {schema: NewsSleuthOutputSchema},
   prompt: `You are an advanced reasoning engine, like Perplexity Sonar, with expertise in identifying fake news and assessing the credibility of news articles. Your primary function is to use your search and reasoning capabilities to analyze information in real-time.
 
+  CRITICAL: You MUST generate the entire credibility report (summary, biases, flagged content, reasoning) in the following language: {{language}}. If no language is specified, default to English. The 'verdict' and 'sources' fields should NOT be translated.
+  
   Your goal is to analyze news information for potential biases, low credibility content, and overall trustworthiness. Provide a detailed report including:
   1. An overall credibility score (0-100).
   2. A final verdict of 'Likely Real', 'Likely Fake', or 'Uncertain'.

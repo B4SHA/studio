@@ -18,6 +18,7 @@ import { Separator } from "./ui/separator";
 import { ScrollArea } from "./ui/scroll-area";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { useTranslation } from "@/hooks/use-translation";
+import { useLanguage } from "@/context/language-context";
 
 const formSchema = z.object({
   videoFile: z
@@ -47,6 +48,7 @@ export function VideoIntegrity() {
   const [videoPreview, setVideoPreview] = useState<string | null>(null);
   const { toast } = useToast();
   const { t } = useTranslation();
+  const { language } = useLanguage();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -68,7 +70,7 @@ export function VideoIntegrity() {
     
     try {
       const videoDataUri = await fileToDataUri(values.videoFile[0]);
-      const analysisResult = await videoIntegrityAnalysis({ videoDataUri });
+      const analysisResult = await videoIntegrityAnalysis({ videoDataUri, language });
       setResult(analysisResult);
     } catch (error) {
       console.error(error);

@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { ScrollArea } from "./ui/scroll-area";
 import { useTranslation } from "@/hooks/use-translation";
+import { useLanguage } from "@/context/language-context";
 
 const formSchema = z.object({
   inputType: z.enum(["text", "url", "headline"]).default("text"),
@@ -78,6 +79,7 @@ export function NewsSleuth() {
   const [result, setResult] = useState<NewsSleuthOutput | null>(null);
   const { toast } = useToast();
   const { t } = useTranslation();
+  const { language } = useLanguage();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -95,13 +97,13 @@ export function NewsSleuth() {
     setIsLoading(true);
     setResult(null);
 
-    let analysisInput: { [key: string]: string | undefined } = {};
+    let analysisInput: { [key: string]: string | undefined } = { language };
     if (values.inputType === 'text') {
-      analysisInput = { articleText: values.articleText };
+      analysisInput = { ...analysisInput, articleText: values.articleText };
     } else if (values.inputType === 'url') {
-      analysisInput = { articleUrl: values.articleUrl };
+      analysisInput = { ...analysisInput, articleUrl: values.articleUrl };
     } else if (values.inputType === 'headline') {
-      analysisInput = { articleHeadline: values.articleHeadline };
+      analysisInput = { ...analysisInput, articleHeadline: values.articleHeadline };
     }
     
     try {

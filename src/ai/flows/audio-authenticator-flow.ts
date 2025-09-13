@@ -18,6 +18,7 @@ const AudioAuthenticatorInputSchema = z.object({
     .describe(
       "The audio clip to analyze, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
+    language: z.string().optional().describe('The language for the analysis report (e.g., "en", "hi").'),
 });
 export type AudioAuthenticatorInput = z.infer<typeof AudioAuthenticatorInputSchema>;
 
@@ -46,6 +47,8 @@ const prompt = ai.definePrompt({
 
   Your task is to perform a two-part analysis on the provided audio clip.
   
+  CRITICAL: You MUST generate the entire report (the 'report', 'textAnalysis.analysis' fields) in the following language: {{language}}. If no language is provided, default to English. The 'verdict' and 'detectedText' fields should NOT be translated.
+
   **Part 1: Audio Forensics**
   Analyze the audio clip's technical properties to determine if it is authentic or has been manipulated or AI-generated.
   - Characteristics of authentic audio: Natural speech patterns, consistent background noise, natural emotional intonation.
@@ -89,5 +92,3 @@ const audioAuthenticatorFlow = ai.defineFlow(
     }
   }
 );
-
-    

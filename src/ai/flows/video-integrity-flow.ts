@@ -18,6 +18,7 @@ const VideoIntegrityInputSchema = z.object({
     .describe(
       "A video, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'"
     ),
+    language: z.string().optional().describe('The language for the analysis report (e.g., "en", "hi").'),
 });
 
 export type VideoIntegrityInput = z.infer<typeof VideoIntegrityInputSchema>;
@@ -51,6 +52,8 @@ const prompt = ai.definePrompt({
   prompt: `You are a multi-disciplinary expert in digital forensics, combining video analysis with audio and text investigation.
 
   Your task is to perform a two-part analysis on the provided video.
+  
+  CRITICAL: You MUST generate the entire report (the 'summary' and 'audioTextAnalysis.analysis' fields) in the following language: {{language}}. If no language is provided, default to English. The boolean fields and 'detectedText' field should NOT be translated.
 
   **Part 1: Visual and Audio Forensics**
   Analyze the video for authenticity. You will determine if it is a deepfake, used in a misleading context, manipulated, satire/parody, contains a synthetic voice, or is fully AI-generated.
@@ -107,7 +110,7 @@ const videoIntegrityFlow = ai.defineFlow(
             };
         }
 
-        const {output} = await prompt({ videoDataUri: input.videoDataUri });
+        const {output} = await prompt(input);
         return output!;
     } catch (e: any) {
         console.error('Error during video analysis:', e);
@@ -126,5 +129,3 @@ const videoIntegrityFlow = ai.defineFlow(
     }
   }
 );
-
-    

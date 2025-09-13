@@ -19,6 +19,7 @@ import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "./ui/scroll-area";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { useTranslation } from "@/hooks/use-translation";
+import { useLanguage } from "@/context/language-context";
 
 const formSchema = z.object({
   audioFile: z
@@ -35,6 +36,7 @@ export function AudioAuthenticator() {
   const [audioPreview, setAudioPreview] = useState<string | null>(null);
   const { toast } = useToast();
   const { t } = useTranslation();
+  const { language } = useLanguage();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -54,7 +56,7 @@ export function AudioAuthenticator() {
     setResult(null);
     try {
       const audioDataUri = await fileToDataUri(values.audioFile[0]);
-      const analysisResult = await audioAuthenticatorAnalysis({ audioDataUri });
+      const analysisResult = await audioAuthenticatorAnalysis({ audioDataUri, language });
       setResult(analysisResult);
     } catch (error) {
       console.error(error);

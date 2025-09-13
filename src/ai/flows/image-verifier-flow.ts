@@ -18,6 +18,7 @@ const ImageVerifierInputSchema = z.object({
     .describe(
       "The image to analyze, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
+    language: z.string().optional().describe('The language for the analysis report (e.g., "en", "hi").'),
 });
 export type ImageVerifierInput = z.infer<typeof ImageVerifierInputSchema>;
 
@@ -48,7 +49,9 @@ const prompt = ai.definePrompt({
   output: {schema: ImageVerifierOutputSchema},
   prompt: `You are a multi-disciplinary expert in digital forensics, combining the skills of an image analyst and a fake news investigator.
 
-  Your task is to perform a two-part analysis on the provided image:
+  Your task is to perform a two-part analysis on the provided image.
+
+  CRITICAL: You MUST generate the entire report (the 'report', 'context', and 'textAnalysis.analysis' fields) in the following language: {{language}}. If no language is provided, default to English. The 'verdict' and 'detectedText' fields should NOT be translated.
   
   **Part 1: Image Forensics**
   Analyze the image for authenticity. Look for signs of AI generation or digital manipulation.
@@ -89,7 +92,7 @@ const imageVerifierFlow = ai.defineFlow(
         throw new Error('No image data available for analysis.');
       }
 
-      const {output} = await prompt({ imageDataUri: input.imageDataUri });
+      const {output} = await prompt(input);
       return output!;
     } catch (e: any) {
       console.error('Error during image analysis:', e);
@@ -105,5 +108,3 @@ const imageVerifierFlow = ai.defineFlow(
     }
   }
 );
-
-    
