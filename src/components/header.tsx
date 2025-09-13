@@ -65,6 +65,18 @@ export function Header() {
               <DropdownMenuItem onClick={() => setLanguage('hi')}>
                 Hindi (हिन्दी)
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setLanguage('bn')}>
+                Bengali (বাংলা)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setLanguage('mr')}>
+                Marathi (मराठी)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setLanguage('te')}>
+                Telugu (తెలుగు)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setLanguage('ta')}>
+                Tamil (தமிழ்)
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           
