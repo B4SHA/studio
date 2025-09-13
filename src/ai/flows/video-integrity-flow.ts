@@ -10,7 +10,6 @@
  */
 
 import {ai} from '@/ai/genkit';
-import { downloadVideoFromUrl } from '@/services/video-downloader';
 import {z} from 'genkit';
 
 const VideoIntegrityInputSchema = z.object({
@@ -18,10 +17,7 @@ const VideoIntegrityInputSchema = z.object({
     .string()
     .describe(
       "A video, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'"
-    ).optional(),
-  videoUrl: z.string().url().optional().describe('The URL of the video file to analyze.'),
-}).refine(data => data.videoDataUri || data.videoUrl, {
-  message: 'Either a video file or a URL must be provided.',
+    ),
 });
 
 export type VideoIntegrityInput = z.infer<typeof VideoIntegrityInputSchema>;
@@ -50,7 +46,7 @@ export async function videoIntegrityAnalysis(input: VideoIntegrityInput): Promis
 
 const prompt = ai.definePrompt({
   name: 'videoIntegrityPrompt',
-  input: {schema: z.object({ videoDataUri: z.string() })},
+  input: {schema: VideoIntegrityInputSchema},
   output: {schema: VideoIntegrityOutputSchema},
   prompt: `You are a multi-disciplinary expert in digital forensics, combining video analysis with audio and text investigation.
 
@@ -96,20 +92,7 @@ const videoIntegrityFlow = ai.defineFlow(
   },
   async input => {
     try {
-        let videoDataUri = input.videoDataUri;
-        
-        if (input.videoUrl) {
-          const downloadResult = await downloadVideoFromUrl(input.videoUrl);
-          if (downloadResult.error) {
-            throw new Error(downloadResult.error);
-          }
-          if (!downloadResult.videoDataUri) {
-            throw new Error('Failed to download video from the provided URL.');
-          }
-          videoDataUri = downloadResult.videoDataUri;
-        }
-
-        if (!videoDataUri) {
+        if (!input.videoDataUri) {
              return {
                 analysis: {
                     deepfake: false,
@@ -124,7 +107,7 @@ const videoIntegrityFlow = ai.defineFlow(
             };
         }
 
-        const {output} = await prompt({ videoDataUri });
+        const {output} = await prompt({ videoDataUri: input.videoDataUri });
         return output!;
     } catch (e: any) {
         console.error('Error during video analysis:', e);
@@ -144,3 +127,4 @@ const videoIntegrityFlow = ai.defineFlow(
   }
 );
 
+    

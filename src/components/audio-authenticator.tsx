@@ -18,30 +18,13 @@ import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "./ui/scroll-area";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 
 const formSchema = z.object({
-  inputType: z.enum(["file", "url"]).default("file"),
   audioFile: z
     .custom<FileList>()
     .refine((files) => files?.length === 1, "Audio file is required.")
     .refine((files) => files?.[0]?.type.startsWith("audio/"), "Please upload a valid audio file.")
-    .refine((files) => files?.[0]?.size <= 10 * 1024 * 1024, "File size should be less than 10MB.").optional(),
-  audioUrl: z.string().url("Please enter a valid URL.").optional(),
-}).superRefine((data, ctx) => {
-  if (data.inputType === 'file' && !data.audioFile) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ['audioFile'],
-      message: 'An audio file is required.',
-    });
-  } else if (data.inputType === 'url' && !data.audioUrl) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ['audioUrl'],
-      message: 'An audio URL is required.',
-    });
-  }
+    .refine((files) => files?.[0]?.size <= 10 * 1024 * 1024, "File size should be less than 10MB."),
 });
 
 
@@ -53,10 +36,7 @@ export function AudioAuthenticator() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { inputType: 'file' },
   });
-
-  const inputType = form.watch("inputType");
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -70,21 +50,9 @@ export function AudioAuthenticator() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     setResult(null);
-    setAudioPreview(null);
     try {
-      let analysisInput = {};
-      if (values.inputType === 'file' && values.audioFile) {
-        const audioDataUri = await fileToDataUri(values.audioFile[0]);
-        analysisInput = { audioDataUri };
-      } else if (values.inputType === 'url' && values.audioUrl) {
-        analysisInput = { audioUrl: values.audioUrl };
-      } else {
-        toast({ variant: "destructive", title: "Invalid Input", description: "Please provide a file or URL." });
-        setIsLoading(false);
-        return;
-      }
-      
-      const analysisResult = await audioAuthenticatorAnalysis(analysisInput);
+      const audioDataUri = await fileToDataUri(values.audioFile[0]);
+      const analysisResult = await audioAuthenticatorAnalysis({ audioDataUri });
       setResult(analysisResult);
     } catch (error) {
       console.error(error);
@@ -136,7 +104,7 @@ export function AudioAuthenticator() {
             Audio Authenticator
           </h1>
           <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-            Upload an audio clip or provide a URL to analyze its authenticity and detect potential AI generation or manipulation.
+            Upload an audio clip to analyze its authenticity and detect potential AI generation or manipulation.
           </p>
         </div>
 
@@ -148,7 +116,7 @@ export function AudioAuthenticator() {
                 Audio Input
                 </CardTitle>
                 <CardDescription>
-                Select an audio file (Max 10MB) or provide a direct URL.
+                Select an audio file to upload (Max 10MB).
                 </CardDescription>
             </CardHeader>
             <Form {...form}>
@@ -156,77 +124,23 @@ export function AudioAuthenticator() {
                 <CardContent className="space-y-6">
                     <FormField
                       control={form.control}
-                      name="inputType"
+                      name="audioFile"
                       render={({ field }) => (
                         <FormItem>
+                          <FormLabel>Audio File</FormLabel>
                           <FormControl>
-                            <RadioGroup
-                              onValueChange={(value) => {
-                                  field.onChange(value);
-                                  form.clearErrors(['audioFile', 'audioUrl']);
-                                  setAudioPreview(null);
-                              }}
-                              defaultValue={field.value}
-                              className="grid grid-cols-2 gap-4"
-                            >
-                              <FormItem className="flex items-center space-x-2 space-y-0">
-                                <FormControl>
-                                  <RadioGroupItem value="file" id="file" />
-                                </FormControl>
-                                <FormLabel htmlFor="file" className="font-normal cursor-pointer">Upload File</FormLabel>
-                              </FormItem>
-                              <FormItem className="flex items-center space-x-2 space-y-0">
-                                <FormControl>
-                                  <RadioGroupItem value="url" id="url" />
-                                </FormControl>
-                                <FormLabel htmlFor="url" className="font-normal cursor-pointer">From URL</FormLabel>
-                              </FormItem>
-                            </RadioGroup>
+                              <Input
+                              type="file"
+                              accept="audio/*"
+                              onChange={handleFileChange}
+                              className="file:text-foreground h-12 text-base"
+                              />
                           </FormControl>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
 
-                    {inputType === 'file' && (
-                      <FormField
-                        control={form.control}
-                        name="audioFile"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Audio File</FormLabel>
-                            <FormControl>
-                                <Input
-                                type="file"
-                                accept="audio/*"
-                                onChange={handleFileChange}
-                                className="file:text-foreground h-12 text-base"
-                                />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    )}
-
-                    {inputType === 'url' && (
-                      <FormField
-                        control={form.control}
-                        name="audioUrl"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Audio URL</FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="https://example.com/audio.mp3"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    )}
-                    
                     {audioPreview && (
                     <div className="mt-4 border-2 shadow-inner rounded-lg p-2">
                         <audio controls src={audioPreview} className="w-full">
@@ -324,3 +238,5 @@ export function AudioAuthenticator() {
     </div>
   );
 }
+
+    

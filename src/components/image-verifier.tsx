@@ -19,30 +19,13 @@ import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "./ui/scroll-area";
 import Image from 'next/image';
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 
 const formSchema = z.object({
-  inputType: z.enum(["file", "url"]).default("file"),
   imageFile: z
     .custom<FileList>()
     .refine((files) => files?.length === 1, "An image file is required.")
     .refine((files) => files?.[0]?.type.startsWith("image/"), "Please upload a valid image file (e.g., JPG, PNG, WEBP).")
-    .refine((files) => files?.[0]?.size <= 10 * 1024 * 1024, "File size should be less than 10MB.").optional(),
-  imageUrl: z.string().url("Please enter a valid URL.").optional(),
-}).superRefine((data, ctx) => {
-  if (data.inputType === 'file' && !data.imageFile) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ['imageFile'],
-      message: 'An image file is required.',
-    });
-  } else if (data.inputType === 'url' && !data.imageUrl) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ['imageUrl'],
-      message: 'An image URL is required.',
-    });
-  }
+    .refine((files) => files?.[0]?.size <= 10 * 1024 * 1024, "File size should be less than 10MB."),
 });
 
 function AnalysisItem({ label, value }: { label: string; value: boolean }) {
@@ -66,11 +49,7 @@ export function ImageVerifier() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { inputType: 'file' },
   });
-
-  const inputType = form.watch("inputType");
-  const imageUrl = form.watch("imageUrl");
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -84,30 +63,10 @@ export function ImageVerifier() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     setResult(null);
-
-    // Set preview from URL on submit
-    if (values.inputType === 'url' && values.imageUrl) {
-        setImagePreview(values.imageUrl);
-    } else if (values.inputType === 'file') {
-        // Preview is already set by handleFileChange
-    } else {
-        setImagePreview(null);
-    }
     
     try {
-        let analysisInput = {};
-        if (values.inputType === 'file' && values.imageFile) {
-            const imageDataUri = await fileToDataUri(values.imageFile[0]);
-            analysisInput = { imageDataUri };
-        } else if (values.inputType === 'url' && values.imageUrl) {
-            analysisInput = { imageUrl: values.imageUrl };
-        } else {
-            toast({ variant: "destructive", title: "Invalid Input", description: "Please provide a file or URL." });
-            setIsLoading(false);
-            return;
-        }
-
-        const analysisResult = await imageVerifierAnalysis(analysisInput);
+        const imageDataUri = await fileToDataUri(values.imageFile[0]);
+        const analysisResult = await imageVerifierAnalysis({ imageDataUri });
         setResult(analysisResult);
     } catch (error) {
       console.error(error);
@@ -159,7 +118,7 @@ export function ImageVerifier() {
             Image Verifier
           </h1>
           <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-            Upload an image or provide a URL to detect AI-generation, manipulation, and analyze any text within it.
+            Upload an image to detect AI-generation, manipulation, and analyze any text within it.
           </p>
         </div>
 
@@ -171,82 +130,30 @@ export function ImageVerifier() {
                 Image Input
                 </CardTitle>
                 <CardDescription>
-                Select an image file (Max 10MB) or provide a direct URL.
+                Select an image file to upload (Max 10MB).
                 </CardDescription>
             </CardHeader>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                 <CardContent className="space-y-6">
                     <FormField
-                      control={form.control}
-                      name="inputType"
-                      render={({ field }) => (
+                    control={form.control}
+                    name="imageFile"
+                    render={() => (
                         <FormItem>
-                          <FormControl>
-                            <RadioGroup
-                              onValueChange={(value) => {
-                                  field.onChange(value);
-                                  form.clearErrors(['imageFile', 'imageUrl']);
-                                  setImagePreview(null);
-                              }}
-                              defaultValue={field.value}
-                              className="grid grid-cols-2 gap-4"
-                            >
-                              <FormItem className="flex items-center space-x-2 space-y-0">
-                                <FormControl>
-                                  <RadioGroupItem value="file" id="file" />
-                                </FormControl>
-                                <FormLabel htmlFor="file" className="font-normal cursor-pointer">Upload File</FormLabel>
-                              </FormItem>
-                              <FormItem className="flex items-center space-x-2 space-y-0">
-                                <FormControl>
-                                  <RadioGroupItem value="url" id="url" />
-                                </FormControl>
-                                <FormLabel htmlFor="url" className="font-normal cursor-pointer">From URL</FormLabel>
-                              </FormItem>
-                            </RadioGroup>
-                          </FormControl>
+                        <FormLabel>Image File</FormLabel>
+                        <FormControl>
+                            <Input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            className="file:text-foreground h-12 text-base"
+                            />
+                        </FormControl>
+                        <FormMessage />
                         </FormItem>
-                      )}
+                    )}
                     />
-                    {inputType === 'file' && (
-                        <FormField
-                        control={form.control}
-                        name="imageFile"
-                        render={() => (
-                            <FormItem>
-                            <FormLabel>Image File</FormLabel>
-                            <FormControl>
-                                <Input
-                                type="file"
-                                accept="image/*"
-                                onChange={handleFileChange}
-                                className="file:text-foreground h-12 text-base"
-                                />
-                            </FormControl>
-                            <FormMessage />
-                            </FormItem>
-                        )}
-                        />
-                    )}
-                    {inputType === 'url' && (
-                        <FormField
-                            control={form.control}
-                            name="imageUrl"
-                            render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Image URL</FormLabel>
-                                <FormControl>
-                                <Input
-                                    placeholder="https://example.com/image.jpg"
-                                    {...field}
-                                />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                            )}
-                        />
-                    )}
                     {imagePreview && (
                       <div className="mt-4 border-2 shadow-inner rounded-lg p-2 aspect-video relative">
                           <Image 
@@ -354,3 +261,5 @@ export function ImageVerifier() {
     </div>
   );
 }
+
+    

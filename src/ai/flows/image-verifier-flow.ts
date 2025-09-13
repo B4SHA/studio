@@ -17,10 +17,7 @@ const ImageVerifierInputSchema = z.object({
     .string()
     .describe(
       "The image to analyze, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
-    ).optional(),
-  imageUrl: z.string().url().optional().describe('The URL of the image file to analyze.'),
-}).refine(data => data.imageDataUri || data.imageUrl, {
-  message: 'Either an image file or a URL must be provided.',
+    ),
 });
 export type ImageVerifierInput = z.infer<typeof ImageVerifierInputSchema>;
 
@@ -47,7 +44,7 @@ export async function imageVerifierAnalysis(
 
 const prompt = ai.definePrompt({
   name: 'imageVerifierPrompt',
-  input: {schema: z.object({ imageDataUri: z.string() })},
+  input: {schema: ImageVerifierInputSchema},
   output: {schema: ImageVerifierOutputSchema},
   prompt: `You are a multi-disciplinary expert in digital forensics, combining the skills of an image analyst and a fake news investigator.
 
@@ -88,24 +85,11 @@ const imageVerifierFlow = ai.defineFlow(
   },
   async input => {
     try {
-      let imageDataUri = input.imageDataUri;
-      
-      if (input.imageUrl) {
-        const response = await fetch(input.imageUrl);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch image from URL: ${response.statusText}`);
-        }
-        const contentType = response.headers.get('content-type') || 'image/jpeg';
-        const buffer = await response.arrayBuffer();
-        const base64 = Buffer.from(buffer).toString('base64');
-        imageDataUri = `data:${contentType};base64,${base64}`;
-      }
-
-      if (!imageDataUri) {
+      if (!input.imageDataUri) {
         throw new Error('No image data available for analysis.');
       }
 
-      const {output} = await prompt({ imageDataUri });
+      const {output} = await prompt({ imageDataUri: input.imageDataUri });
       return output!;
     } catch (e: any) {
       console.error('Error during image analysis:', e);
@@ -121,3 +105,5 @@ const imageVerifierFlow = ai.defineFlow(
     }
   }
 );
+
+    

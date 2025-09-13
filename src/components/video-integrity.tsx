@@ -17,30 +17,13 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "./ui/separator";
 import { ScrollArea } from "./ui/scroll-area";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 
 const formSchema = z.object({
-  inputType: z.enum(["file", "url"]).default("file"),
   videoFile: z
     .custom<FileList>()
     .refine((files) => files?.length === 1, "Video file is required.")
     .refine((files) => files?.[0]?.type.startsWith("video/"), "Please upload a valid video file.")
-    .refine((files) => files?.[0]?.size <= 50 * 1024 * 1024, "File size should be less than 50MB.").optional(),
-  videoUrl: z.string().url("Please enter a valid URL.").optional(),
-}).superRefine((data, ctx) => {
-  if (data.inputType === 'file' && !data.videoFile) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ['videoFile'],
-      message: 'A video file is required.',
-    });
-  } else if (data.inputType === 'url' && !data.videoUrl) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ['videoUrl'],
-      message: 'A video URL is required.',
-    });
-  }
+    .refine((files) => files?.[0]?.size <= 50 * 1024 * 1024, "File size should be less than 50MB."),
 });
 
 
@@ -65,19 +48,13 @@ export function VideoIntegrity() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      inputType: 'file',
-      videoUrl: '',
-    },
   });
 
-  const inputType = form.watch("inputType");
   const videoFile = form.watch("videoFile");
-  const videoUrl = form.watch("videoUrl");
 
   useEffect(() => {
     let objectUrl: string | null = null;
-    if (inputType === 'file' && videoFile && videoFile.length > 0) {
+    if (videoFile && videoFile.length > 0) {
       objectUrl = URL.createObjectURL(videoFile[0]);
       setVideoPreview(objectUrl);
     }
@@ -87,36 +64,16 @@ export function VideoIntegrity() {
         URL.revokeObjectURL(objectUrl);
       }
     };
-  }, [videoFile, inputType]);
+  }, [videoFile]);
 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     setResult(null);
-
-    // Set preview from URL on submit
-    if (values.inputType === 'url' && values.videoUrl) {
-        setVideoPreview(values.videoUrl);
-    } else if (values.inputType === 'file') {
-        // Preview is already set by useEffect
-    } else {
-        setVideoPreview(null);
-    }
     
     try {
-      let analysisInput = {};
-      if (values.inputType === 'file' && values.videoFile) {
-        const videoDataUri = await fileToDataUri(values.videoFile[0]);
-        analysisInput = { videoDataUri };
-      } else if (values.inputType === 'url' && values.videoUrl) {
-        analysisInput = { videoUrl: values.videoUrl };
-      } else {
-        toast({ variant: "destructive", title: "Invalid Input", description: "Please provide a file or URL." });
-        setIsLoading(false);
-        return;
-      }
-      
-      const analysisResult = await videoIntegrityAnalysis(analysisInput);
+      const videoDataUri = await fileToDataUri(values.videoFile[0]);
+      const analysisResult = await videoIntegrityAnalysis({ videoDataUri });
       setResult(analysisResult);
     } catch (error) {
       console.error(error);
@@ -138,7 +95,7 @@ export function VideoIntegrity() {
                     Video Integrity
                 </h1>
                 <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-                    Upload a video or provide a URL to detect deepfakes, manipulations, and other signs of AI-generated content.
+                    Upload a video to detect deepfakes, manipulations, and other signs of AI-generated content.
                 </p>
             </div>
 
@@ -150,7 +107,7 @@ export function VideoIntegrity() {
                             Video Input
                         </CardTitle>
                         <CardDescription>
-                            Select a video file (Max 50MB) or provide a direct URL.
+                            Select a video file to upload (Max 50MB).
                         </CardDescription>
                     </CardHeader>
                     <Form {...form}>
@@ -158,76 +115,22 @@ export function VideoIntegrity() {
                             <CardContent className="space-y-6">
                                 <FormField
                                     control={form.control}
-                                    name="inputType"
+                                    name="videoFile"
                                     render={({ field }) => (
-                                        <FormItem>
+                                    <FormItem>
+                                        <FormLabel>Video File</FormLabel>
                                         <FormControl>
-                                            <RadioGroup
-                                            onValueChange={(value) => {
-                                                field.onChange(value);
-                                                form.clearErrors(['videoFile', 'videoUrl']);
-                                                setVideoPreview(null);
-                                            }}
-                                            defaultValue={field.value}
-                                            className="grid grid-cols-2 gap-4"
-                                            >
-                                            <FormItem className="flex items-center space-x-2 space-y-0">
-                                                <FormControl>
-                                                <RadioGroupItem value="file" id="file" />
-                                                </FormControl>
-                                                <FormLabel htmlFor="file" className="font-normal cursor-pointer">Upload File</FormLabel>
-                                            </FormItem>
-                                            <FormItem className="flex items-center space-x-2 space-y-0">
-                                                <FormControl>
-                                                <RadioGroupItem value="url" id="url" />
-                                                </FormControl>
-                                                <FormLabel htmlFor="url" className="font-normal cursor-pointer">From URL</FormLabel>
-                                            </FormItem>
-                                            </RadioGroup>
+                                        <Input
+                                            type="file"
+                                            accept="video/*"
+                                            onChange={(e) => field.onChange(e.target.files)}
+                                            className="file:text-foreground h-12 text-base"
+                                        />
                                         </FormControl>
-                                        </FormItem>
+                                        <FormMessage />
+                                    </FormItem>
                                     )}
                                 />
-                                {inputType === 'file' && (
-                                    <FormField
-                                        control={form.control}
-                                        name="videoFile"
-                                        render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Video File</FormLabel>
-                                            <FormControl>
-                                            <Input
-                                                type="file"
-                                                accept="video/*"
-                                                onChange={(e) => field.onChange(e.target.files)}
-                                                className="file:text-foreground h-12 text-base"
-                                            />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                        )}
-                                    />
-                                )}
-                                {inputType === 'url' && (
-                                    <FormField
-                                        control={form.control}
-                                        name="videoUrl"
-                                        render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Video URL</FormLabel>
-                                            <FormControl>
-                                            <Input
-                                                placeholder="https://example.com/video.mp4"
-                                                {...field}
-                                            />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                        )}
-                                    />
-                                )}
-
-
                                 {videoPreview && (
                                     <div className="mt-4 rounded-lg overflow-hidden border-2 shadow-inner">
                                     <video controls src={videoPreview} className="w-full aspect-video" />
@@ -325,3 +228,5 @@ export function VideoIntegrity() {
     </div>
   );
 }
+
+    

@@ -17,10 +17,7 @@ const AudioAuthenticatorInputSchema = z.object({
     .string()
     .describe(
       "The audio clip to analyze, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
-    ).optional(),
-  audioUrl: z.string().url().optional().describe('The URL of the audio file to analyze.'),
-}).refine(data => data.audioDataUri || data.audioUrl, {
-  message: 'Either an audio file or a URL must be provided.',
+    ),
 });
 export type AudioAuthenticatorInput = z.infer<typeof AudioAuthenticatorInputSchema>;
 
@@ -43,7 +40,7 @@ export async function audioAuthenticatorAnalysis(
 
 const prompt = ai.definePrompt({
   name: 'audioAuthenticatorPrompt',
-  input: {schema: z.object({ audioDataUri: z.string() })},
+  input: {schema: AudioAuthenticatorInputSchema},
   output: {schema: AudioAuthenticatorOutputSchema},
   prompt: `You are an expert in digital forensics with two specialties: audio analysis and misinformation detection.
 
@@ -76,24 +73,11 @@ const audioAuthenticatorFlow = ai.defineFlow(
   },
   async input => {
     try {
-      let audioDataUri = input.audioDataUri;
-
-      if (input.audioUrl) {
-        const response = await fetch(input.audioUrl);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch audio from URL: ${response.statusText}`);
-        }
-        const contentType = response.headers.get('content-type') || 'audio/mpeg';
-        const buffer = await response.arrayBuffer();
-        const base64 = Buffer.from(buffer).toString('base64');
-        audioDataUri = `data:${contentType};base64,${base64}`;
-      }
-
-      if (!audioDataUri) {
+      if (!input.audioDataUri) {
         throw new Error('No audio data available for analysis.');
       }
 
-      const {output} = await prompt({ audioDataUri });
+      const {output} = await prompt(input);
       return output!;
     } catch (e: any) {
       console.error('Error during audio analysis:', e);
@@ -105,3 +89,5 @@ const audioAuthenticatorFlow = ai.defineFlow(
     }
   }
 );
+
+    
