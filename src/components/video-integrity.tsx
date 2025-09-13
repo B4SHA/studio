@@ -65,7 +65,10 @@ export function VideoIntegrity() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { inputType: 'file' },
+    defaultValues: {
+      inputType: 'file',
+      videoUrl: '',
+    },
   });
 
   const inputType = form.watch("inputType");
